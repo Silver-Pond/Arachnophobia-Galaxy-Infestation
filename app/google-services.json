@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "271668743357",
+    "project_id": "arachnophobiagalaxyinfestation",
+    "storage_bucket": "arachnophobiagalaxyinfestation.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:271668743357:android:4718686d4646baeec7fbd4",
+        "android_client_info": {
+          "package_name": "com.example.arachnophobia_galaxy_infestation"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA3rvtBWHyo0CcsqC4ZADhxWHxWbsMz-fY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
