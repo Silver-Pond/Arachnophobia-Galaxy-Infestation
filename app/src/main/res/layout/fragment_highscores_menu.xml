@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".HighscoresMenuFragment"
+    android:background="#070707">
+
+    <LinearLayout
+        android:id="@+id/submain"
+        android:layout_width="409dp"
+        android:layout_height="729dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginBottom="1dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/loginTitleImage"
+            android:layout_width="match_parent"
+            android:layout_height="232dp"
+            android:layout_marginTop="15dp"
+            app:srcCompat="@drawable/spider_white" />
+
+        <TextView
+            android:id="@+id/appTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="80dp"
+            android:fontFamily="@font/black_ops_one"
+            android:text="ARACHNOPHOBIA: GALAXY INFESTATION"
+            android:textAlignment="center"
+            android:textColor="#009688"
+            android:textSize="30sp" />
+
+        <Button
+            android:id="@+id/btnarcadehighscore"
+            android:layout_width="287dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/custom_button"
+            android:backgroundTint="#673AB7"
+            android:fontFamily="@font/black_ops_one"
+            android:text="ARCADE HIGHSCORES"
+            android:textColor="#FFFFFF" />
+
+        <Button
+            android:id="@+id/btnsurvivalhighscore"
+            android:layout_width="287dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/custom_button"
+            android:backgroundTint="#673AB7"
+            android:fontFamily="@font/black_ops_one"
+            android:text="SURVIVAL HIGHSCORES"
+            android:textColor="#FFFFFF" />
+
+        <Button
+            android:id="@+id/btnback"
+            android:layout_width="287dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/custom_button"
+            android:backgroundTint="#673AB7"
+            android:fontFamily="@font/black_ops_one"
+            android:text="BACK TO MENU"
+            android:textColor="#FFFFFF" />
+    </LinearLayout>
+</FrameLayout>
