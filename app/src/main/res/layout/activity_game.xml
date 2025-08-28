@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    tools:context=".GameActivity">
+
+    <LinearLayout
+        android:id="@+id/submain"
+        android:layout_width="409dp"
+        android:layout_height="729dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginBottom="1dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/highscoreLayout"
+            android:layout_width="match_parent"
+            android:layout_height="37dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/highscoreText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="1"
+                android:fontFamily="@font/black_ops_one"
+                android:text="HIGH SCORE: 0"
+                android:textColor="#009688" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/scoreLayout"
+            android:layout_width="match_parent"
+            android:layout_height="37dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/scoreText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:layout_marginLeft="10dp"
+                android:fontFamily="@font/black_ops_one"
+                android:text="SCORE: 0"
+                android:textColor="#009688" />
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/gameframe"
+            android:layout_width="389dp"
+            android:layout_height="523dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="5dp"
+            android:background="#10022C">
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/controlsLayout"
+            android:layout_width="389dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/leftbtnLayout"
+                android:layout_width="90dp"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/leftbtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="115dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/control_buttons_a"
+                    android:backgroundTint="#E91E63"
+                    android:fontFamily="@font/black_ops_one"
+                    android:text="L"
+                    android:textAlignment="center"
+                    android:textColor="#FFFFFF"
+                    android:textSize="34sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/middlebtnLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/vertLayout"
+                    android:layout_width="210dp"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <Button
+                        android:id="@+id/pausebtn"
+                        android:layout_width="190dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/custom_button"
+                        android:backgroundTint="#673AB7"
+                        android:fontFamily="@font/black_ops_one"
+                        android:text="PAUSE"
+                        android:textColor="#FFFFFF" />
+
+                    <Button
+                        android:id="@+id/blastbtn"
+                        android:layout_width="190dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center_horizontal"
+                        android:background="@drawable/custom_button"
+                        android:fontFamily="@font/black_ops_one"
+                        android:text="SHOOT"
+                        android:textColor="#FFFFFF" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/rightbtnLayout"
+                android:layout_width="90dp"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/rightbtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="115dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/control_buttons_a"
+                    android:backgroundTint="#E91E63"
+                    android:fontFamily="@font/black_ops_one"
+                    android:text="R"
+                    android:textAlignment="center"
+                    android:textColor="#FFFFFF"
+                    android:textSize="34sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

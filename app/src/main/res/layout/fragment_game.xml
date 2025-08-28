@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainGameFrame"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0E0423"
+    tools:context=".GameFragment">
+
+    <ImageView
+        android:id="@+id/player"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:src="@drawable/moth" />
+
+    <LinearLayout
+        android:id="@+id/livesLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_gravity="top|end"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/lifeIcon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/moth"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter" />
+
+        <TextView
+            android:id="@+id/livesText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/black_ops_one"
+            android:text="x3"
+            android:textSize="18sp"
+            android:textColor="#FFFFFF"
+            android:layout_marginStart="6dp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/pauseText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="PAUSED"
+        android:textColor="#FFFFFF"
+        android:textSize="32sp"
+        android:visibility="gone"
+        android:fontFamily="@font/black_ops_one"
+        android:background="#80000000"
+        android:padding="20dp"/>
+</FrameLayout>
