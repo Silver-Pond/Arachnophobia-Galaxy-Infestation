@@ -415,24 +415,28 @@ class GameFragment : Fragment() {
         scoreText.text = "SCORE: $score"
     }
 
-    private fun updateHighScoreUI(){
-
-        val username = arguments?.getString("username").toString()
-        val dbRef = FirebaseDatabase.getInstance().getReference("highscores").child(username)
+    private fun updateHighScoreUI() {
+        // Get info from Firebase
+        val auth = FirebaseAuth.getInstance()
+        val uid = auth.currentUser?.uid ?: return  // make sure user is logged in
+        val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
 
         dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
-                    val storedHighscore = snapshot.child("highscore").getValue(Int::class.java)
+                    val storedHighscore = snapshot.child("highscore").getValue(Int::class.java) ?: 0
                     highScoreText.text = "HIGHSCORE: $storedHighscore"
                 } else {
-                    highScoreText.text = "HIGHSCORE: $highscore"
+                    highScoreText.text = "HIGHSCORE: 0"
                 }
             }
 
-            override fun onCancelled(error: DatabaseError) {}
+            override fun onCancelled(error: DatabaseError) {
+                // Optionally show a message if needed
+            }
         })
     }
+
 
     fun togglePause(): Boolean {
         isPaused = !isPaused
@@ -450,19 +454,19 @@ class GameFragment : Fragment() {
     }
 
     private fun saveHighScore() {
-        // Save highscore to Firebase
-        val dbRef = FirebaseDatabase.getInstance().getReference("highscores")
-        val username = arguments?.getString("username") ?: "Guest"
+        val auth = FirebaseAuth.getInstance()
+        val uid = auth.currentUser?.uid ?: return  // Ensure user is logged in
+        val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
 
-        dbRef.child(username).addListenerForSingleValueEvent(object : ValueEventListener {
+        dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
-                    // Username exists, check existing highscore
+                    // Player exists, check current highscore
                     val existingHighscore = snapshot.child("highscore").getValue(Int::class.java) ?: 0
 
                     if (score > existingHighscore) {
-                        // Update only if the new score is higher
-                        dbRef.child(username).child("highscore").setValue(score)
+                        // Update only if new score is higher
+                        dbRef.child("highscore").setValue(score)
                             .addOnSuccessListener {
                                 // Toast.makeText(requireContext(), "Highscore updated!", Toast.LENGTH_SHORT).show()
                             }
@@ -473,15 +477,19 @@ class GameFragment : Fragment() {
                         // Toast.makeText(requireContext(), "Your score is not higher than the current highscore", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    // Username does not exist, create new entry
+                    // If somehow player data is missing, recreate entry
                     val user = mapOf(
-                        "username" to username,
+                        "id" to uid,
+                        "username" to (snapshot.child("username").getValue(String::class.java) ?: "Guest"),
+                        "email" to (snapshot.child("email").getValue(String::class.java) ?: ""),
+                        "password" to (snapshot.child("password").getValue(String::class.java)
+                            ?: ""), // ⚠️ Optional, not recommended
                         "highscore" to score
                     )
 
-                    dbRef.child(username).setValue(user)
+                    dbRef.setValue(user)
                         .addOnSuccessListener {
-                            // Toast.makeText(requireContext(), "New user created with highscore!", Toast.LENGTH_SHORT).show()
+                            // Toast.makeText(requireContext(), "Player created with highscore!", Toast.LENGTH_SHORT).show()
                         }
                         .addOnFailureListener {
                             // Toast.makeText(requireContext(), "Failed to save highscore", Toast.LENGTH_SHORT).show()

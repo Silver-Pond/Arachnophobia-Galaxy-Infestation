@@ -83,10 +83,11 @@ class SignUpFragment : Fragment() {
                 Toast.makeText(requireContext(), "Password Invalid", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+            // Firebase Authentication
             val auth = FirebaseAuth.getInstance()
             val dbRef = FirebaseDatabase.getInstance().getReference("players")
 
-// First, check if the username already exists in the database
+            // First, check if the username already exists in the database
             dbRef.orderByChild("username").equalTo(username)
                 .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
@@ -100,14 +101,18 @@ class SignUpFragment : Fragment() {
                                         val firebaseUser = auth.currentUser
                                         val uid = firebaseUser?.uid
 
-                                        // Save additional user info (like username) in Realtime Database
-                                        val user = mapOf(
-                                            "username" to username,
-                                            "email" to email
-                                        )
-
                                         if (uid != null) {
-                                            dbRef.child(uid).setValue(user)
+                                            // Build Player object
+                                            val player = Player(
+                                                id = uid,
+                                                username = username,
+                                                email = email,
+                                                password = password,   // ⚠️ optional – you can remove for security
+                                                highscore = 0
+                                            )
+
+                                            // Save Player in Realtime Database
+                                            dbRef.child(uid).setValue(player)
                                                 .addOnSuccessListener {
                                                     Toast.makeText(requireContext(), "User created successfully", Toast.LENGTH_SHORT).show()
                                                     replaceFragment(LoginFragment()) // go back to login
@@ -128,7 +133,6 @@ class SignUpFragment : Fragment() {
                         Toast.makeText(requireContext(), "Database error: ${error.message}", Toast.LENGTH_SHORT).show()
                     }
                 })
-
         }
     }
     // Username validation

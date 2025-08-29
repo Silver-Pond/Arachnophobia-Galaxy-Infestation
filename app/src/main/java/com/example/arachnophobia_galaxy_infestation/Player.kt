@@ -7,5 +7,6 @@ data class Player(
     @SerializedName("username")
     val username: String = "",
     val email: String = "",
-    val password: String = ""
+    val password: String = "",
+    val highscore: Int = 0
 )

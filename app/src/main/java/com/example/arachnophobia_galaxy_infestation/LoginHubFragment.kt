@@ -112,7 +112,8 @@ class LoginHubFragment : Fragment() {
                         val player = Player(
                             username = it.displayName ?: "Guest",
                             email = it.email ?: "No Email",
-                            password = "N/A" // Google Sign-In does not provide password
+                            password = "N/A", // Google Sign-In does not provide password
+                            highscore = 0
                         )
                         database.child(playerId).setValue(player)
                             .addOnSuccessListener {
