@@ -79,25 +79,27 @@ class LeaderboardFragment : Fragment() {
     }
 
     private fun loadLeaderboard() {
-        val dbRef = FirebaseDatabase.getInstance().getReference("highscores")
+        // Clear existing data
+        val dbRef = FirebaseDatabase.getInstance().getReference("players")
 
         dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 players.clear()
+
                 for (playerSnap in snapshot.children) {
                     val username = playerSnap.child("username").getValue(String::class.java) ?: ""
                     val highscore = playerSnap.child("highscore").getValue(Int::class.java) ?: 0
 
-                    // Make sure you ADD instead of filtering only logged-in user
                     players.add(HighScore(username, highscore))
                 }
+
                 // Sort by score descending
                 players.sortByDescending { it.score }
 
                 adapter = LeaderboardAdapter(players, loggedInUser)
                 recyclerView.adapter = adapter
 
-                // Find logged-in user's position
+                // Scroll to logged-in user's position
                 val position = players.indexOfFirst { it.username == loggedInUser }
                 if (position != -1) {
                     recyclerView.scrollToPosition(position)
@@ -109,6 +111,7 @@ class LeaderboardFragment : Fragment() {
             }
         })
     }
+
     // Helper method to replace fragment
     private fun replaceFragment(fragment: Fragment) {
         parentFragmentManager.beginTransaction()
