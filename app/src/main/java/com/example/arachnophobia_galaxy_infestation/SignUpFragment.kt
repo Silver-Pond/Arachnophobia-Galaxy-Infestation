@@ -83,39 +83,52 @@ class SignUpFragment : Fragment() {
                 Toast.makeText(requireContext(), "Password Invalid", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            // Create user
+            val auth = FirebaseAuth.getInstance()
             val dbRef = FirebaseDatabase.getInstance().getReference("players")
 
-            // Check if username already exists
-            dbRef.child(username).addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    if (snapshot.exists()) {
-                        Toast.makeText(requireContext(), "Username already in use", Toast.LENGTH_SHORT).show()
-                        return
+// First, check if the username already exists in the database
+            dbRef.orderByChild("username").equalTo(username)
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        if (snapshot.exists()) {
+                            Toast.makeText(requireContext(), "Username already in use", Toast.LENGTH_SHORT).show()
+                        } else {
+                            // Create user with email and password using Firebase Auth
+                            auth.createUserWithEmailAndPassword(email, password)
+                                .addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
+                                        val firebaseUser = auth.currentUser
+                                        val uid = firebaseUser?.uid
+
+                                        // Save additional user info (like username) in Realtime Database
+                                        val user = mapOf(
+                                            "username" to username,
+                                            "email" to email
+                                        )
+
+                                        if (uid != null) {
+                                            dbRef.child(uid).setValue(user)
+                                                .addOnSuccessListener {
+                                                    Toast.makeText(requireContext(), "User created successfully", Toast.LENGTH_SHORT).show()
+                                                    replaceFragment(LoginFragment()) // go back to login
+                                                }
+                                                .addOnFailureListener { e ->
+                                                    Toast.makeText(requireContext(), "Database error: ${e.message}", Toast.LENGTH_SHORT).show()
+                                                }
+                                        }
+                                    } else {
+                                        // Handle errors from Firebase Auth
+                                        Toast.makeText(requireContext(), "Auth failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                        }
                     }
 
-                    // Create user object
-                    val user = mapOf(
-                        "username" to username,
-                        "email" to email,
-                        "password" to password
-                    )
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(requireContext(), "Database error: ${error.message}", Toast.LENGTH_SHORT).show()
+                    }
+                })
 
-                    // Save new user
-                    dbRef.child(username).setValue(user)
-                        .addOnSuccessListener {
-                            Toast.makeText(requireContext(), "User created successfully", Toast.LENGTH_SHORT).show()
-                            replaceFragment(LoginFragment()) // Go back to login
-                        }
-                        .addOnFailureListener { e ->
-                            Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-                        }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    Toast.makeText(requireContext(), "Database error: ${error.message}", Toast.LENGTH_SHORT).show()
-                }
-            })
         }
     }
     // Username validation

@@ -45,6 +45,7 @@ id btntrophies
 id controlsLayout
 id emailImage
 id emailInput
+id emailLoginInput
 id gameframe
 id highscoreLayout
 id highscoreText
@@ -82,7 +83,6 @@ id submainhorizontal03
 id titleImage
 id usernameImage
 id usernameInput
-id usernameLoginInput
 id usernameText
 id usernameview
 id vertLayout

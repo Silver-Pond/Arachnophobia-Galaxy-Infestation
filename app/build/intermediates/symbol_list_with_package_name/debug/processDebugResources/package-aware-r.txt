@@ -3382,6 +3382,7 @@ id edit_text_id
 id elastic
 id emailImage
 id emailInput
+id emailLoginInput
 id embed
 id end
 id endToStart
@@ -3732,7 +3733,6 @@ id up
 id useLogo
 id usernameImage
 id usernameInput
-id usernameLoginInput
 id usernameText
 id usernameview
 id vertLayout

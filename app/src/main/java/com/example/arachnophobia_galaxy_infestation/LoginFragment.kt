@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -51,7 +52,7 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Now you can find views by ID
-        val usernameInput = view.findViewById<EditText>(R.id.usernameLoginInput)
+        val emailInput = view.findViewById<EditText>(R.id.emailLoginInput)
         val passwordInput = view.findViewById<EditText>(R.id.passwordLoginInput)
         val signUpText = view.findViewById<TextView>(R.id.loginText)
         val btnlogin = view.findViewById<Button>(R.id.btnLogin)
@@ -66,43 +67,53 @@ class LoginFragment : Fragment() {
         }
         // You can now set up click listeners, etc.
         btnlogin.setOnClickListener {
-            val username = usernameInput.text.toString().trim()
+            val email = emailInput.text.toString().trim()
             val password = passwordInput.text.toString().trim()
 
-            if (username.isEmpty() || password.isEmpty()) {
+            if (email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(requireContext(), "Please enter username and password", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            val dbRef = FirebaseDatabase.getInstance().getReference("players").child(username)
+            val auth = FirebaseAuth.getInstance()
 
-            dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    if (snapshot.exists()) {
-                        val storedPassword = snapshot.child("password").getValue(String::class.java)
+            auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val firebaseUser = auth.currentUser
+                        val uid = firebaseUser?.uid
 
-                        if (storedPassword == password) {
-                            Toast.makeText(requireContext(), "Welcome $username", Toast.LENGTH_SHORT).show()
+                        if (uid != null) {
+                            // Retrieve username (or any extra info) from Realtime Database
+                            val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
 
-                            val gameMenuFragment = GameMenuFragment().apply {
-                                arguments = Bundle().apply {
-                                    putString("username", username)
+                            dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                                override fun onDataChange(snapshot: DataSnapshot) {
+                                    if (snapshot.exists()) {
+                                        val username = snapshot.child("username").getValue(String::class.java) ?: "Player"
+
+                                        Toast.makeText(requireContext(), "Welcome $username", Toast.LENGTH_SHORT).show()
+
+                                        val gameMenuFragment = GameMenuFragment().apply {
+                                            arguments = Bundle().apply {
+                                                putString("username", username)
+                                            }
+                                        }
+                                        replaceFragment(gameMenuFragment)
+                                    } else {
+                                        Toast.makeText(requireContext(), "User data not found", Toast.LENGTH_SHORT).show()
+                                    }
                                 }
-                            }
-                            replaceFragment(gameMenuFragment)
 
-                        } else {
-                            Toast.makeText(requireContext(), "Invalid credentials", Toast.LENGTH_SHORT).show()
+                                override fun onCancelled(error: DatabaseError) {
+                                    Toast.makeText(requireContext(), "Database error: ${error.message}", Toast.LENGTH_SHORT).show()
+                                }
+                            })
                         }
                     } else {
-                        Toast.makeText(requireContext(), "User not found", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "Login failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                     }
                 }
-
-                override fun onCancelled(error: DatabaseError) {
-                    Toast.makeText(requireContext(), "Database error: ${error.message}", Toast.LENGTH_SHORT).show()
-                }
-            })
         }
     }
     // Helper method to replace fragment

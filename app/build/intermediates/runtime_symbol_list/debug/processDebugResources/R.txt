@@ -3381,6 +3381,7 @@ int id edit_text_id 0x7f0a00cb
 int id elastic 0x7f0a00cc
 int id emailImage 0x7f0a00cd
 int id emailInput 0x7f0a00ce
+int id emailLoginInput 0x7f0a0246
 int id embed 0x7f0a00cf
 int id end 0x7f0a00d0
 int id endToStart 0x7f0a00d1
@@ -3731,7 +3732,6 @@ int id up 0x7f0a0229
 int id useLogo 0x7f0a022a
 int id usernameImage 0x7f0a022b
 int id usernameInput 0x7f0a022c
-int id usernameLoginInput 0x7f0a022d
 int id usernameText 0x7f0a022e
 int id usernameview 0x7f0a022f
 int id vertLayout 0x7f0a0230
