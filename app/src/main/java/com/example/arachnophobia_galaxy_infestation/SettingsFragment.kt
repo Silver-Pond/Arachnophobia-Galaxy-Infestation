@@ -5,7 +5,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.Spinner
+import android.content.res.Configuration
+import java.util.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -18,9 +23,9 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class SettingsFragment : Fragment() {
-    // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    private var selectedLanguage: String = "en" // default
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,24 +43,45 @@ class SettingsFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_settings, container, false)
     }
 
-    // Use this method to safely access views
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Now you can find views by ID
         val btnsavesettings = view.findViewById<Button>(R.id.btnsavesettings)
+        val languagespinner = view.findViewById<Spinner>(R.id.languagespinner)
+
+        // Language options
+        val options = arrayOf("English", "Afrikaans")
+        val adapter = ArrayAdapter(requireContext(), R.layout.item_spinner, options)
+        adapter.setDropDownViewResource(R.layout.item_spinner)
+        languagespinner.adapter = adapter
+
+        languagespinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>, view: View?, position: Int, id: Long
+            ) {
+                selectedLanguage = when (position) {
+                    0 -> "en" // English
+                    1 -> "af" // Afrikaans
+                    else -> "en"
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
 
         // Retrieve username from arguments
         val username = arguments?.getString("username") ?: "Guest"
 
         btnsavesettings.setOnClickListener {
-            // Create a new instance of GameMenuFragment with the username
+            // Change app language
+            setLocale(selectedLanguage)
+
+            // Navigate to GameMenuFragment
             val gameMenuFragment = GameMenuFragment().apply {
                 arguments = Bundle().apply {
                     putString("username", username)
                 }
             }
-            // Navigate to profile fragment
             replaceFragment(gameMenuFragment)
         }
     }
@@ -64,6 +90,19 @@ class SettingsFragment : Fragment() {
         parentFragmentManager.beginTransaction()
             .replace(R.id.main, fragment)
             .commit()
+    }
+
+    private fun setLocale(languageCode: String) {
+        val locale = Locale(languageCode)
+        Locale.setDefault(locale)
+        val config = Configuration()
+        config.setLocale(locale)
+        requireActivity().baseContext.resources.updateConfiguration(
+            config, requireActivity().baseContext.resources.displayMetrics
+        )
+
+        // Force activity to refresh so UI language updates immediately
+        requireActivity().recreate()
     }
 
     companion object {

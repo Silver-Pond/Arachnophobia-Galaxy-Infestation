@@ -17,6 +17,7 @@ drawable ic_launcher_foreground
 drawable moth
 drawable moth_blast
 drawable moth_death
+drawable outline_arrow_drop_down_24
 drawable spider_blue
 drawable spider_death
 drawable spider_maroon
@@ -26,6 +27,8 @@ drawable spider_white
 drawable user_icon
 font black_ops_one
 id appTitle
+id biometricsLayout
+id bioswitch
 id blastbtn
 id btnBack
 id btnBioLogin
@@ -46,6 +49,9 @@ id btnsurvivalhighscore
 id btnsurvivalmode
 id btntrophies
 id controlsLayout
+id effectsvolumeLayout
+id effectsvolumeSlider
+id effectsvolumeText
 id emailImage
 id emailInput
 id emailLoginInput
@@ -53,6 +59,9 @@ id fingerprintIcon
 id gameframe
 id highscoreLayout
 id highscoreText
+id languageLayout
+id languageText
+id languagespinner
 id leftbtn
 id leftbtnLayout
 id lifeIcon
@@ -63,6 +72,9 @@ id loginTitleImage
 id main
 id mainGameFrame
 id middlebtnLayout
+id musicvolumeLayout
+id musicvolumeSlider
+id musicvolumeText
 id pageTitle
 id passwordImage
 id passwordInput
@@ -80,6 +92,7 @@ id rightbtnLayout
 id scoreLayout
 id scoreText
 id signupTitleImage
+id spinnerText
 id submain
 id submainhorizontal
 id submainhorizontal02
@@ -103,6 +116,7 @@ layout fragment_profile
 layout fragment_settings
 layout fragment_sign_up
 layout item_leaderboard
+layout item_spinner
 mipmap ic_launcher
 mipmap ic_launcher_foreground
 mipmap ic_launcher_round

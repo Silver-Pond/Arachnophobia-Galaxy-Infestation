@@ -3176,6 +3176,7 @@ drawable notification_template_icon_bg
 drawable notification_template_icon_low_bg
 drawable notification_tile_bg
 drawable notify_panel_notification_icon_bg
+drawable outline_arrow_drop_down_24
 drawable spider_blue
 drawable spider_death
 drawable spider_maroon
@@ -3285,6 +3286,8 @@ id beginOnFirstDraw
 id beginning
 id below
 id bestChoice
+id biometricsLayout
+id bioswitch
 id blastbtn
 id blocking
 id bottom
@@ -3392,6 +3395,9 @@ id east
 id edge
 id edit_query
 id edit_text_id
+id effectsvolumeLayout
+id effectsvolumeSlider
+id effectsvolumeText
 id elastic
 id emailImage
 id emailInput
@@ -3464,6 +3470,9 @@ id item_touch_helper_previous_elevation
 id jumpToEnd
 id jumpToStart
 id labeled
+id languageLayout
+id languageText
+id languagespinner
 id layout
 id left
 id leftToRight
@@ -3544,6 +3553,9 @@ id mtrl_picker_text_input_range_start
 id mtrl_picker_title_text
 id mtrl_view_tag_bottom_padding
 id multiply
+id musicvolumeLayout
+id musicvolumeSlider
+id musicvolumeText
 id navigation_bar_item_active_indicator_view
 id navigation_bar_item_icon_container
 id navigation_bar_item_icon_view
@@ -3667,6 +3679,7 @@ id snapMargins
 id south
 id spacer
 id special_effects_controller_view_tag
+id spinnerText
 id spline
 id split_action_bar
 id spread
@@ -3924,6 +3937,7 @@ layout fragment_sign_up
 layout ime_base_split_test_activity
 layout ime_secondary_split_test_activity
 layout item_leaderboard
+layout item_spinner
 layout m3_alert_dialog
 layout m3_alert_dialog_actions
 layout m3_alert_dialog_title

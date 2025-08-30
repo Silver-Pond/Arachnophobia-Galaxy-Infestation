@@ -54,6 +54,104 @@
             android:textSize="24sp"
             android:textStyle="italic" />
 
+        <LinearLayout
+            android:id="@+id/languageLayout"
+            android:layout_width="328dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/languageText"
+                android:layout_width="241dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/black_ops_one"
+                android:text="LANGUAGE"
+                android:textColor="#009688"
+                android:textSize="20sp" />
+
+            <Spinner
+                android:id="@+id/languagespinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/black"
+                android:spinnerMode="dropdown"
+                android:padding="8dp"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/biometricsLayout"
+            android:layout_width="328dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <Switch
+                android:id="@+id/bioswitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/black_ops_one"
+                android:text="USE BIOMETRICS"
+                android:textColor="#009688"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:thumbTint="#3F51B5"
+                android:trackTint="#3F51B5" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/musicvolumeLayout"
+            android:layout_width="328dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/musicvolumeText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/black_ops_one"
+                android:text="MUSIC VOLUME"
+                android:textColor="#009688"
+                android:textSize="20sp" />
+
+            <com.google.android.material.slider.Slider
+                android:id="@+id/musicvolumeSlider"
+                android:layout_width="120dp"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/effectsvolumeLayout"
+            android:layout_width="328dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/effectsvolumeText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/black_ops_one"
+                android:text="EFFECTS VOLUME"
+                android:textColor="#009688"
+                android:textSize="20sp" />
+
+            <com.google.android.material.slider.Slider
+                android:id="@+id/effectsvolumeSlider"
+                android:layout_width="120dp"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+
         <Button
             android:id="@+id/btnsavesettings"
             android:layout_width="287dp"
