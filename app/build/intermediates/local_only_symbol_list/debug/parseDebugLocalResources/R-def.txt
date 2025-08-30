@@ -7,6 +7,8 @@ array preloaded_fonts
 color black
 color ic_launcher_background
 color white
+drawable baseline_fingerprint_24
+drawable biometric_print
 drawable control_buttons_a
 drawable control_buttons_b
 drawable custom_button
@@ -26,6 +28,7 @@ font black_ops_one
 id appTitle
 id blastbtn
 id btnBack
+id btnBioLogin
 id btnLogin
 id btnSignUp
 id btnarcadehighscore
@@ -46,6 +49,7 @@ id controlsLayout
 id emailImage
 id emailInput
 id emailLoginInput
+id fingerprintIcon
 id gameframe
 id highscoreLayout
 id highscoreText
@@ -88,6 +92,7 @@ id usernameview
 id vertLayout
 layout activity_game
 layout activity_main
+layout fragment_biometric_login
 layout fragment_game
 layout fragment_game_menu
 layout fragment_highscores_menu

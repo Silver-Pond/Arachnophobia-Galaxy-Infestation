@@ -6,10 +6,10 @@ INJECTED from C:\Users\ashfo\AndroidStudioProjects\Arachnophobia_Galaxy_Infestat
 INJECTED from C:\Users\ashfo\AndroidStudioProjects\Arachnophobia_Galaxy_Infestation\app\src\main\AndroidManifest.xml:2:1-36:12
 MERGED from [com.google.android.material:material:1.12.0] C:\Users\ashfo\.gradle\caches\8.13\transforms\269a50fbe8855365979149c2049136f7\transformed\material-1.12.0\AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.constraintlayout:constraintlayout:2.2.1] C:\Users\ashfo\.gradle\caches\8.13\transforms\f45c0f5938266ab07d34e8ac48c9864c\transformed\constraintlayout-2.2.1\AndroidManifest.xml:2:1-9:12
+MERGED from [androidx.biometric:biometric:1.2.0-alpha05] C:\Users\ashfo\.gradle\caches\8.13\transforms\a38ba10ddfa3ed1ebeaaac418c4b7755\transformed\biometric-1.2.0-alpha05\AndroidManifest.xml:17:1-27:12
 MERGED from [androidx.appcompat:appcompat-resources:1.7.1] C:\Users\ashfo\.gradle\caches\8.13\transforms\19d119b3ebabd5e8c468e971cf70bd74\transformed\appcompat-resources-1.7.1\AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.appcompat:appcompat:1.7.1] C:\Users\ashfo\.gradle\caches\8.13\transforms\bf314285ce971a0b526e55761f949e79\transformed\appcompat-1.7.1\AndroidManifest.xml:2:1-7:12
 MERGED from [com.google.firebase:firebase-auth:23.0.0] C:\Users\ashfo\.gradle\caches\8.13\transforms\77c94e493173fdf37d58e6cc4d3c7ea4\transformed\firebase-auth-23.0.0\AndroidManifest.xml:17:1-75:12
-MERGED from [com.google.android.libraries.identity.googleid:googleid:1.1.0] C:\Users\ashfo\.gradle\caches\8.13\transforms\3a9a9daba69849f786e5c1808a62a384\transformed\googleid-1.1.0\AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.credentials:credentials:1.2.0-rc01] C:\Users\ashfo\.gradle\caches\8.13\transforms\a267be1be726339ec2be36c9964acd41\transformed\credentials-1.2.0-rc01\AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\ashfo\.gradle\caches\8.13\transforms\8a7a58eb9551b3e7048eef4c607626e8\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:17:1-44:12
 MERGED from [com.google.android.gms:play-services-auth:21.2.0] C:\Users\ashfo\.gradle\caches\8.13\transforms\fad744a5139cbf350a7eb57a336c4f5a\transformed\play-services-auth-21.2.0\AndroidManifest.xml:17:1-40:12
@@ -58,6 +58,7 @@ MERGED from [androidx.fragment:fragment:1.5.7] C:\Users\ashfo\.gradle\caches\8.1
 MERGED from [androidx.activity:activity:1.10.1] C:\Users\ashfo\.gradle\caches\8.13\transforms\49e583eecb971fbc3cc167de5fb84b2b\transformed\activity-1.10.1\AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.core:core-ktx:1.16.0] C:\Users\ashfo\.gradle\caches\8.13\transforms\7786292da06190adac9abb46fce197d6\transformed\core-ktx-1.16.0\AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.core:core-viewtree:1.0.0] C:\Users\ashfo\.gradle\caches\8.13\transforms\21756d254b9b07b3711d3b9391da698c\transformed\core-viewtree-1.0.0\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.security:security-crypto:1.1.0-alpha03] C:\Users\ashfo\.gradle\caches\8.13\transforms\a4bf97346fd6ffe6689bbec194664cf7\transformed\security-crypto-1.1.0-alpha03\AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] C:\Users\ashfo\.gradle\caches\8.13\transforms\c472163b99a71e65722805e556ff2335\transformed\cursoradapter-1.0.0\AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.cardview:cardview:1.0.0] C:\Users\ashfo\.gradle\caches\8.13\transforms\c73614ef1a6600bd10c158f72513d4f9\transformed\cardview-1.0.0\AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\ashfo\.gradle\caches\8.13\transforms\11b433b203a23da85d2b62482fe7f568\transformed\profileinstaller-1.4.0\AndroidManifest.xml:17:1-55:12
@@ -71,6 +72,7 @@ MERGED from [androidx.arch.core:core-runtime:2.2.0] C:\Users\ashfo\.gradle\cache
 MERGED from [androidx.documentfile:documentfile:1.0.0] C:\Users\ashfo\.gradle\caches\8.13\transforms\a3f5ae309927a2b6af59ed461376b337\transformed\documentfile-1.0.0\AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.print:print:1.0.0] C:\Users\ashfo\.gradle\caches\8.13\transforms\a8870e1c76fa8474c7f174a30b7ad6ef\transformed\print-1.0.0\AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.annotation:annotation-experimental:1.4.1] C:\Users\ashfo\.gradle\caches\8.13\transforms\8ca3e6efb38be9ce1afbf4376427f89c\transformed\annotation-experimental-1.4.1\AndroidManifest.xml:2:1-7:12
+MERGED from [com.google.android.libraries.identity.googleid:googleid:1.1.0] C:\Users\ashfo\.gradle\caches\8.13\transforms\3a9a9daba69849f786e5c1808a62a384\transformed\googleid-1.1.0\AndroidManifest.xml:2:1-7:12
 MERGED from [io.grpc:grpc-android:1.62.2] C:\Users\ashfo\.gradle\caches\8.13\transforms\89f52bc77599e919d34739c9c9cb525b\transformed\grpc-android-1.62.2\AndroidManifest.xml:2:1-9:12
 MERGED from [com.google.firebase:protolite-well-known-types:18.0.1] C:\Users\ashfo\.gradle\caches\8.13\transforms\936ddce8c69fa4fb8d94dd359028406f\transformed\protolite-well-known-types-18.0.1\AndroidManifest.xml:2:1-7:12
 	package
@@ -97,6 +99,8 @@ MERGED from [com.google.android.recaptcha:recaptcha:18.4.0] C:\Users\ashfo\.grad
 		ADDED from C:\Users\ashfo\AndroidStudioProjects\Arachnophobia_Galaxy_Infestation\app\src\main\AndroidManifest.xml:5:22-64
 uses-permission#android.permission.USE_BIOMETRIC
 ADDED from C:\Users\ashfo\AndroidStudioProjects\Arachnophobia_Galaxy_Infestation\app\src\main\AndroidManifest.xml:6:5-71
+MERGED from [androidx.biometric:biometric:1.2.0-alpha05] C:\Users\ashfo\.gradle\caches\8.13\transforms\a38ba10ddfa3ed1ebeaaac418c4b7755\transformed\biometric-1.2.0-alpha05\AndroidManifest.xml:22:5-72
+MERGED from [androidx.biometric:biometric:1.2.0-alpha05] C:\Users\ashfo\.gradle\caches\8.13\transforms\a38ba10ddfa3ed1ebeaaac418c4b7755\transformed\biometric-1.2.0-alpha05\AndroidManifest.xml:22:5-72
 	android:name
 		ADDED from C:\Users\ashfo\AndroidStudioProjects\Arachnophobia_Galaxy_Infestation\app\src\main\AndroidManifest.xml:6:22-69
 application
@@ -206,14 +210,14 @@ MERGED from [com.google.android.material:material:1.12.0] C:\Users\ashfo\.gradle
 MERGED from [com.google.android.material:material:1.12.0] C:\Users\ashfo\.gradle\caches\8.13\transforms\269a50fbe8855365979149c2049136f7\transformed\material-1.12.0\AndroidManifest.xml:20:5-44
 MERGED from [androidx.constraintlayout:constraintlayout:2.2.1] C:\Users\ashfo\.gradle\caches\8.13\transforms\f45c0f5938266ab07d34e8ac48c9864c\transformed\constraintlayout-2.2.1\AndroidManifest.xml:5:5-44
 MERGED from [androidx.constraintlayout:constraintlayout:2.2.1] C:\Users\ashfo\.gradle\caches\8.13\transforms\f45c0f5938266ab07d34e8ac48c9864c\transformed\constraintlayout-2.2.1\AndroidManifest.xml:5:5-44
+MERGED from [androidx.biometric:biometric:1.2.0-alpha05] C:\Users\ashfo\.gradle\caches\8.13\transforms\a38ba10ddfa3ed1ebeaaac418c4b7755\transformed\biometric-1.2.0-alpha05\AndroidManifest.xml:20:5-44
+MERGED from [androidx.biometric:biometric:1.2.0-alpha05] C:\Users\ashfo\.gradle\caches\8.13\transforms\a38ba10ddfa3ed1ebeaaac418c4b7755\transformed\biometric-1.2.0-alpha05\AndroidManifest.xml:20:5-44
 MERGED from [androidx.appcompat:appcompat-resources:1.7.1] C:\Users\ashfo\.gradle\caches\8.13\transforms\19d119b3ebabd5e8c468e971cf70bd74\transformed\appcompat-resources-1.7.1\AndroidManifest.xml:5:5-44
 MERGED from [androidx.appcompat:appcompat-resources:1.7.1] C:\Users\ashfo\.gradle\caches\8.13\transforms\19d119b3ebabd5e8c468e971cf70bd74\transformed\appcompat-resources-1.7.1\AndroidManifest.xml:5:5-44
 MERGED from [androidx.appcompat:appcompat:1.7.1] C:\Users\ashfo\.gradle\caches\8.13\transforms\bf314285ce971a0b526e55761f949e79\transformed\appcompat-1.7.1\AndroidManifest.xml:5:5-44
 MERGED from [androidx.appcompat:appcompat:1.7.1] C:\Users\ashfo\.gradle\caches\8.13\transforms\bf314285ce971a0b526e55761f949e79\transformed\appcompat-1.7.1\AndroidManifest.xml:5:5-44
 MERGED from [com.google.firebase:firebase-auth:23.0.0] C:\Users\ashfo\.gradle\caches\8.13\transforms\77c94e493173fdf37d58e6cc4d3c7ea4\transformed\firebase-auth-23.0.0\AndroidManifest.xml:21:5-23:151
 MERGED from [com.google.firebase:firebase-auth:23.0.0] C:\Users\ashfo\.gradle\caches\8.13\transforms\77c94e493173fdf37d58e6cc4d3c7ea4\transformed\firebase-auth-23.0.0\AndroidManifest.xml:21:5-23:151
-MERGED from [com.google.android.libraries.identity.googleid:googleid:1.1.0] C:\Users\ashfo\.gradle\caches\8.13\transforms\3a9a9daba69849f786e5c1808a62a384\transformed\googleid-1.1.0\AndroidManifest.xml:5:5-44
-MERGED from [com.google.android.libraries.identity.googleid:googleid:1.1.0] C:\Users\ashfo\.gradle\caches\8.13\transforms\3a9a9daba69849f786e5c1808a62a384\transformed\googleid-1.1.0\AndroidManifest.xml:5:5-44
 MERGED from [androidx.credentials:credentials:1.2.0-rc01] C:\Users\ashfo\.gradle\caches\8.13\transforms\a267be1be726339ec2be36c9964acd41\transformed\credentials-1.2.0-rc01\AndroidManifest.xml:5:5-44
 MERGED from [androidx.credentials:credentials:1.2.0-rc01] C:\Users\ashfo\.gradle\caches\8.13\transforms\a267be1be726339ec2be36c9964acd41\transformed\credentials-1.2.0-rc01\AndroidManifest.xml:5:5-44
 MERGED from [androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\ashfo\.gradle\caches\8.13\transforms\8a7a58eb9551b3e7048eef4c607626e8\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:21:5-44
@@ -310,6 +314,8 @@ MERGED from [androidx.core:core-ktx:1.16.0] C:\Users\ashfo\.gradle\caches\8.13\t
 MERGED from [androidx.core:core-ktx:1.16.0] C:\Users\ashfo\.gradle\caches\8.13\transforms\7786292da06190adac9abb46fce197d6\transformed\core-ktx-1.16.0\AndroidManifest.xml:5:5-44
 MERGED from [androidx.core:core-viewtree:1.0.0] C:\Users\ashfo\.gradle\caches\8.13\transforms\21756d254b9b07b3711d3b9391da698c\transformed\core-viewtree-1.0.0\AndroidManifest.xml:5:5-44
 MERGED from [androidx.core:core-viewtree:1.0.0] C:\Users\ashfo\.gradle\caches\8.13\transforms\21756d254b9b07b3711d3b9391da698c\transformed\core-viewtree-1.0.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.security:security-crypto:1.1.0-alpha03] C:\Users\ashfo\.gradle\caches\8.13\transforms\a4bf97346fd6ffe6689bbec194664cf7\transformed\security-crypto-1.1.0-alpha03\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.security:security-crypto:1.1.0-alpha03] C:\Users\ashfo\.gradle\caches\8.13\transforms\a4bf97346fd6ffe6689bbec194664cf7\transformed\security-crypto-1.1.0-alpha03\AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] C:\Users\ashfo\.gradle\caches\8.13\transforms\c472163b99a71e65722805e556ff2335\transformed\cursoradapter-1.0.0\AndroidManifest.xml:20:5-44
 MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] C:\Users\ashfo\.gradle\caches\8.13\transforms\c472163b99a71e65722805e556ff2335\transformed\cursoradapter-1.0.0\AndroidManifest.xml:20:5-44
 MERGED from [androidx.cardview:cardview:1.0.0] C:\Users\ashfo\.gradle\caches\8.13\transforms\c73614ef1a6600bd10c158f72513d4f9\transformed\cardview-1.0.0\AndroidManifest.xml:20:5-44
@@ -336,6 +342,8 @@ MERGED from [androidx.print:print:1.0.0] C:\Users\ashfo\.gradle\caches\8.13\tran
 MERGED from [androidx.print:print:1.0.0] C:\Users\ashfo\.gradle\caches\8.13\transforms\a8870e1c76fa8474c7f174a30b7ad6ef\transformed\print-1.0.0\AndroidManifest.xml:20:5-44
 MERGED from [androidx.annotation:annotation-experimental:1.4.1] C:\Users\ashfo\.gradle\caches\8.13\transforms\8ca3e6efb38be9ce1afbf4376427f89c\transformed\annotation-experimental-1.4.1\AndroidManifest.xml:5:5-44
 MERGED from [androidx.annotation:annotation-experimental:1.4.1] C:\Users\ashfo\.gradle\caches\8.13\transforms\8ca3e6efb38be9ce1afbf4376427f89c\transformed\annotation-experimental-1.4.1\AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.libraries.identity.googleid:googleid:1.1.0] C:\Users\ashfo\.gradle\caches\8.13\transforms\3a9a9daba69849f786e5c1808a62a384\transformed\googleid-1.1.0\AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.libraries.identity.googleid:googleid:1.1.0] C:\Users\ashfo\.gradle\caches\8.13\transforms\3a9a9daba69849f786e5c1808a62a384\transformed\googleid-1.1.0\AndroidManifest.xml:5:5-44
 MERGED from [io.grpc:grpc-android:1.62.2] C:\Users\ashfo\.gradle\caches\8.13\transforms\89f52bc77599e919d34739c9c9cb525b\transformed\grpc-android-1.62.2\AndroidManifest.xml:5:5-44
 MERGED from [io.grpc:grpc-android:1.62.2] C:\Users\ashfo\.gradle\caches\8.13\transforms\89f52bc77599e919d34739c9c9cb525b\transformed\grpc-android-1.62.2\AndroidManifest.xml:5:5-44
 MERGED from [com.google.firebase:protolite-well-known-types:18.0.1] C:\Users\ashfo\.gradle\caches\8.13\transforms\936ddce8c69fa4fb8d94dd359028406f\transformed\protolite-well-known-types-18.0.1\AndroidManifest.xml:5:5-44
@@ -346,6 +354,10 @@ MERGED from [com.google.firebase:protolite-well-known-types:18.0.1] C:\Users\ash
 		INJECTED from C:\Users\ashfo\AndroidStudioProjects\Arachnophobia_Galaxy_Infestation\app\src\main\AndroidManifest.xml
 	android:minSdkVersion
 		INJECTED from C:\Users\ashfo\AndroidStudioProjects\Arachnophobia_Galaxy_Infestation\app\src\main\AndroidManifest.xml
+uses-permission#android.permission.USE_FINGERPRINT
+ADDED from [androidx.biometric:biometric:1.2.0-alpha05] C:\Users\ashfo\.gradle\caches\8.13\transforms\a38ba10ddfa3ed1ebeaaac418c4b7755\transformed\biometric-1.2.0-alpha05\AndroidManifest.xml:25:5-74
+	android:name
+		ADDED from [androidx.biometric:biometric:1.2.0-alpha05] C:\Users\ashfo\.gradle\caches\8.13\transforms\a38ba10ddfa3ed1ebeaaac418c4b7755\transformed\biometric-1.2.0-alpha05\AndroidManifest.xml:25:22-71
 uses-permission#android.permission.ACCESS_NETWORK_STATE
 ADDED from [com.google.firebase:firebase-auth:23.0.0] C:\Users\ashfo\.gradle\caches\8.13\transforms\77c94e493173fdf37d58e6cc4d3c7ea4\transformed\firebase-auth-23.0.0\AndroidManifest.xml:26:5-79
 MERGED from [com.google.firebase:firebase-database:22.0.0] C:\Users\ashfo\.gradle\caches\8.13\transforms\502ba4986ab676d175d30add2b24014e\transformed\firebase-database-22.0.0\AndroidManifest.xml:22:5-79

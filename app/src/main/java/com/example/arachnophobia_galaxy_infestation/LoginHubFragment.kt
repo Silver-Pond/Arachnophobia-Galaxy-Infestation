@@ -67,6 +67,7 @@ class LoginHubFragment : Fragment() {
 
         val btngooglelogin = view.findViewById<Button>(R.id.btngooglelogin)
         val btnlogin = view.findViewById<Button>(R.id.btnlogin)
+        val btnbiologin = view.findViewById<Button>(R.id.btnbiologin)
         val btnguest = view.findViewById<Button>(R.id.btnguest)
 
         btngooglelogin.setOnClickListener {
@@ -75,6 +76,10 @@ class LoginHubFragment : Fragment() {
 
         btnlogin.setOnClickListener {
             replaceFragment(LoginFragment())
+        }
+
+        btnbiologin.setOnClickListener {
+            replaceFragment(BiometricLoginFragment())
         }
 
         btnguest.setOnClickListener {

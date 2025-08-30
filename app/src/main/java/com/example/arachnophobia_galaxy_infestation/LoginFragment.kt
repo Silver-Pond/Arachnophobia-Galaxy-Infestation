@@ -1,5 +1,6 @@
 package com.example.arachnophobia_galaxy_infestation
 
+import android.content.Context
 import android.graphics.Paint
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -51,21 +52,19 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Now you can find views by ID
         val emailInput = view.findViewById<EditText>(R.id.emailLoginInput)
         val passwordInput = view.findViewById<EditText>(R.id.passwordLoginInput)
         val signUpText = view.findViewById<TextView>(R.id.loginText)
         val btnlogin = view.findViewById<Button>(R.id.btnLogin)
 
-        // Underline textView
+        // Underline the sign-up text
         signUpText.paintFlags = signUpText.paintFlags or Paint.UNDERLINE_TEXT_FLAG
 
-        // You can now set up click listeners, etc.
+        // Navigate to SignUpFragment
         signUpText.setOnClickListener {
-            // Navigate to the signup fragment
             replaceFragment(SignUpFragment())
         }
-        // You can now set up click listeners, etc.
+
         btnlogin.setOnClickListener {
             val email = emailInput.text.toString().trim()
             val password = passwordInput.text.toString().trim()
@@ -76,7 +75,6 @@ class LoginFragment : Fragment() {
             }
 
             val auth = FirebaseAuth.getInstance()
-
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
@@ -84,13 +82,22 @@ class LoginFragment : Fragment() {
                         val uid = firebaseUser?.uid
 
                         if (uid != null) {
-                            // Retrieve username (or any extra info) from Realtime Database
                             val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
 
                             dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
                                 override fun onDataChange(snapshot: DataSnapshot) {
                                     if (snapshot.exists()) {
                                         val username = snapshot.child("username").getValue(String::class.java) ?: "Player"
+
+                                        // Save login details for biometric login
+                                        val sharedPref = requireActivity()
+                                            .getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+                                        with(sharedPref.edit()) {
+                                            putString("email", email)
+                                            putString("password", password)
+                                            putString("username", username) // optional
+                                            apply()
+                                        }
 
                                         Toast.makeText(requireContext(), "Welcome $username", Toast.LENGTH_SHORT).show()
 

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    tools:context=".BiometricLoginFragment">
+
+
+    <LinearLayout
+        android:id="@+id/submain"
+        android:layout_width="409dp"
+        android:layout_height="729dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginBottom="1dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/loginTitleImage"
+            android:layout_width="match_parent"
+            android:layout_height="218dp"
+            android:layout_marginTop="15dp"
+            app:srcCompat="@drawable/biometric_print" />
+
+        <TextView
+            android:id="@+id/appTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="50dp"
+            android:fontFamily="@font/black_ops_one"
+            android:text="ARACHNOPHOBIA: GALAXY INFESTATION"
+            android:textAlignment="center"
+            android:textColor="#009688"
+            android:textSize="30sp" />
+
+        <ImageView
+            android:id="@+id/fingerprintIcon"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="16dp"
+            android:background="#673AB7"
+            android:src="@drawable/baseline_fingerprint_24" />
+
+        <Button
+            android:id="@+id/btnBioLogin"
+            android:layout_width="145dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="15dp"
+            android:background="@drawable/custom_button"
+            android:backgroundTint="#673AB7"
+            android:fontFamily="@font/black_ops_one"
+            android:text="LOGIN"
+            android:textColor="#FFFFFF" />
+    </LinearLayout>
+</FrameLayout>
