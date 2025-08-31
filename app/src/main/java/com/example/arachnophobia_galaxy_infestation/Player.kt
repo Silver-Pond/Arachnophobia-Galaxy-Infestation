@@ -8,5 +8,6 @@ data class Player(
     val username: String = "",
     val email: String = "",
     val password: String = "",
-    val highscore: Int = 0
+    val highscore: Int = 0,
+    val spider_silk: Double = 0.00
 )

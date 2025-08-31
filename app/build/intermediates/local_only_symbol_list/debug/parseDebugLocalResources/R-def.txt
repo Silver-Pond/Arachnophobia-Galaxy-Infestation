@@ -22,6 +22,7 @@ drawable spider_blue
 drawable spider_death
 drawable spider_maroon
 drawable spider_purple
+drawable spider_web
 drawable spider_web_shot
 drawable spider_white
 drawable user_icon
@@ -120,6 +121,7 @@ layout item_spinner
 mipmap ic_launcher
 mipmap ic_launcher_foreground
 mipmap ic_launcher_round
+raw nebula
 string app_name
 string default_web_client_id
 string gcm_defaultSenderId

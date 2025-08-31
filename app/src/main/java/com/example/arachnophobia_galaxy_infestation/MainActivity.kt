@@ -1,5 +1,6 @@
 package com.example.arachnophobia_galaxy_infestation
 
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
@@ -13,6 +14,7 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
     private lateinit var networkMonitor: NetworkMonitor
     private var isOnline = false
     private lateinit var start: TextView
+    private var mediaPlayer: MediaPlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,16 +24,20 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
         // Initialize the NetworkMonitor
         networkMonitor = NetworkMonitor(this, this)
 
+        // Initialize background music
+        mediaPlayer = MediaPlayer.create(this, R.raw.nebula)
+        MusicPlayerManager.mediaPlayer = mediaPlayer
+        MusicPlayerManager.updateVolume(0.5f)
+        mediaPlayer?.isLooping = true
+
         // Find the TextView by its ID
         start = findViewById(R.id.pressStart)
 
         start.setOnClickListener {
             // Check if the device is online
             if (isOnline) {
-                // Navigate to the login fragment
                 replaceFragment(LoginHubFragment())
             } else {
-                // Navigate to the game menu fragment
                 replaceFragment(GameMenuFragment())
             }
         }
@@ -46,11 +52,24 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
     override fun onResume() {
         super.onResume()
         networkMonitor.register()
+
+        // Start music when activity is visible
+        mediaPlayer?.start()
     }
 
     override fun onPause() {
         super.onPause()
         networkMonitor.unregister()
+
+        // Pause music when activity is not visible
+        mediaPlayer?.pause()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Release resources
+        mediaPlayer?.release()
+        mediaPlayer = null
     }
 
     override fun onNetworkAvailable() {

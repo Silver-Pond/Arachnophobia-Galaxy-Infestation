@@ -1,5 +1,6 @@
 package com.example.arachnophobia_galaxy_infestation
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -39,29 +40,48 @@ class SettingsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_settings, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Initialize views
         val btnsavesettings = view.findViewById<Button>(R.id.btnsavesettings)
         val languagespinner = view.findViewById<Spinner>(R.id.languagespinner)
+        val musicvolumeSlider = view.findViewById<com.google.android.material.slider.Slider>(R.id.musicvolumeSlider)
 
-        // Language options
+        // Set up spinner
         val options = arrayOf("English", "Afrikaans")
         val adapter = ArrayAdapter(requireContext(), R.layout.item_spinner, options)
         adapter.setDropDownViewResource(R.layout.item_spinner)
         languagespinner.adapter = adapter
+
+        // Load saved preferences
+        val prefs = requireActivity().getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
+        val savedLang = prefs.getString("language", "en") ?: "en"
+        selectedLanguage = savedLang
+        val savedVolume = prefs.getFloat("music_volume", 0.5f)
+
+        // Set spinner selection based on saved language
+        languagespinner.setSelection(
+            when (savedLang) {
+                "af" -> 1
+                else -> 0
+            }
+        )
+
+        // Set slider to saved volume
+        musicvolumeSlider.value = savedVolume * musicvolumeSlider.valueTo // scale to slider max
+        MusicPlayerManager.updateVolume(savedVolume)
 
         languagespinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>, view: View?, position: Int, id: Long
             ) {
                 selectedLanguage = when (position) {
-                    0 -> "en" // English
-                    1 -> "af" // Afrikaans
+                    0 -> "en"
+                    1 -> "af"
                     else -> "en"
                 }
             }
@@ -69,10 +89,19 @@ class SettingsFragment : Fragment() {
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
 
-        // Retrieve username from arguments
+        // Listen to slider changes
+        musicvolumeSlider.addOnChangeListener { _, value, _ ->
+            val volume = value / musicvolumeSlider.valueTo // normalize to 0.0–1.0
+            MusicPlayerManager.updateVolume(volume)
+            prefs.edit().putFloat("music_volume", volume).apply()
+        }
+
         val username = arguments?.getString("username") ?: "Guest"
 
         btnsavesettings.setOnClickListener {
+            // Save language preference
+            prefs.edit().putString("language", selectedLanguage).apply()
+
             // Change app language
             setLocale(selectedLanguage)
 

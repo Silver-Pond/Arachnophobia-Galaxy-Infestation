@@ -3180,6 +3180,7 @@ int drawable spider_blue 0x7f080107
 int drawable spider_death 0x7f080108
 int drawable spider_maroon 0x7f080109
 int drawable spider_purple 0x7f08010a
+int drawable spider_web 0x7f080111
 int drawable spider_web_shot 0x7f08010b
 int drawable spider_white 0x7f08010c
 int drawable test_level_drawable 0x7f08010d
@@ -4003,6 +4004,7 @@ int mipmap ic_launcher_foreground 0x7f0f0001
 int mipmap ic_launcher_round 0x7f0f0002
 int plurals mtrl_badge_content_description 0x7f100000
 int raw firebase_common_keep 0x7f110000
+int raw nebula 0x7f110001
 int string abc_action_bar_home_description 0x7f120000
 int string abc_action_bar_up_description 0x7f120001
 int string abc_action_menu_overflow_description 0x7f120002

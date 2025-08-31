@@ -108,7 +108,8 @@ class SignUpFragment : Fragment() {
                                                 username = username,
                                                 email = email,
                                                 password = password,   // ⚠️ optional – you can remove for security
-                                                highscore = 0
+                                                highscore = 0,
+                                                spider_silk = 0.00
                                             )
 
                                             // Save Player in Realtime Database

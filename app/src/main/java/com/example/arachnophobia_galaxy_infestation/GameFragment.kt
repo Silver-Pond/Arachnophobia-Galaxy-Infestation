@@ -484,7 +484,55 @@ class GameFragment : Fragment() {
                         "email" to (snapshot.child("email").getValue(String::class.java) ?: ""),
                         "password" to (snapshot.child("password").getValue(String::class.java)
                             ?: ""), // ⚠️ Optional, not recommended
+                        "spider_silk" to (snapshot.child("spider_silk").getValue(String::class.java)),
                         "highscore" to score
+                    )
+
+                    dbRef.setValue(user)
+                        .addOnSuccessListener {
+                            // Toast.makeText(requireContext(), "Player created with highscore!", Toast.LENGTH_SHORT).show()
+                        }
+                        .addOnFailureListener {
+                            // Toast.makeText(requireContext(), "Failed to save highscore", Toast.LENGTH_SHORT).show()
+                        }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(requireContext(), "Database error: ${error.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun saveInGameCurrency(){
+
+        // Calculate spider silk & save to Firebase
+        val spider_silk = (score*0.5)/100
+        val auth = FirebaseAuth.getInstance()
+        val uid = auth.currentUser?.uid ?: return  // Ensure user is logged in
+        val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
+
+        dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    // Update currency amount if player exists
+                    dbRef.child("spider_silk").setValue(score)
+                        .addOnSuccessListener {
+                            // Toast.makeText(requireContext(), "Highscore updated!", Toast.LENGTH_SHORT).show()
+                        }
+                        .addOnFailureListener {
+                            // Toast.makeText(requireContext(), "Failed to update highscore", Toast.LENGTH_SHORT).show()
+                        }
+                } else {
+                    // If somehow player data is missing, recreate entry
+                    val user = mapOf(
+                        "id" to uid,
+                        "username" to (snapshot.child("username").getValue(String::class.java) ?: "Guest"),
+                        "email" to (snapshot.child("email").getValue(String::class.java) ?: ""),
+                        "password" to (snapshot.child("password").getValue(String::class.java)
+                            ?: ""), // ⚠️ Optional, not recommended
+                        "highscore" to (snapshot.child("highscore").getValue(String::class.java)),
+                        "spider_silk" to spider_silk
                     )
 
                     dbRef.setValue(user)
@@ -509,8 +557,9 @@ class GameFragment : Fragment() {
         pauseText.visibility = View.VISIBLE
         pauseText.bringToFront()
 
-        // Save Highscore
+        // Save Highscore & Currency
         saveHighScore()
+        saveInGameCurrency()
 
         Handler(Looper.getMainLooper()).postDelayed({
             requireActivity().finish()
@@ -523,8 +572,9 @@ class GameFragment : Fragment() {
         pauseText.visibility = View.VISIBLE
         pauseText.bringToFront()
 
-        // Save Highscore
+        // Save Highscore & Currency
         saveHighScore()
+        saveInGameCurrency()
 
         Handler(Looper.getMainLooper()).postDelayed({
             requireActivity().finish()

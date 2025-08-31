@@ -5,6 +5,11 @@
       <config />
     </shared>
     <layouts>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/drawable/baseline_fingerprint_24.xml">
+        <config>
+          <theme>@style/Theme.Arachnophobia_Galaxy_Infestation</theme>
+        </config>
+      </layout>
       <layout url="file://$PROJECT_DIR$/app/src/main/res/drawable/control_buttons_a.xml">
         <config>
           <theme>@style/Theme.Arachnophobia_Galaxy_Infestation</theme>
@@ -85,18 +90,18 @@
           <theme>@style/Theme.Arachnophobia_Galaxy_Infestation</theme>
         </config>
       </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/item_spinner.xml">
+        <config>
+          <theme>@style/Theme.Arachnophobia_Galaxy_Infestation</theme>
+        </config>
+      </layout>
     </layouts>
   </component>
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0fa8f017-5757-4b80-8e2d-5853bd444b49" name="Changes" comment="Merged remote history with local changes">
-      <change beforePath="$PROJECT_DIR$/.gradle/8.13/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/checksums/checksums.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle.kts" afterDir="false" />
-    </list>
+    <list default="true" id="0fa8f017-5757-4b80-8e2d-5853bd444b49" name="Changes" comment="Merged remote history with local changes" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -169,9 +174,9 @@
         <option value="Interface" />
         <option value="valueResourceFile" />
         <option value="Class" />
-        <option value="layoutResourceFile" />
         <option value="resourceFile" />
         <option value="Kotlin Class" />
+        <option value="layoutResourceFile" />
       </list>
     </option>
   </component>
@@ -363,7 +368,23 @@
       <option name="project" value="LOCAL" />
       <updated>1756505333242</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Merged remote history with local changes">
+      <option name="closed" value="true" />
+      <created>1756590935558</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1756590935558</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Merged remote history with local changes">
+      <option name="closed" value="true" />
+      <created>1756597956259</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1756597956261</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -375,12 +396,12 @@
       <map>
         <entry key="com.example.arachnophobia_galaxy_infestation">
           <value>
-            <CheckInfo lastCheckTimestamp="1756483359789" />
+            <CheckInfo lastCheckTimestamp="1756585557596" />
           </value>
         </entry>
         <entry key="com.example.arachnophobia_galaxy_infestation.test">
           <value>
-            <CheckInfo lastCheckTimestamp="1756483359763" />
+            <CheckInfo lastCheckTimestamp="1756585557598" />
           </value>
         </entry>
       </map>

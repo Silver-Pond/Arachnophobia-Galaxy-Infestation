@@ -124,8 +124,8 @@
 
             <com.google.android.material.slider.Slider
                 android:id="@+id/musicvolumeSlider"
-                android:layout_width="120dp"
-                android:layout_height="match_parent" />
+                android:layout_width="125dp"
+                android:layout_height="wrap_content" />
         </LinearLayout>
 
         <LinearLayout
@@ -148,8 +148,8 @@
 
             <com.google.android.material.slider.Slider
                 android:id="@+id/effectsvolumeSlider"
-                android:layout_width="120dp"
-                android:layout_height="match_parent" />
+                android:layout_width="125dp"
+                android:layout_height="wrap_content" />
         </LinearLayout>
 
         <Button
