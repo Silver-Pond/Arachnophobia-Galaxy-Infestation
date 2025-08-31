@@ -61,6 +61,17 @@ class GameMenuFragment : Fragment() {
             "Guest"
         }
 
+        usernameview.setOnClickListener {
+            // Create a new instance of ProfileFragment with the username
+            val profileFragment = ProfileFragment().apply {
+                arguments = Bundle().apply {
+                    putString("username", username)
+                }
+            }
+            // Navigate to profile fragment
+            replaceFragment(profileFragment)
+        }
+
         btnarcademode.setOnClickListener {
             // Navigate to game activity
             val intent = Intent(requireContext(), GameActivity::class.java)
