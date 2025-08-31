@@ -504,10 +504,9 @@ class GameFragment : Fragment() {
         })
     }
 
-    private fun saveInGameCurrency(){
-
-        // Calculate spider silk & save to Firebase
-        val spider_silk = (score*0.5)/100
+    private fun saveInGameCurrency() {
+        // Calculate spider silk earned
+        val spider_silk = (score * 0.5) / 100
         val auth = FirebaseAuth.getInstance()
         val uid = auth.currentUser?.uid ?: return  // Ensure user is logged in
         val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
@@ -515,13 +514,16 @@ class GameFragment : Fragment() {
         dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
-                    // Update currency amount if player exists
-                    dbRef.child("spider_silk").setValue(score)
+                    // Get current spider_silk from database (default to 0.0 if missing)
+                    val currentSilk = snapshot.child("spider_silk").getValue(Double::class.java) ?: 0.0
+                    val updatedSilk = currentSilk + spider_silk
+
+                    dbRef.child("spider_silk").setValue(updatedSilk)
                         .addOnSuccessListener {
-                            // Toast.makeText(requireContext(), "Highscore updated!", Toast.LENGTH_SHORT).show()
+                            // Success handling (optional)
                         }
                         .addOnFailureListener {
-                            // Toast.makeText(requireContext(), "Failed to update highscore", Toast.LENGTH_SHORT).show()
+                            // Failure handling (optional)
                         }
                 } else {
                     // If somehow player data is missing, recreate entry
@@ -529,18 +531,17 @@ class GameFragment : Fragment() {
                         "id" to uid,
                         "username" to (snapshot.child("username").getValue(String::class.java) ?: "Guest"),
                         "email" to (snapshot.child("email").getValue(String::class.java) ?: ""),
-                        "password" to (snapshot.child("password").getValue(String::class.java)
-                            ?: ""), // ⚠️ Optional, not recommended
-                        "highscore" to (snapshot.child("highscore").getValue(String::class.java)),
-                        "spider_silk" to spider_silk
+                        "password" to (snapshot.child("password").getValue(String::class.java) ?: ""), // ⚠️ Not recommended to store plain passwords
+                        "highscore" to (snapshot.child("highscore").getValue(Int::class.java) ?: 0),
+                        "spider_silk" to spider_silk // start with earned amount
                     )
 
                     dbRef.setValue(user)
                         .addOnSuccessListener {
-                            // Toast.makeText(requireContext(), "Player created with highscore!", Toast.LENGTH_SHORT).show()
+                            // Success handling (optional)
                         }
                         .addOnFailureListener {
-                            // Toast.makeText(requireContext(), "Failed to save highscore", Toast.LENGTH_SHORT).show()
+                            // Failure handling (optional)
                         }
                 }
             }
