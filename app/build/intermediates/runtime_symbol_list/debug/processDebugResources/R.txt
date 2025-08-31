@@ -3313,8 +3313,10 @@ int id btngooglelogin 0x7f0a007a
 int id btnguest 0x7f0a007b
 int id btnhighscores 0x7f0a007c
 int id btnlogin 0x7f0a007d
+int id btnprofilechange 0x7f0a0259
 int id btnsavesettings 0x7f0a007e
 int id btnsettings 0x7f0a007f
+int id btnskin 0x7f0a025a
 int id btnsurvivalhighscore 0x7f0a0080
 int id btnsurvivalmode 0x7f0a0081
 int id btntrophies 0x7f0a0082

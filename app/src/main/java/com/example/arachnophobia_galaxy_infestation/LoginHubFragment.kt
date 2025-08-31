@@ -1,5 +1,6 @@
 package com.example.arachnophobia_galaxy_infestation
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -65,10 +66,15 @@ class LoginHubFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Initialize views
         val btngooglelogin = view.findViewById<Button>(R.id.btngooglelogin)
         val btnlogin = view.findViewById<Button>(R.id.btnlogin)
         val btnbiologin = view.findViewById<Button>(R.id.btnbiologin)
         val btnguest = view.findViewById<Button>(R.id.btnguest)
+
+        // Check if user is already signed in
+        val prefs = requireActivity().getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
+        val useBiometrics = prefs.getBoolean("use_biometrics", false)
 
         btngooglelogin.setOnClickListener {
             signInWithGoogle()
@@ -77,6 +83,8 @@ class LoginHubFragment : Fragment() {
         btnlogin.setOnClickListener {
             replaceFragment(LoginFragment())
         }
+        // Hide or show the button based on preference
+        btnbiologin.visibility = if (useBiometrics) View.VISIBLE else View.GONE
 
         btnbiologin.setOnClickListener {
             replaceFragment(BiometricLoginFragment())

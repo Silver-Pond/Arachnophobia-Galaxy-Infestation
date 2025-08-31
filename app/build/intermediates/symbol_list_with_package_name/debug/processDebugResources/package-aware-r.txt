@@ -3314,8 +3314,10 @@ id btngooglelogin
 id btnguest
 id btnhighscores
 id btnlogin
+id btnprofilechange
 id btnsavesettings
 id btnsettings
+id btnskin
 id btnsurvivalhighscore
 id btnsurvivalmode
 id btntrophies

@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.Spinner
 import android.content.res.Configuration
+import android.widget.Switch
 import java.util.*
 
 // TODO: Rename parameter arguments, choose names that match
@@ -50,6 +51,7 @@ class SettingsFragment : Fragment() {
         val btnsavesettings = view.findViewById<Button>(R.id.btnsavesettings)
         val languagespinner = view.findViewById<Spinner>(R.id.languagespinner)
         val musicvolumeSlider = view.findViewById<com.google.android.material.slider.Slider>(R.id.musicvolumeSlider)
+        val bioswitch = view.findViewById<Switch>(R.id.bioswitch)
 
         // Set up spinner
         val options = arrayOf("English", "Afrikaans")
@@ -94,6 +96,13 @@ class SettingsFragment : Fragment() {
             val volume = value / musicvolumeSlider.valueTo // normalize to 0.0–1.0
             MusicPlayerManager.updateVolume(volume)
             prefs.edit().putFloat("music_volume", volume).apply()
+        }
+        // Load saved biometric setting (default = false)
+        val bioEnabled = prefs.getBoolean("use_biometrics", false)
+        bioswitch.isChecked = bioEnabled
+
+        bioswitch.setOnCheckedChangeListener { _, isChecked ->
+            prefs.edit().putBoolean("use_biometrics", isChecked).apply()
         }
 
         val username = arguments?.getString("username") ?: "Guest"
