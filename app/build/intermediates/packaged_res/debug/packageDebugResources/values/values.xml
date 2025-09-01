@@ -20,7 +20,7 @@
     <color name="black">#FF000000</color>
     <color name="ic_launcher_background">#000000</color>
     <color name="white">#FFFFFFFF</color>
-    <string name="app_name">Arachnophobia_Galaxy_Infestation</string>
+    <string name="app_name">Arachnophobia Galaxy Infestation</string>
     <string name="default_web_client_id">271668743357-pi1bb00pmr1sc11ptdn2rbj0ckoq3oep.apps.googleusercontent.com</string>
     <string name="gcm_defaultSenderId" translatable="false">271668743357</string>
     <string name="google_api_key" translatable="false">AIzaSyA3rvtBWHyo0CcsqC4ZADhxWHxWbsMz-fY</string>
