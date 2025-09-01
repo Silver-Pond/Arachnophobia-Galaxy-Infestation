@@ -1,6 +1,10 @@
 package com.example.arachnophobia_galaxy_infestation
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 import android.media.MediaPlayer
+import android.os.Build
 import android.os.Bundle
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
@@ -30,6 +34,9 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
         MusicPlayerManager.updateVolume(0.5f)
         mediaPlayer?.isLooping = true
 
+        // Currency Notifications
+        createNotificationChannel()
+
         // Find the TextView by its ID
         start = findViewById(R.id.pressStart)
 
@@ -40,6 +47,21 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
             } else {
                 replaceFragment(GameMenuFragment())
             }
+        }
+    }
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                "spider_channel",
+                "Spider Silk Updates",
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = "Notifies when spider silk changes"
+            }
+
+            val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            manager.createNotificationChannel(channel)
         }
     }
 

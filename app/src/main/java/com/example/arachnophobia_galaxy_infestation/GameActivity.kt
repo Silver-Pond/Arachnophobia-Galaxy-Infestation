@@ -1,5 +1,6 @@
 package com.example.arachnophobia_galaxy_infestation
 
+import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -31,6 +32,9 @@ class GameActivity : AppCompatActivity() {
 
         // Retrieve the username from the Intent
         username = intent.getStringExtra("username") ?: "Guest"
+
+        // Update last played time
+        updateLastPlayed()
 
         // Load GameFragment into gameframe
         val gameFragment = GameFragment().apply {
@@ -128,5 +132,10 @@ class GameActivity : AppCompatActivity() {
         leftBtn.isEnabled = enabled
         rightBtn.isEnabled = enabled
         blastBtn.isEnabled = enabled
+    }
+
+    private fun updateLastPlayed() {
+        val prefs = getSharedPreferences("game_prefs", Context.MODE_PRIVATE)
+        prefs.edit().putLong("last_played", System.currentTimeMillis()).apply()
     }
 }

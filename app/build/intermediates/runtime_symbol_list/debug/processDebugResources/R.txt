@@ -1355,7 +1355,11 @@ int attr yearStyle 0x7f0404f1
 int attr yearTodayStyle 0x7f0404f2
 int bool abc_action_bar_embed_tabs 0x7f050000
 int bool abc_config_actionMenuItemAllCaps 0x7f050001
+int bool enable_system_alarm_service_default 0x7f050003
+int bool enable_system_foreground_service_default 0x7f050004
+int bool enable_system_job_service_default 0x7f050005
 int bool mtrl_btn_textappearance_all_caps 0x7f050002
+int bool workmanager_test_configuration 0x7f050006
 int color abc_background_cache_hint_selector_material_dark 0x7f060000
 int color abc_background_cache_hint_selector_material_light 0x7f060001
 int color abc_btn_colored_borderless_text_material 0x7f060002
@@ -4090,6 +4094,7 @@ int string face_prompt_message 0x7f12004f
 int string fallback_menu_item_copy_link 0x7f120050
 int string fallback_menu_item_open_in_browser 0x7f120051
 int string fallback_menu_item_share_link 0x7f120052
+int string fcm_fallback_notification_channel_label 0x7f1200e2
 int string fingerprint_dialog_icon_description 0x7f120053
 int string fingerprint_dialog_touch_sensor 0x7f120054
 int string fingerprint_error_hw_not_available 0x7f120055

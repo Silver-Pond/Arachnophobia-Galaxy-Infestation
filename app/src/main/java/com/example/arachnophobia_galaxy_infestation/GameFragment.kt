@@ -1,5 +1,7 @@
 package com.example.arachnophobia_galaxy_infestation
 
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -12,6 +14,9 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -468,10 +473,10 @@ class GameFragment : Fragment() {
                         // Update only if new score is higher
                         dbRef.child("highscore").setValue(score)
                             .addOnSuccessListener {
-                                // Toast.makeText(requireContext(), "Highscore updated!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(requireContext(), "New Highscore!", Toast.LENGTH_SHORT).show()
                             }
                             .addOnFailureListener {
-                                // Toast.makeText(requireContext(), "Failed to update highscore", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(requireContext(), "Failed to update highscore", Toast.LENGTH_SHORT).show()
                             }
                     } else {
                         // Toast.makeText(requireContext(), "Your score is not higher than the current highscore", Toast.LENGTH_SHORT).show()
@@ -490,10 +495,10 @@ class GameFragment : Fragment() {
 
                     dbRef.setValue(user)
                         .addOnSuccessListener {
-                            // Toast.makeText(requireContext(), "Player created with highscore!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), "Player created with highscore!", Toast.LENGTH_SHORT).show()
                         }
                         .addOnFailureListener {
-                            // Toast.makeText(requireContext(), "Failed to save highscore", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), "Failed to save highscore", Toast.LENGTH_SHORT).show()
                         }
                 }
             }
@@ -505,43 +510,35 @@ class GameFragment : Fragment() {
     }
 
     private fun saveInGameCurrency() {
-        // Calculate spider silk earned
+        // Calculate spider silk
         val spider_silk = (score * 0.5) / 100
         val auth = FirebaseAuth.getInstance()
-        val uid = auth.currentUser?.uid ?: return  // Ensure user is logged in
+        val uid = auth.currentUser?.uid ?: return
         val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
 
         dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
-                    // Get current spider_silk from database (default to 0.0 if missing)
                     val currentSilk = snapshot.child("spider_silk").getValue(Double::class.java) ?: 0.0
                     val updatedSilk = currentSilk + spider_silk
 
                     dbRef.child("spider_silk").setValue(updatedSilk)
                         .addOnSuccessListener {
-                            // Success handling (optional)
-                        }
-                        .addOnFailureListener {
-                            // Failure handling (optional)
+                            showSpiderNotification("Spider Silk Earned!", "You now have $updatedSilk silk!")
                         }
                 } else {
-                    // If somehow player data is missing, recreate entry
                     val user = mapOf(
                         "id" to uid,
                         "username" to (snapshot.child("username").getValue(String::class.java) ?: "Guest"),
                         "email" to (snapshot.child("email").getValue(String::class.java) ?: ""),
-                        "password" to (snapshot.child("password").getValue(String::class.java) ?: ""), // ⚠️ Not recommended to store plain passwords
+                        "password" to (snapshot.child("password").getValue(String::class.java) ?: ""),
                         "highscore" to (snapshot.child("highscore").getValue(Int::class.java) ?: 0),
-                        "spider_silk" to spider_silk // start with earned amount
+                        "spider_silk" to spider_silk
                     )
 
                     dbRef.setValue(user)
                         .addOnSuccessListener {
-                            // Success handling (optional)
-                        }
-                        .addOnFailureListener {
-                            // Failure handling (optional)
+                            showSpiderNotification("Welcome!", "You earned $spider_silk spider silk!")
                         }
                 }
             }
@@ -550,6 +547,59 @@ class GameFragment : Fragment() {
                 Toast.makeText(requireContext(), "Database error: ${error.message}", Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    private fun showSpiderNotification(title: String, message: String) {
+        if (!hasNotificationPermission()) {
+            requestNotificationPermission()
+            return
+        }
+
+        val builder = NotificationCompat.Builder(requireContext(), "spider_channel")
+            .setSmallIcon(R.drawable.spider_maroon) // replace with your app's icon
+            .setContentTitle(title)
+            .setContentText(message)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+
+        with(NotificationManagerCompat.from(requireContext())) {
+            try {
+                notify(System.currentTimeMillis().toInt(), builder.build())
+            } catch (e: SecurityException) {
+                Toast.makeText(requireContext(), "Cannot show notification: permission denied", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 1001) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted → you can show notifications now
+            } else {
+                Toast.makeText(requireContext(), "Notifications disabled by user", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun hasNotificationPermission(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                android.Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true // Permission not needed below Android 13
+        }
+    }
+
+    private fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1001)
+        }
     }
 
     private fun gameOver() {
