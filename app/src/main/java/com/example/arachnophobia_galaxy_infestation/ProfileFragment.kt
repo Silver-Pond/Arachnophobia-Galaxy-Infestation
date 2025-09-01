@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.TextView
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -44,9 +45,17 @@ class ProfileFragment : Fragment() {
 
         // Initialize views
         val username = arguments?.getString("username") ?: "Guest"
+        val usernameview = view.findViewById<TextView>(R.id.usernameview)
         val btnprofilechange = view.findViewById<Button>(R.id.btnprofilechange)
         val btnskin = view.findViewById<Button>(R.id.btnskin)
         val btnback = view.findViewById<Button>(R.id.btnback)
+
+        // Set username
+        usernameview.text = if (!username.isNullOrEmpty()) {
+            "${username}"
+        } else {
+            "Guest"
+        }
 
         // Set up click listeners
         btnprofilechange.setOnClickListener {}
