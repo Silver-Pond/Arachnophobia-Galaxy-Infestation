@@ -3626,6 +3626,7 @@ int id pressStart 0x7f0a01ac
 int id pressed 0x7f0a01ad
 int id profileImage 0x7f0a01ae
 int id profileLayout 0x7f0a01af
+int id profileusernameview 0x7f0a025e
 int id progress_circular 0x7f0a01b0
 int id progress_horizontal 0x7f0a01b1
 int id radio 0x7f0a01b2
@@ -3773,7 +3774,6 @@ int id usernameImage 0x7f0a023f
 int id usernameInput 0x7f0a0240
 int id usernameText 0x7f0a0241
 int id usernameview 0x7f0a0242
-int id usernameviewtext 0x7f0a025d
 int id vertLayout 0x7f0a0243
 int id vertical 0x7f0a0244
 int id vertical_only 0x7f0a0245

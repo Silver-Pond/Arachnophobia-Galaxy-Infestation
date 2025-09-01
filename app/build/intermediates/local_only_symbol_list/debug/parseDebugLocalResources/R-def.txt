@@ -89,6 +89,7 @@ id player
 id pressStart
 id profileImage
 id profileLayout
+id profileusernameview
 id rankText
 id recyclerView
 id rightbtn
@@ -106,7 +107,6 @@ id usernameImage
 id usernameInput
 id usernameText
 id usernameview
-id usernameviewtext
 id vertLayout
 layout activity_game
 layout activity_main

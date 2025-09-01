@@ -3627,6 +3627,7 @@ id pressStart
 id pressed
 id profileImage
 id profileLayout
+id profileusernameview
 id progress_circular
 id progress_horizontal
 id radio
@@ -3774,7 +3775,6 @@ id usernameImage
 id usernameInput
 id usernameText
 id usernameview
-id usernameviewtext
 id vertLayout
 id vertical
 id vertical_only
