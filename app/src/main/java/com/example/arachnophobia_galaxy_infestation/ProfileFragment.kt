@@ -45,13 +45,13 @@ class ProfileFragment : Fragment() {
 
         // Initialize views
         val username = arguments?.getString("username") ?: "Guest"
-        val usernameview = view.findViewById<TextView>(R.id.usernameview)
+        val profileusernameview = view.findViewById<TextView>(R.id.profileusernameview)
         val btnprofilechange = view.findViewById<Button>(R.id.btnprofilechange)
         val btnskin = view.findViewById<Button>(R.id.btnskin)
         val btnback = view.findViewById<Button>(R.id.btnback)
 
         // Set username
-        usernameview.text = if (!username.isNullOrEmpty()) {
+        profileusernameview.text = if (!username.isNullOrEmpty()) {
             "${username}"
         } else {
             "Guest"

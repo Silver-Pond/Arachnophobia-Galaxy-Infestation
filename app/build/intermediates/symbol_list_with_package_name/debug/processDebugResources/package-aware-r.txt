@@ -3614,6 +3614,7 @@ id passwordLoginInput
 id password_toggle
 id path
 id pathRelative
+id pauseLayout
 id pauseText
 id pausebtn
 id peekHeight
@@ -3647,8 +3648,8 @@ id save_non_transition_alpha
 id save_overlay_view
 id sawtooth
 id scale
-id scoreLayout
 id scoreText
+id scoresLayout
 id screen
 id scroll
 id scrollIndicatorDown
@@ -3773,6 +3774,7 @@ id usernameImage
 id usernameInput
 id usernameText
 id usernameview
+id usernameviewtext
 id vertLayout
 id vertical
 id vertical_only
@@ -3941,6 +3943,7 @@ layout fragment_login_hub
 layout fragment_profile
 layout fragment_settings
 layout fragment_sign_up
+layout fragment_skins
 layout ime_base_split_test_activity
 layout ime_secondary_split_test_activity
 layout item_leaderboard

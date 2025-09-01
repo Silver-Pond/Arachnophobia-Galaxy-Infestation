@@ -3613,6 +3613,7 @@ int id passwordLoginInput 0x7f0a01a0
 int id password_toggle 0x7f0a01a1
 int id path 0x7f0a01a2
 int id pathRelative 0x7f0a01a3
+int id pauseLayout 0x7f0a025b
 int id pauseText 0x7f0a01a4
 int id pausebtn 0x7f0a01a5
 int id peekHeight 0x7f0a01a6
@@ -3646,8 +3647,8 @@ int id save_non_transition_alpha 0x7f0a01c1
 int id save_overlay_view 0x7f0a01c2
 int id sawtooth 0x7f0a01c3
 int id scale 0x7f0a01c4
-int id scoreLayout 0x7f0a01c5
 int id scoreText 0x7f0a01c6
+int id scoresLayout 0x7f0a025c
 int id screen 0x7f0a01c7
 int id scroll 0x7f0a01c8
 int id scrollIndicatorDown 0x7f0a01c9
@@ -3772,6 +3773,7 @@ int id usernameImage 0x7f0a023f
 int id usernameInput 0x7f0a0240
 int id usernameText 0x7f0a0241
 int id usernameview 0x7f0a0242
+int id usernameviewtext 0x7f0a025d
 int id vertLayout 0x7f0a0243
 int id vertical 0x7f0a0244
 int id vertical_only 0x7f0a0245
@@ -3940,6 +3942,7 @@ int layout fragment_login_hub 0x7f0d0037
 int layout fragment_profile 0x7f0d0038
 int layout fragment_settings 0x7f0d0039
 int layout fragment_sign_up 0x7f0d003a
+int layout fragment_skins 0x7f0d007c
 int layout ime_base_split_test_activity 0x7f0d003b
 int layout ime_secondary_split_test_activity 0x7f0d003c
 int layout item_leaderboard 0x7f0d003d

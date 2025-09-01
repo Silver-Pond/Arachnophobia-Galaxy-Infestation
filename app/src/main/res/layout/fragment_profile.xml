@@ -55,7 +55,7 @@
             android:textStyle="italic" />
 
         <TextView
-            android:id="@+id/usernameviewtext"
+            android:id="@+id/profileusernameview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"

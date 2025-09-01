@@ -66,7 +66,7 @@ class GameMenuFragment : Fragment() {
             "Guest"
         }
 
-        if(username != "Guest"){
+        if (username != "Guest"){
             // Schedule daily reminder
             scheduleDailyReminder()
         }

@@ -82,6 +82,7 @@ id pageTitle
 id passwordImage
 id passwordInput
 id passwordLoginInput
+id pauseLayout
 id pauseText
 id pausebtn
 id player
@@ -92,8 +93,8 @@ id rankText
 id recyclerView
 id rightbtn
 id rightbtnLayout
-id scoreLayout
 id scoreText
+id scoresLayout
 id signupTitleImage
 id spinnerText
 id submain
@@ -105,6 +106,7 @@ id usernameImage
 id usernameInput
 id usernameText
 id usernameview
+id usernameviewtext
 id vertLayout
 layout activity_game
 layout activity_main
@@ -118,6 +120,7 @@ layout fragment_login_hub
 layout fragment_profile
 layout fragment_settings
 layout fragment_sign_up
+layout fragment_skins
 layout item_leaderboard
 layout item_spinner
 mipmap ic_launcher
