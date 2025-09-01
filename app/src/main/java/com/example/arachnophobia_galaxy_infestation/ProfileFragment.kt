@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -40,6 +41,27 @@ class ProfileFragment : Fragment() {
     // Use this method to safely access views
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Initialize views
+        val username = arguments?.getString("username") ?: "Guest"
+        val btnprofilechange = view.findViewById<Button>(R.id.btnprofilechange)
+        val btnskin = view.findViewById<Button>(R.id.btnskin)
+        val btnback = view.findViewById<Button>(R.id.btnback)
+
+        // Set up click listeners
+        btnprofilechange.setOnClickListener {}
+
+        btnskin.setOnClickListener {}
+
+        btnback.setOnClickListener {
+            // Navigate to GameMenuFragment
+            val gameMenuFragment = GameMenuFragment().apply {
+                arguments = Bundle().apply {
+                    putString("username", username)
+                }
+            }
+            replaceFragment(gameMenuFragment)
+        }
     }
     // Helper method to replace fragment
     private fun replaceFragment(fragment: Fragment) {

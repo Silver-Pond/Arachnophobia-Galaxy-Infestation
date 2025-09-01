@@ -123,7 +123,7 @@ class SettingsFragment : Fragment() {
             replaceFragment(gameMenuFragment)
         }
     }
-
+    // Helper method to replace fragment
     private fun replaceFragment(fragment: Fragment) {
         parentFragmentManager.beginTransaction()
             .replace(R.id.main, fragment)

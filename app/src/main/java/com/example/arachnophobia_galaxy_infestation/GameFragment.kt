@@ -207,15 +207,15 @@ class GameFragment : Fragment() {
         } else {
             enemySets.add(set)
         }
-        // Enemy speed restriction
-        if(currentLevel == 5 || currentLevel == 10 || currentLevel == 15){
-            enemySpeed = 5f
+        // Reset speeds every multiple of 5
+        if (currentLevel % 5 == 0) {
+            enemySpeed = 1f
             enemyFallSpeed = 1f
+        } else {
+            // Normal scaling otherwise
+            enemySpeed = 5f + (currentLevel - 1) * 1.2f
+            enemyFallSpeed = 1f + (currentLevel - 1) * 1.005f
         }
-        // Enemy speed
-        enemySpeed = 5f + (currentLevel - 1) * 1.2f
-        // Enemy fall speed
-        enemyFallSpeed = 1f + (currentLevel - 1) * 1.005f
     }
 
     private fun updateGame() {
