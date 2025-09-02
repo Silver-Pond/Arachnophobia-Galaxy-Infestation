@@ -126,6 +126,8 @@ layout item_spinner
 mipmap ic_launcher
 mipmap ic_launcher_foreground
 mipmap ic_launcher_round
+raw cannon_shot
+raw game_over
 raw nebula
 string app_name
 string default_web_client_id

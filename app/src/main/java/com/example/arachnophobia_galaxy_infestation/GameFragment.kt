@@ -1,6 +1,8 @@
 package com.example.arachnophobia_galaxy_infestation
 
 import android.content.pm.PackageManager
+import android.media.AudioAttributes
+import android.media.SoundPool
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -68,6 +70,8 @@ class GameFragment : Fragment() {
     private var currentLevel = 1
     private val maxLevels = 20
     private val setsPerLevel = 4
+    private lateinit var soundPool: SoundPool
+    private var shootSoundId: Int = 0
 
     private val scoreText: TextView
         get() = requireActivity().findViewById(R.id.scoreText)
@@ -99,11 +103,27 @@ class GameFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Initialize views
         player = view.findViewById(R.id.player)
         gameArea = view.findViewById(R.id.mainGameFrame)
         pauseText = view.findViewById(R.id.pauseText)
         livesText = view.findViewById(R.id.livesText)
 
+        // Initialize sound pool
+        val audioAttributes = AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_GAME)
+            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+            .build()
+
+        soundPool = SoundPool.Builder()
+            .setMaxStreams(5) // max simultaneous sounds
+            .setAudioAttributes(audioAttributes)
+            .build()
+
+        // Load shooting sound
+        shootSoundId = soundPool.load(requireContext(), R.raw.cannon_shot, 1)
+
+        // Initialize game
         gameArea.post {
             playerX = (gameArea.width - player.width) / 2f
             playerY = (gameArea.height - player.height).toFloat()
@@ -122,6 +142,11 @@ class GameFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         handler.removeCallbacks(gameRunnable)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        soundPool.release() // free memory
     }
 
     // Player movement
@@ -152,6 +177,9 @@ class GameFragment : Fragment() {
         bullet.x = player.x + player.width / 2f - bulletSize / 2f
         bullet.y = player.y - bulletSize
         bullets.add(bullet)
+
+        // Play shooting sound
+        soundPool.play(shootSoundId, 1f, 1f, 1, 0, 1f)
     }
 
     // Enemy spawn logic
