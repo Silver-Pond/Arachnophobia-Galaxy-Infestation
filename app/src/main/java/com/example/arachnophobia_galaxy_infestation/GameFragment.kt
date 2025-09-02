@@ -1,5 +1,6 @@
 package com.example.arachnophobia_galaxy_infestation
 
+import android.content.Context
 import android.content.pm.PackageManager
 import android.media.AudioAttributes
 import android.media.SoundPool
@@ -73,6 +74,7 @@ class GameFragment : Fragment() {
     private lateinit var soundPool: SoundPool
     private var shootSoundId: Int = 0
     private var gameOverSoundId: Int = 0
+    private var effectsVolume: Float = 1.0f
 
     private val scoreText: TextView
         get() = requireActivity().findViewById(R.id.scoreText)
@@ -109,6 +111,10 @@ class GameFragment : Fragment() {
         gameArea = view.findViewById(R.id.mainGameFrame)
         pauseText = view.findViewById(R.id.pauseText)
         livesText = view.findViewById(R.id.livesText)
+
+        // Load effects volume
+        val prefs = requireContext().getSharedPreferences("game_prefs", Context.MODE_PRIVATE)
+        effectsVolume = prefs.getFloat("effects_volume", 1.0f)
 
         // Initialize sound pool
         val audioAttributes = AudioAttributes.Builder()
@@ -183,7 +189,7 @@ class GameFragment : Fragment() {
         bullets.add(bullet)
 
         // Play shooting sound
-        soundPool.play(shootSoundId, 1f, 1f, 1, 0, 1f)
+        soundPool.play(shootSoundId, effectsVolume, effectsVolume, 1, 0, 1f)
     }
 
     // Enemy spawn logic
@@ -593,7 +599,7 @@ class GameFragment : Fragment() {
         pauseText.bringToFront()
 
         // Play Game Over sound
-        soundPool.play(gameOverSoundId, 1f, 1f, 1, 0, 1f)
+        soundPool.play(gameOverSoundId, effectsVolume, effectsVolume, 1, 0, 1f)
 
         // Save Highscore & Currency
         saveHighScore()

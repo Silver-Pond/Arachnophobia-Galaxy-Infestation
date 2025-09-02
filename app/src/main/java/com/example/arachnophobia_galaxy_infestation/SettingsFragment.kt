@@ -51,6 +51,7 @@ class SettingsFragment : Fragment() {
         val btnsavesettings = view.findViewById<Button>(R.id.btnsavesettings)
         val languagespinner = view.findViewById<Spinner>(R.id.languagespinner)
         val musicvolumeSlider = view.findViewById<com.google.android.material.slider.Slider>(R.id.musicvolumeSlider)
+        val effectsvolumeSlider = view.findViewById<com.google.android.material.slider.Slider>(R.id.effectsvolumeSlider)
         val bioswitch = view.findViewById<Switch>(R.id.bioswitch)
 
         // Set up spinner
@@ -64,6 +65,7 @@ class SettingsFragment : Fragment() {
         val savedLang = prefs.getString("language", "en") ?: "en"
         selectedLanguage = savedLang
         val savedVolume = prefs.getFloat("music_volume", 0.5f)
+        val savedEffectsVolume = prefs.getFloat("effects_volume", 1.0f)
 
         // Set spinner selection based on saved language
         languagespinner.setSelection(
@@ -97,6 +99,14 @@ class SettingsFragment : Fragment() {
             MusicPlayerManager.updateVolume(volume)
             prefs.edit().putFloat("music_volume", volume).apply()
         }
+        // Load saved value or default to 1.0
+        effectsvolumeSlider.value = savedEffectsVolume
+
+        effectsvolumeSlider.addOnChangeListener { _, value, _ ->
+            // Save volume whenever slider changes
+            prefs.edit().putFloat("effects_volume", value).apply()
+        }
+
         // Load saved biometric setting (default = false)
         val bioEnabled = prefs.getBoolean("use_biometrics", false)
         bioswitch.isChecked = bioEnabled
