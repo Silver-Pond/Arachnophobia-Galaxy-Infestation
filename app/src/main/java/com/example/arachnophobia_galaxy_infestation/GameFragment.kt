@@ -72,6 +72,7 @@ class GameFragment : Fragment() {
     private val setsPerLevel = 4
     private lateinit var soundPool: SoundPool
     private var shootSoundId: Int = 0
+    private var gameOverSoundId: Int = 0
 
     private val scoreText: TextView
         get() = requireActivity().findViewById(R.id.scoreText)
@@ -122,6 +123,9 @@ class GameFragment : Fragment() {
 
         // Load shooting sound
         shootSoundId = soundPool.load(requireContext(), R.raw.cannon_shot, 1)
+
+        // Load game over sound
+        gameOverSoundId = soundPool.load(requireContext(), R.raw.game_over, 1)
 
         // Initialize game
         gameArea.post {
@@ -587,6 +591,9 @@ class GameFragment : Fragment() {
         pauseText.text = "GAME OVER"
         pauseText.visibility = View.VISIBLE
         pauseText.bringToFront()
+
+        // Play Game Over sound
+        soundPool.play(gameOverSoundId, 1f, 1f, 1, 0, 1f)
 
         // Save Highscore & Currency
         saveHighScore()
