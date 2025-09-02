@@ -66,11 +66,6 @@ class GameMenuFragment : Fragment() {
             "Guest"
         }
 
-        if (username != "Guest" && !username.isNullOrEmpty()){
-            // Schedule daily reminder
-            scheduleDailyReminder()
-        }
-
         usernameview.setOnClickListener {
             // Create a new instance of ProfileFragment with the username
             val profileFragment = ProfileFragment().apply {
@@ -116,31 +111,6 @@ class GameMenuFragment : Fragment() {
             requireActivity().finish()
         }
     }
-
-    private fun scheduleDailyReminder() {
-        val workRequest = PeriodicWorkRequestBuilder<DailyReminderWorker>(1, TimeUnit.DAYS)
-            .setInitialDelay(getDelayUntilTomorrow(), TimeUnit.MILLISECONDS)
-            .build()
-
-        WorkManager.getInstance(requireContext()).enqueueUniquePeriodicWork(
-            "daily_reminder",
-            ExistingPeriodicWorkPolicy.UPDATE,
-            workRequest
-        )
-    }
-
-    private fun getDelayUntilTomorrow(): Long {
-        val now = Calendar.getInstance()
-        val tomorrow = Calendar.getInstance().apply {
-            add(Calendar.DAY_OF_YEAR, 1)
-            set(Calendar.HOUR_OF_DAY, 9)   // e.g. 9 AM reminder
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }
-        return tomorrow.timeInMillis - now.timeInMillis
-    }
-
     // Helper method to replace fragment
     private fun replaceFragment(fragment: Fragment) {
         parentFragmentManager.beginTransaction()

@@ -9,6 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
@@ -17,6 +20,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.database.FirebaseDatabase
+import java.util.Calendar
+import java.util.concurrent.TimeUnit
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -131,6 +136,9 @@ class LoginHubFragment : Fragment() {
                         )
                         database.child(playerId).setValue(player)
                             .addOnSuccessListener {
+                                // Schedule daily reminder
+                                scheduleDailyReminder()
+
                                 // Redirect to GameMenuFragment with username
                                 val gameMenuFragment = GameMenuFragment().apply {
                                     arguments = Bundle().apply {
@@ -149,6 +157,30 @@ class LoginHubFragment : Fragment() {
             }
     }
 
+    private fun scheduleDailyReminder() {
+        val workRequest = PeriodicWorkRequestBuilder<DailyReminderWorker>(1, TimeUnit.DAYS)
+            .setInitialDelay(getDelayUntilTomorrow(), TimeUnit.MILLISECONDS)
+            .build()
+
+        WorkManager.getInstance(requireContext()).enqueueUniquePeriodicWork(
+            "daily_reminder",
+            ExistingPeriodicWorkPolicy.UPDATE,
+            workRequest
+        )
+    }
+
+    private fun getDelayUntilTomorrow(): Long {
+        val now = Calendar.getInstance()
+        val tomorrow = Calendar.getInstance().apply {
+            add(Calendar.DAY_OF_YEAR, 1)
+            set(Calendar.HOUR_OF_DAY, 9)   // e.g. 9 AM reminder
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        return tomorrow.timeInMillis - now.timeInMillis
+    }
+    // Helper method to replace fragment
     private fun replaceFragment(fragment: Fragment) {
         parentFragmentManager.beginTransaction()
             .replace(R.id.main, fragment)
