@@ -5,7 +5,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -20,10 +19,7 @@ import androidx.core.content.ContextCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.MutableData
-import com.google.firebase.database.Transaction
 import com.google.firebase.database.ValueEventListener
 import kotlin.math.max
 import kotlin.math.min
@@ -219,7 +215,7 @@ class GameFragment : Fragment() {
             enemyFallSpeed = 1f
         } else {
             // Scale starting from reset point
-            enemySpeed = 1f + (offset * 1.2f)
+            enemySpeed = 5f + (offset * 1.2f)
             enemyFallSpeed = 1f + (offset * 1.005f)
         }
     }
@@ -530,7 +526,7 @@ class GameFragment : Fragment() {
 
                     dbRef.child("spider_silk").setValue(updatedSilk)
                         .addOnSuccessListener {
-                            showSpiderNotification("Spider Silk Earned!", "You now have $updatedSilk silk!")
+                            Toast.makeText(requireContext(), "You have earned $spider_silk silk!", Toast.LENGTH_SHORT).show()
                         }
                 } else {
                     val user = mapOf(
@@ -544,7 +540,10 @@ class GameFragment : Fragment() {
 
                     dbRef.setValue(user)
                         .addOnSuccessListener {
-                            showSpiderNotification("Welcome!", "You earned $spider_silk spider silk!")
+                            Toast.makeText(requireContext(), "Player created with spider silk!", Toast.LENGTH_SHORT).show()
+                        }
+                        .addOnFailureListener {
+                            Toast.makeText(requireContext(), "Failed to save spider silk!", Toast.LENGTH_SHORT).show()
                         }
                 }
             }
@@ -553,59 +552,6 @@ class GameFragment : Fragment() {
                 Toast.makeText(requireContext(), "Database error: ${error.message}", Toast.LENGTH_SHORT).show()
             }
         })
-    }
-
-    private fun showSpiderNotification(title: String, message: String) {
-        if (!hasNotificationPermission()) {
-            requestNotificationPermission()
-            return
-        }
-
-        val builder = NotificationCompat.Builder(requireContext(), "spider_channel")
-            .setSmallIcon(R.drawable.spider_maroon) // replace with your app's icon
-            .setContentTitle(title)
-            .setContentText(message)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-
-        with(NotificationManagerCompat.from(requireContext())) {
-            try {
-                notify(System.currentTimeMillis().toInt(), builder.build())
-            } catch (e: SecurityException) {
-                Toast.makeText(requireContext(), "Cannot show notification: permission denied", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 1001) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted → you can show notifications now
-            } else {
-                Toast.makeText(requireContext(), "Notifications disabled by user", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    private fun hasNotificationPermission(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            ContextCompat.checkSelfPermission(
-                requireContext(),
-                android.Manifest.permission.POST_NOTIFICATIONS
-            ) == PackageManager.PERMISSION_GRANTED
-        } else {
-            true // Permission not needed below Android 13
-        }
-    }
-
-    private fun requestNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1001)
-        }
     }
 
     private fun gameOver() {
