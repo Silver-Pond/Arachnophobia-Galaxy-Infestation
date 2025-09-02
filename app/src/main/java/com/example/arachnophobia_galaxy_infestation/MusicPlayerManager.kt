@@ -4,7 +4,7 @@ import android.media.MediaPlayer
 
 object MusicPlayerManager {
     var mediaPlayer: MediaPlayer? = null
-    var currentVolume: Float = 0.5f // default volume
+    var currentVolume: Float = 0.5f // default
 
     fun updateVolume(vol: Float) {
         currentVolume = vol

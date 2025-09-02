@@ -75,8 +75,15 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
         super.onResume()
         networkMonitor.register()
 
+        // Load saved volume
+        val prefs = getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
+        val savedVolume = prefs.getFloat("music_volume", 0.5f)
+
+        // Apply it to MusicPlayerManager + MediaPlayer
+        MusicPlayerManager.updateVolume(savedVolume)
+
         // Start music when activity is visible
-        mediaPlayer?.start()
+        MusicPlayerManager.mediaPlayer?.start()
     }
 
     override fun onPause() {

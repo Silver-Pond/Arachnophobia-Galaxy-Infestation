@@ -72,7 +72,7 @@
 
                 <Button
                     android:id="@+id/pausebtn"
-                    android:layout_width="190dp"
+                    android:layout_width="170dp"
                     android:layout_height="match_parent"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="5dp"
@@ -129,7 +129,7 @@
                 android:id="@+id/rightbtnLayout"
                 android:layout_width="100dp"
                 android:layout_height="match_parent"
-                android:layout_marginRight="60dp"
+                android:layout_marginRight="50dp"
                 android:orientation="horizontal">
 
                 <Button

@@ -160,7 +160,10 @@ class GameFragment : Fragment() {
 
     // Enemy spawn logic
     private fun spawnCurrentSet() {
-        enemies.forEach { gameArea.removeView(it.imageView) }
+
+        val ctx = context ?: return
+        val gameAreaView = gameArea ?: return
+        enemies.forEach { gameAreaView.removeView(it.imageView) }
         enemies.clear()
 
         val set = mutableListOf<Enemy>()
@@ -173,9 +176,9 @@ class GameFragment : Fragment() {
 
         for (row in 0 until 3) {
             for (col in 0 until 5) {
-                val enemyView = ImageView(requireContext())
+                val enemyView = ImageView(ctx)
 
-                val isShooter = (currentLevel >= 6 && row == 1) // Row 2 enemies shoot from level 6+
+                val isShooter = (currentLevel >= 5 && row == 1) // Row 2 enemies shoot from level 6+
                 val isShooterx2 = (currentLevel >= 10 && row == 2) // Row 3 enemies shoot from level 10+
                 if (isShooterx2) {
                     enemyView.setImageResource(R.drawable.spider_maroon) // NEW type
@@ -207,12 +210,13 @@ class GameFragment : Fragment() {
         } else {
             enemySets.add(set)
         }
-        // Reset speeds every multiple of 5
-        if (currentLevel % 5 == 0) {
-            enemySpeed = 1f
+        // Enemy speed logic
+        if (currentLevel == 5) {
+            // Reset both speeds back to 1 at level 5
+            enemySpeed = 5f
             enemyFallSpeed = 1f
         } else {
-            // Normal scaling otherwise
+            // Scale speeds normally
             enemySpeed = 5f + (currentLevel - 1) * 1.2f
             enemyFallSpeed = 1f + (currentLevel - 1) * 1.005f
         }
