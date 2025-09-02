@@ -210,15 +210,17 @@ class GameFragment : Fragment() {
         } else {
             enemySets.add(set)
         }
-        // Enemy speed logic
-        if (currentLevel == 5) {
-            // Reset both speeds back to 1 at level 5
+        // Find how far we are past the last reset level
+        val offset = (currentLevel % 5)
+
+        if (offset == 0) {
+            // Exact multiple of 5 → reset
             enemySpeed = 5f
             enemyFallSpeed = 1f
         } else {
-            // Scale speeds normally
-            enemySpeed = 5f + (currentLevel - 1) * 1.2f
-            enemyFallSpeed = 1f + (currentLevel - 1) * 1.005f
+            // Scale starting from reset point
+            enemySpeed = 1f + (offset * 1.2f)
+            enemyFallSpeed = 1f + (offset * 1.005f)
         }
     }
 
