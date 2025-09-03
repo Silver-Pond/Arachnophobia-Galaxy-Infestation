@@ -17,6 +17,7 @@
         android:layout_marginEnd="1dp"
         android:layout_marginBottom="1dp"
         android:orientation="vertical"
+        android:gravity="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -26,7 +27,6 @@
             android:id="@+id/loginTitleImage"
             android:layout_width="match_parent"
             android:layout_height="218dp"
-            android:layout_marginTop="15dp"
             app:srcCompat="@drawable/spider_maroon" />
 
         <TextView
@@ -48,7 +48,7 @@
             android:layout_marginBottom="20dp"
             android:layout_gravity="center_horizontal"
             android:fontFamily="@font/black_ops_one"
-            android:text="SETTINGS"
+            android:text="@string/settingstext"
             android:textAlignment="center"
             android:textColor="#009688"
             android:textSize="24sp"
@@ -68,7 +68,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:fontFamily="@font/black_ops_one"
-                android:text="LANGUAGE"
+                android:text="@string/languagetext"
                 android:textColor="#009688"
                 android:textSize="20sp" />
 
@@ -96,7 +96,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:fontFamily="@font/black_ops_one"
-                android:text="USE BIOMETRICS"
+                android:text="@string/bioswitchtext"
                 android:textColor="#009688"
                 android:textSize="20sp"
                 android:textStyle="bold"
@@ -118,7 +118,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:fontFamily="@font/black_ops_one"
-                android:text="MUSIC VOLUME"
+                android:text="@string/musictext"
                 android:textColor="#009688"
                 android:textSize="20sp" />
 
@@ -142,7 +142,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:fontFamily="@font/black_ops_one"
-                android:text="EFFECTS VOLUME"
+                android:text="@string/effectstext"
                 android:textColor="#009688"
                 android:textSize="20sp" />
 
@@ -160,7 +160,7 @@
             android:layout_gravity="center_horizontal"
             android:background="@drawable/custom_button"
             android:fontFamily="@font/black_ops_one"
-            android:text="SAVE" />
+            android:text="@string/btnsavesettings" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -17,6 +17,7 @@
         android:layout_marginEnd="1dp"
         android:layout_marginBottom="1dp"
         android:orientation="vertical"
+        android:gravity="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -26,7 +27,6 @@
             android:id="@+id/signupTitleImage"
             android:layout_width="match_parent"
             android:layout_height="217dp"
-            android:layout_marginTop="15dp"
             app:srcCompat="@drawable/spider_purple" />
 
         <TextView
@@ -141,7 +141,7 @@
             android:backgroundTint="#9C27B0"
             android:layout_marginBottom="15dp"
             android:fontFamily="@font/black_ops_one"
-            android:text="SIGN UP"
+            android:text="@string/btnsignup"
             android:textColor="#FFFFFF" />
 
         <TextView
@@ -150,7 +150,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:fontFamily="@font/black_ops_one"
-            android:text="Have an account?"
+            android:text="@string/logintext"
             android:textAlignment="center"
             android:textColor="#9C27B0"
             android:textStyle="italic" />

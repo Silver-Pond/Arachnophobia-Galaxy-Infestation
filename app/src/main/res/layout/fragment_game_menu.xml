@@ -16,6 +16,7 @@
         android:layout_marginTop="1dp"
         android:layout_marginEnd="1dp"
         android:layout_marginBottom="1dp"
+        android:gravity="center"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -26,7 +27,6 @@
             android:id="@+id/loginTitleImage"
             android:layout_width="match_parent"
             android:layout_height="178dp"
-            android:layout_marginTop="15dp"
             app:srcCompat="@drawable/spider_blue" />
 
         <TextView
@@ -65,8 +65,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="right|center_horizontal|top"
-                android:layout_marginTop="15dp"
                 android:layout_marginLeft="5dp"
+                android:layout_marginTop="15dp"
                 app:srcCompat="@drawable/user_icon" />
         </LinearLayout>
 
@@ -103,7 +103,7 @@
             android:background="@drawable/custom_button"
             android:backgroundTint="#673AB7"
             android:fontFamily="@font/black_ops_one"
-            android:text="LEADERBOARDS"
+            android:text="@string/btnleaderboards"
             android:textColor="#FFFFFF" />
 
         <Button
@@ -115,7 +115,7 @@
             android:background="@drawable/custom_button"
             android:backgroundTint="#673AB7"
             android:fontFamily="@font/black_ops_one"
-            android:text="TROPHIES"
+            android:text="@string/btntrophies"
             android:textColor="#FFFFFF" />
 
         <Button
@@ -127,7 +127,7 @@
             android:background="@drawable/custom_button"
             android:backgroundTint="#673AB7"
             android:fontFamily="@font/black_ops_one"
-            android:text="SETTINGS"
+            android:text="@string/btnsettings"
             android:textColor="#FFFFFF" />
 
         <Button
@@ -139,7 +139,7 @@
             android:background="@drawable/custom_button"
             android:backgroundTint="#673AB7"
             android:fontFamily="@font/black_ops_one"
-            android:text="EXIT"
+            android:text="@string/btnexit"
             android:textColor="#FFFFFF" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

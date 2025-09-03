@@ -12,12 +12,12 @@
         android:id="@+id/submain"
         android:layout_width="409dp"
         android:layout_height="729dp"
-        android:layout_gravity="center_horizontal"
         android:layout_marginStart="1dp"
         android:layout_marginTop="1dp"
         android:layout_marginEnd="1dp"
         android:layout_marginBottom="1dp"
         android:orientation="vertical"
+        android:gravity="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -27,7 +27,6 @@
             android:id="@+id/loginTitleImage"
             android:layout_width="match_parent"
             android:layout_height="173dp"
-            android:layout_marginTop="15dp"
             app:srcCompat="@drawable/spider_maroon" />
 
         <TextView
@@ -48,7 +47,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:fontFamily="@font/black_ops_one"
-            android:text="PROFILE"
+            android:text="@string/profiletext"
             android:textAlignment="center"
             android:textColor="#009688"
             android:textSize="24sp"
@@ -73,7 +72,7 @@
             android:layout_marginBottom="10dp"
             android:background="@drawable/custom_button"
             android:fontFamily="@font/black_ops_one"
-            android:text="CHANGE PROFILE"
+            android:text="@string/btnprofilechange"
             android:textColor="#FFFFFF" />
 
         <Button
@@ -84,7 +83,7 @@
             android:layout_marginBottom="10dp"
             android:background="@drawable/custom_button"
             android:fontFamily="@font/black_ops_one"
-            android:text="BUY AND EQUIP SKINS"
+            android:text="@string/btnskin"
             android:textColor="#FFFFFF" />
 
         <Button
@@ -95,7 +94,7 @@
             android:layout_marginBottom="10dp"
             android:background="@drawable/custom_button"
             android:fontFamily="@font/black_ops_one"
-            android:text="BACK TO MENU"
+            android:text="@string/btnback"
             android:textColor="#FFFFFF" />
     </LinearLayout>
 </FrameLayout>

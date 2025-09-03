@@ -3,4 +3,33 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="default_web_client_id">271668743357-pi1bb00pmr1sc11ptdn2rbj0ckoq3oep.apps.googleusercontent.com</string>
+
+    <string name="logintext">Have an account?</string>
+    <string name="signuptext">Don\'t have an account yet?</string>
+    <string name="settingstext">SETTINGS</string>
+    <string name="languagetext">LANGUAGE</string>
+    <string name="bioswitchtext">USE BIOMETRICS</string>
+    <string name="musictext">MUSIC VOLUME</string>
+    <string name="effectstext">EFFECTS VOLUME</string>
+    <string name="profiletext">PROFILE</string>
+    <string name="highscorestext">HIGHSCORES</string>
+
+    <string name="btnsignup">SIGN UP</string>
+    <string name="btnlogin">LOGIN</string>
+    <string name="btngooglelogin">GOOGLE LOGIN</string>
+    <string name="btnbiologin">BIOLOGIN</string>
+    <string name="btnguest">CONTINUE AS GUEST</string>
+
+    <string name="start">START GAME</string>
+
+    <string name="btnarcadehighscore">ARCADE HIGHSCORES</string>
+    <string name="btnsurvivalhighscore">SURVIVAL HIGHSCORES</string>
+    <string name="btnprofilechange">CHANGE PROFILE</string>
+    <string name="btnskin">BUY AND EQUIP SKINS</string>
+    <string name="btnback">BACK TO MENU</string>
+    <string name="btnsavesettings">SAVE</string>
+    <string name="btnleaderboards">LEADERBOARDS</string>
+    <string name="btntrophies">TROPHIES</string>
+    <string name="btnsettings">SETTINGS</string>
+    <string name="btnexit">EXIT</string>
 </resources>

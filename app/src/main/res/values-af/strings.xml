@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">Arachnophobia: Galaxy Infestation</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hallo leeg fragment</string>
+
+    <string name="logintext">Het jy \'n rekening?</string>
+    <string name="signuptext">Het jy nog nie \'n rekening nie?</string>
+    <string name="settingstext">INSTELLINGS</string>
+    <string name="languagetext">TAAL</string>
+    <string name="bioswitchtext">GEBRUIK BIOMETRIE</string>
+    <string name="musictext">MUSIK VOLUME</string>
+    <string name="effectstext">EFFEKTE VOLUME</string>
+    <string name="profiletext">PROFIEL</string>
+    <string name="highscorestext">HOOGTELLINGE</string>
+
+    <string name="btnsignup">REGISTREER</string>
+    <string name="btnlogin">MELD AAN</string>
+    <string name="btngooglelogin">GOOGLE AANMELD</string>
+    <string name="btnbiologin">BIO AANMELD</string>
+    <string name="btnguest">GAAN VOORT AS GAS</string>
+
+    <string name="start">BEGIN SPEL</string>
+
+    <string name="btnarcadehighscore">ARCADE HOOGTELLINGE</string>
+    <string name="btnsurvivalhighscore">SURVIVAL HOOGTELLINGE</string>
+    <string name="btnprofilechange">VERANDER PROFIEL</string>
+    <string name="btnskin">KOOP EN RUS VELLEN TOE</string>
+    <string name="btnback">TERUG NA SPYSKAART</string>
+    <string name="btnsavesettings">STOOR INSTELLINGS</string>
+    <string name="btnleaderboards">LEIDERBORDE</string>
+    <string name="btntrophies">TOEKENNINGS</string>
+    <string name="btnsettings">INSTELLINGS</string>
+    <string name="btnexit">UITGANG</string>
+</resources>

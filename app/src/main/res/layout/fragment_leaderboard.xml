@@ -22,7 +22,7 @@
             android:background="@drawable/custom_button"
             android:backgroundTint="#673AB7"
             android:fontFamily="@font/black_ops_one"
-            android:text="BACK TO MENU"
+            android:text="@string/btnback"
             android:textColor="#FFFFFF" />
 
         <androidx.recyclerview.widget.RecyclerView
