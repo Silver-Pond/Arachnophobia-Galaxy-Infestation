@@ -47,7 +47,6 @@ class GameFragment : Fragment() {
     private var takingHit = false
     private var lives = 3
     private var score = 0
-    private var highscore = 0
 
     private val handler = Handler(Looper.getMainLooper())
     private val bullets = mutableListOf<ImageView>()
@@ -65,7 +64,6 @@ class GameFragment : Fragment() {
     private var currentLevel = 1
     private val maxLevels = 20
     private val setsPerLevel = 4
-    private lateinit var soundPool: SoundPool
     private var shootSoundId: Int = 0
     private var gameOverSoundId: Int = 0
 

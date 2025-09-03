@@ -167,7 +167,7 @@
                         android:layout_marginTop="5dp"
                         android:background="@drawable/custom_button"
                         android:fontFamily="@font/black_ops_one"
-                        android:text="SHOOT"
+                        android:text="BLAST"
                         android:textColor="#FFFFFF" />
 
                 </LinearLayout>
