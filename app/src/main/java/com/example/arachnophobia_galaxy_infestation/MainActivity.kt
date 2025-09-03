@@ -7,6 +7,8 @@ import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import java.util.Locale
+import android.content.res.Configuration
 
 class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
 
@@ -16,6 +18,9 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
     private var mediaPlayer: MediaPlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Apply saved language BEFORE inflating layout
+        applySavedLocale(this)
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
@@ -26,14 +31,17 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
         // Initialize background music
         mediaPlayer = MediaPlayer.create(this, R.raw.nebula)
         MusicPlayerManager.mediaPlayer = mediaPlayer
-        MusicPlayerManager.updateVolume(0.5f)
+
+        // Load saved music volume from preferences
+        val prefs = getSharedPreferences("AppSettings", MODE_PRIVATE)
+        val savedMusicVolume = prefs.getFloat("music_volume", 0.5f)
+        MusicPlayerManager.updateVolume(savedMusicVolume)
         mediaPlayer?.isLooping = true
 
         // Find the TextView by its ID
         start = findViewById(R.id.pressStart)
 
         start.setOnClickListener {
-            // Check if the device is online
             if (isOnline) {
                 replaceFragment(LoginHubFragment())
             } else {
@@ -54,30 +62,23 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
 
         // Load saved volume
         val prefs = getSharedPreferences("AppSettings", MODE_PRIVATE)
-
-        // Restore music volume
         val savedMusicVolume = prefs.getFloat("music_volume", 0.5f)
         MusicPlayerManager.updateVolume(savedMusicVolume)
 
-        // Restore effects volume
         val savedEffectsVolume = prefs.getFloat("effects_volume", 1.0f)
         SoundEffectsManager.updateVolume(savedEffectsVolume)
 
-        // Start music when activity is visible
-        MusicPlayerManager.mediaPlayer?.start()
+        mediaPlayer?.start()
     }
 
     override fun onPause() {
         super.onPause()
         networkMonitor.unregister()
-
-        // Pause music when activity is not visible
         mediaPlayer?.pause()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        // Release resources
         mediaPlayer?.release()
         mediaPlayer = null
     }
@@ -88,5 +89,17 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
 
     override fun onNetworkLost() {
         isOnline = false
+    }
+
+    // Helper function to apply saved language
+    private fun applySavedLocale(context: Context) {
+        val prefs = context.getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
+        val languageCode = prefs.getString("language", "en") ?: "en"
+
+        val locale = Locale(languageCode)
+        Locale.setDefault(locale)
+        val config = Configuration()
+        config.setLocale(locale)
+        context.resources.updateConfiguration(config, context.resources.displayMetrics)
     }
 }
