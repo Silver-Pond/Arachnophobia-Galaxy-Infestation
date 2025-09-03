@@ -11,6 +11,7 @@
         android:id="@+id/submain"
         android:layout_width="409dp"
         android:layout_height="729dp"
+        android:layout_gravity="center_horizontal"
         android:layout_marginStart="1dp"
         android:layout_marginTop="1dp"
         android:layout_marginEnd="1dp"
