@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -67,14 +68,18 @@ class GameMenuFragment : Fragment() {
         }
 
         usernameview.setOnClickListener {
-            // Create a new instance of ProfileFragment with the username
-            val profileFragment = ProfileFragment().apply {
-                arguments = Bundle().apply {
-                    putString("username", username)
+            if (username.isNullOrBlank() || username.equals("Guest", ignoreCase = true)) {
+                Toast.makeText(requireContext(), "Guest users cannot access profiles", Toast.LENGTH_SHORT).show()
+            } else {
+                // Create a new instance of ProfileFragment with the username
+                val profileFragment = ProfileFragment().apply {
+                    arguments = Bundle().apply {
+                        putString("username", username)
+                    }
                 }
+                // Navigate to profile fragment
+                replaceFragment(profileFragment)
             }
-            // Navigate to profile fragment
-            replaceFragment(profileFragment)
         }
 
         btnarcademode.setOnClickListener {

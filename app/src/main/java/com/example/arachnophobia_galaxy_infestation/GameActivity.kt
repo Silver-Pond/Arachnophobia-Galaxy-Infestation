@@ -8,8 +8,6 @@ import android.view.MotionEvent
 import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 
 class GameActivity : AppCompatActivity() {
 
@@ -31,10 +29,7 @@ class GameActivity : AppCompatActivity() {
         setContentView(R.layout.activity_game)
 
         // Retrieve the username from the Intent
-        username = intent.getStringExtra("username") ?: "Guest"
-
-        // Update last played time
-        updateLastPlayed()
+        username = intent.getStringExtra("username") ?: ""
 
         // Load GameFragment into gameframe
         val gameFragment = GameFragment().apply {
@@ -132,10 +127,5 @@ class GameActivity : AppCompatActivity() {
         leftBtn.isEnabled = enabled
         rightBtn.isEnabled = enabled
         blastBtn.isEnabled = enabled
-    }
-
-    private fun updateLastPlayed() {
-        val prefs = getSharedPreferences("game_prefs", Context.MODE_PRIVATE)
-        prefs.edit().putLong("last_played", System.currentTimeMillis()).apply()
     }
 }

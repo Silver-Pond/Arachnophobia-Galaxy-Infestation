@@ -8,9 +8,13 @@ import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import java.util.Calendar
+import java.util.concurrent.TimeUnit
 
 class DailyReminderWorker(appContext: Context, workerParams: WorkerParameters) :
     Worker(appContext, workerParams) {
@@ -28,8 +32,22 @@ class DailyReminderWorker(appContext: Context, workerParams: WorkerParameters) :
         }.timeInMillis
 
         if (lastPlayed < today) {
-            showNotification("We miss you!", "You haven't played today. Come earn more Spider Silk!")
+            showNotification(
+                "We miss you!",
+                "You haven't played today. Come earn more Spider Silk!"
+            )
         }
+
+        // Re-schedule this worker to run again in 2 minutes
+        val newRequest = OneTimeWorkRequestBuilder<DailyReminderWorker>()
+            .setInitialDelay(2, TimeUnit.MINUTES)
+            .build()
+
+        WorkManager.getInstance(applicationContext).enqueueUniqueWork(
+            "daily_reminder",
+            ExistingWorkPolicy.REPLACE,
+            newRequest
+        )
 
         return Result.success()
     }
@@ -43,7 +61,8 @@ class DailyReminderWorker(appContext: Context, workerParams: WorkerParameters) :
                 "Daily Game Reminders",
                 NotificationManager.IMPORTANCE_HIGH
             )
-            val manager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val manager =
+                applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             manager.createNotificationChannel(channel)
         }
 
@@ -54,7 +73,8 @@ class DailyReminderWorker(appContext: Context, workerParams: WorkerParameters) :
             .setPriority(NotificationCompat.PRIORITY_HIGH)
 
         with(NotificationManagerCompat.from(applicationContext)) {
-            if (ActivityCompat.checkSelfPermission(
+            if (
+                ActivityCompat.checkSelfPermission(
                     applicationContext,
                     android.Manifest.permission.POST_NOTIFICATIONS
                 ) == PackageManager.PERMISSION_GRANTED

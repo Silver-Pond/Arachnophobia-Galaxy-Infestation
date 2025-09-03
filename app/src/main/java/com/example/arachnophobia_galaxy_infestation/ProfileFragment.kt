@@ -7,6 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -56,6 +62,8 @@ class ProfileFragment : Fragment() {
         } else {
             "Guest"
         }
+        // Load spider silk
+        loadSpiderSilk()
 
         // Set up click listeners
         btnprofilechange.setOnClickListener {}
@@ -71,6 +79,24 @@ class ProfileFragment : Fragment() {
             }
             replaceFragment(gameMenuFragment)
         }
+    }
+
+    private fun loadSpiderSilk() {
+        val auth = FirebaseAuth.getInstance()
+        val uid = auth.currentUser?.uid ?: return
+        val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
+
+        dbRef.child("spider_silk").addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val spiderSilk = snapshot.getValue(Int::class.java) ?: 0
+                val spiderSilkTextView: TextView = requireActivity().findViewById(R.id.spiderSilkTextView)
+                spiderSilkTextView.text = "SPIDER SILK: $spiderSilk"
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(requireContext(), "Failed to load spider silk: ${error.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
     // Helper method to replace fragment
     private fun replaceFragment(fragment: Fragment) {

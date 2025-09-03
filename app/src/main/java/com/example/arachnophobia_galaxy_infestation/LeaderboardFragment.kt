@@ -87,7 +87,7 @@ class LeaderboardFragment : Fragment() {
                 players.clear()
 
                 for (playerSnap in snapshot.children) {
-                    val username = playerSnap.child("username").getValue(String::class.java) ?: ""
+                    val username = playerSnap.child("username").getValue(String::class.java) ?: "Guest"
                     val highscore = playerSnap.child("highscore").getValue(Int::class.java) ?: 0
 
                     players.add(HighScore(username, highscore))

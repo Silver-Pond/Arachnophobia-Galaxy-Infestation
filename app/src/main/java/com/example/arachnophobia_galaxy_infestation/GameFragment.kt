@@ -62,7 +62,7 @@ class GameFragment : Fragment() {
     private val enemySets = mutableListOf<List<Enemy>>()
     private var currentSetIndex = 0
     private var currentLevel = 1
-    private val maxLevels = 20
+    private val maxLevels = 10
     private val setsPerLevel = 4
     private var shootSoundId: Int = 0
     private var gameOverSoundId: Int = 0
@@ -74,8 +74,13 @@ class GameFragment : Fragment() {
 
     private val gameRunnable = object : Runnable {
         override fun run() {
-            if (!isPaused) updateGame()
-            handler.postDelayed(this, 16)
+            if (isAdded && view != null && !isPaused) {
+                updateGame()
+            }
+            // Re-post ONLY if still added and the view exists
+            if (isAdded && view != null) {
+                handler.postDelayed(this, 16)
+            }
         }
     }
 
@@ -131,14 +136,29 @@ class GameFragment : Fragment() {
         updateLivesUI()
         updateScoreUI()
         updateHighScoreUI()
+    }
+
+    override fun onResume() {
+        super.onResume()
         handler.post(gameRunnable)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        handler.removeCallbacks(gameRunnable)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        handler.removeCallbacks(gameRunnable)
+        // Stop ALL pending tasks (not just the game loop)
+        handler.removeCallbacksAndMessages(null)
+
         SoundEffectsManager.soundPool?.release()
         SoundEffectsManager.soundPool = null
+
+        bullets.clear()
+        enemies.clear()
+        enemyBullets.clear()
     }
 
     // Player movement
@@ -160,28 +180,28 @@ class GameFragment : Fragment() {
     // Player shooting
     fun shoot() {
         if (isPaused) return
+        val ctx = context ?: return
+        val ga = gameArea ?: return
+        val p = player ?: return
 
-        val bullet = ImageView(requireContext())
-        bullet.setImageResource(R.drawable.moth_blast)
+        val bullet = ImageView(ctx).apply { setImageResource(R.drawable.moth_blast) }
         val bulletSize = 40
         val params = FrameLayout.LayoutParams(bulletSize, bulletSize)
-        gameArea.addView(bullet, params)
-        bullet.x = player.x + player.width / 2f - bulletSize / 2f
-        bullet.y = player.y - bulletSize
+        ga.addView(bullet, params)
+        bullet.x = p.x + p.width / 2f - bulletSize / 2f
+        bullet.y = p.y - bulletSize
         bullets.add(bullet)
 
         // Play sound (already loaded at startup)
-        if (shootSoundId != 0) {
-            SoundEffectsManager.playSound(shootSoundId)
-        }
+        if (shootSoundId != 0) SoundEffectsManager.playSound(shootSoundId)
     }
 
     // Enemy spawn logic
     private fun spawnCurrentSet() {
-
+        // Remove previous enemies
         val ctx = context ?: return
-        val gameAreaView = gameArea ?: return
-        enemies.forEach { gameAreaView.removeView(it.imageView) }
+
+        enemies.forEach { gameArea.removeView(it.imageView) }
         enemies.clear()
 
         val set = mutableListOf<Enemy>()
@@ -196,15 +216,12 @@ class GameFragment : Fragment() {
             for (col in 0 until 5) {
                 val enemyView = ImageView(ctx)
 
-                val isShooter = (currentLevel >= 5 && row == 1) // Row 2 enemies shoot from level 6+
-                val isShooterx2 = (currentLevel >= 10 && row == 2) // Row 3 enemies shoot from level 10+
-                if (isShooterx2) {
-                    enemyView.setImageResource(R.drawable.spider_maroon) // NEW type
-                } else if(isShooter){
-                    enemyView.setImageResource(R.drawable.spider_maroon) // NEW type
-                } else {
-                    enemyView.setImageResource(R.drawable.spider_blue)
-                }
+                // If you truly want shooters from L5+, use >= 5
+                val isShooter = (currentLevel >= 5 && row == 1)
+
+                enemyView.setImageResource(
+                    if (isShooter) R.drawable.spider_maroon else R.drawable.spider_blue
+                )
                 // Enemy position
                 val x = startX + col * (enemyWidth + spacingX)
                 val y = startY + row * (enemyHeight + spacingY)
@@ -263,8 +280,11 @@ class GameFragment : Fragment() {
             if (hitEnemy != null) {
                 hitEnemy.isAlive = false
                 hitEnemy.imageView.setImageResource(R.drawable.spider_death)
-                Handler(Looper.getMainLooper()).postDelayed({
-                    gameArea.removeView(hitEnemy.imageView)
+                handler.postDelayed({
+                    val ga = gameArea
+                    if (isAdded && ga != null && ga.isAttachedToWindow) {
+                        ga.removeView(hitEnemy.imageView)
+                    }
                 }, 300)
                 enemies.remove(hitEnemy)
 
@@ -360,9 +380,9 @@ class GameFragment : Fragment() {
     }
 
     private fun shootEnemyBullet(enemy: Enemy) {
-        // Create enemy bullet
-        val bullet = ImageView(requireContext())
-        bullet.setImageResource(R.drawable.spider_web_shot)
+        val ctx = context ?: return
+
+        val bullet = ImageView(ctx).apply { setImageResource(R.drawable.spider_web_shot) }
         val bulletSize = 30
         val params = FrameLayout.LayoutParams(bulletSize, bulletSize)
         gameArea.addView(bullet, params)
@@ -371,8 +391,10 @@ class GameFragment : Fragment() {
         enemyBullets.add(bullet)
     }
 
+
     private fun playerHitBy(view: ImageView): Boolean {
         if (isPaused || takingHit) return false
+
 
         val vw = if (view.width > 0) view.width else (view.layoutParams?.width ?: 0)
         val vh = if (view.height > 0) view.height else (view.layoutParams?.height ?: 0)
@@ -445,23 +467,18 @@ class GameFragment : Fragment() {
     }
 
     private fun updateHighScoreUI() {
-        // Get info from Firebase
         val auth = FirebaseAuth.getInstance()
-        val uid = auth.currentUser?.uid ?: return  // make sure user is logged in
+        val uid = auth.currentUser?.uid ?: "Guest"  // fallback for guest users
         val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
 
         dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()) {
-                    val storedHighscore = snapshot.child("highscore").getValue(Int::class.java) ?: 0
-                    highScoreText.text = "HIGHSCORE: $storedHighscore"
-                } else {
-                    highScoreText.text = "HIGHSCORE: 0"
-                }
+                val storedHighscore = snapshot.child("highscore").getValue(Int::class.java) ?: 0
+                highScoreText.text = "HIGHSCORE: $storedHighscore"
             }
 
             override fun onCancelled(error: DatabaseError) {
-                // Optionally show a message if needed
+                highScoreText.text = "HIGHSCORE: 0"
             }
         })
     }
@@ -489,40 +506,46 @@ class GameFragment : Fragment() {
 
         dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
+                val username = snapshot.child("username").getValue(String::class.java) ?: "Guest"
+
+                val showToasts = username.isNotBlank() && !username.equals("guest", ignoreCase = true)
+
                 if (snapshot.exists()) {
-                    // Player exists, check current highscore
                     val existingHighscore = snapshot.child("highscore").getValue(Int::class.java) ?: 0
 
                     if (score > existingHighscore) {
-                        // Update only if new score is higher
                         dbRef.child("highscore").setValue(score)
                             .addOnSuccessListener {
-                                Toast.makeText(requireContext(), "New Highscore!", Toast.LENGTH_SHORT).show()
+                                if (showToasts) {
+                                    Toast.makeText(requireContext(), "New Highscore!", Toast.LENGTH_SHORT).show()
+                                }
                             }
                             .addOnFailureListener {
-                                Toast.makeText(requireContext(), "Failed to update highscore", Toast.LENGTH_SHORT).show()
+                                if (showToasts) {
+                                    Toast.makeText(requireContext(), "Failed to update highscore", Toast.LENGTH_SHORT).show()
+                                }
                             }
-                    } else {
-                        // Toast.makeText(requireContext(), "Your score is not higher than the current highscore", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    // If somehow player data is missing, recreate entry
                     val user = mapOf(
                         "id" to uid,
-                        "username" to (snapshot.child("username").getValue(String::class.java) ?: "Guest"),
+                        "username" to username.ifBlank { "Guest" },
                         "email" to (snapshot.child("email").getValue(String::class.java) ?: ""),
-                        "password" to (snapshot.child("password").getValue(String::class.java)
-                            ?: ""), // ⚠️ Optional, not recommended
+                        "password" to (snapshot.child("password").getValue(String::class.java) ?: ""),
                         "spider_silk" to (snapshot.child("spider_silk").getValue(String::class.java)),
                         "highscore" to score
                     )
 
                     dbRef.setValue(user)
                         .addOnSuccessListener {
-                            Toast.makeText(requireContext(), "Player created with highscore!", Toast.LENGTH_SHORT).show()
+                            if (showToasts) {
+                                Toast.makeText(requireContext(), "Player created with highscore!", Toast.LENGTH_SHORT).show()
+                            }
                         }
                         .addOnFailureListener {
-                            Toast.makeText(requireContext(), "Failed to save highscore", Toast.LENGTH_SHORT).show()
+                            if (showToasts) {
+                                Toast.makeText(requireContext(), "Failed to save highscore", Toast.LENGTH_SHORT).show()
+                            }
                         }
                 }
             }
@@ -534,7 +557,6 @@ class GameFragment : Fragment() {
     }
 
     private fun saveInGameCurrency() {
-        // Calculate spider silk
         val spider_silk = (score * 0.5) / 100
         val auth = FirebaseAuth.getInstance()
         val uid = auth.currentUser?.uid ?: return
@@ -542,18 +564,23 @@ class GameFragment : Fragment() {
 
         dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
+                val username = snapshot.child("username").getValue(String::class.java) ?: "Guest"
+                val showToasts = username.isNotBlank() && !username.equals("Guest", ignoreCase = true)
+
                 if (snapshot.exists()) {
                     val currentSilk = snapshot.child("spider_silk").getValue(Double::class.java) ?: 0.0
                     val updatedSilk = currentSilk + spider_silk
 
                     dbRef.child("spider_silk").setValue(updatedSilk)
                         .addOnSuccessListener {
-                            Toast.makeText(requireContext(), "You have earned $spider_silk silk!", Toast.LENGTH_SHORT).show()
+                            if (showToasts) {
+                                Toast.makeText(requireContext(), "You have earned $spider_silk silk!", Toast.LENGTH_SHORT).show()
+                            }
                         }
                 } else {
                     val user = mapOf(
                         "id" to uid,
-                        "username" to (snapshot.child("username").getValue(String::class.java) ?: "Guest"),
+                        "username" to username.ifBlank { "Guest" },
                         "email" to (snapshot.child("email").getValue(String::class.java) ?: ""),
                         "password" to (snapshot.child("password").getValue(String::class.java) ?: ""),
                         "highscore" to (snapshot.child("highscore").getValue(Int::class.java) ?: 0),
@@ -562,10 +589,14 @@ class GameFragment : Fragment() {
 
                     dbRef.setValue(user)
                         .addOnSuccessListener {
-                            Toast.makeText(requireContext(), "Player created with spider silk!", Toast.LENGTH_SHORT).show()
+                            if (showToasts) {
+                                Toast.makeText(requireContext(), "Player created with spider silk!", Toast.LENGTH_SHORT).show()
+                            }
                         }
                         .addOnFailureListener {
-                            Toast.makeText(requireContext(), "Failed to save spider silk!", Toast.LENGTH_SHORT).show()
+                            if (showToasts) {
+                                Toast.makeText(requireContext(), "Failed to save spider silk!", Toast.LENGTH_SHORT).show()
+                            }
                         }
                 }
             }
@@ -593,7 +624,7 @@ class GameFragment : Fragment() {
 
         Handler(Looper.getMainLooper()).postDelayed({
             requireActivity().finish()
-        }, 1000)
+        }, 1500)
     }
 
     private fun gameWin() {
@@ -608,7 +639,7 @@ class GameFragment : Fragment() {
 
         Handler(Looper.getMainLooper()).postDelayed({
             requireActivity().finish()
-        }, 2000)
+        }, 1500)
     }
 
     companion object {

@@ -10,6 +10,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -19,7 +21,10 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
@@ -127,58 +132,55 @@ class LoginHubFragment : Fragment() {
                     user?.let {
                         val database = FirebaseDatabase.getInstance().getReference("players")
                         val playerId = it.uid
-                        val player = Player(
-                            username = it.displayName ?: "Guest",
-                            email = it.email ?: "No Email",
-                            password = "N/A", // Google Sign-In does not provide password
-                            highscore = 0,
-                            spider_silk = 0.00
-                        )
-                        database.child(playerId).setValue(player)
-                            .addOnSuccessListener {
-                                // Schedule daily reminder
-                                scheduleDailyReminder()
 
-                                // Redirect to GameMenuFragment with username
-                                val gameMenuFragment = GameMenuFragment().apply {
-                                    arguments = Bundle().apply {
-                                        putString("username", player.username)
+                        // Check if user already exists in DB
+                        database.child(playerId).addListenerForSingleValueEvent(object :
+                            ValueEventListener {
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                if (snapshot.exists()) {
+                                    // User exists → don’t overwrite
+                                    val existingUsername = snapshot.child("username").getValue(String::class.java) ?: it.displayName ?: "Guest"
+
+                                    // Go to GameMenuFragment with existing username
+                                    val gameMenuFragment = GameMenuFragment().apply {
+                                        arguments = Bundle().apply {
+                                            putString("username", existingUsername)
+                                        }
                                     }
+                                    replaceFragment(gameMenuFragment)
+                                } else {
+                                    // User doesn't exist → create new one
+                                    val player = Player(
+                                        username = it.displayName ?: "Guest",
+                                        email = it.email ?: "No Email",
+                                        password = "N/A", // Google Sign-In does not provide password
+                                        highscore = 0,
+                                        spider_silk = 0.00
+                                    )
+                                    database.child(playerId).setValue(player)
+                                        .addOnSuccessListener {
+                                            val gameMenuFragment = GameMenuFragment().apply {
+                                                arguments = Bundle().apply {
+                                                    putString("username", player.username)
+                                                }
+                                            }
+                                            replaceFragment(gameMenuFragment)
+                                        }
+                                        .addOnFailureListener { e ->
+                                            Toast.makeText(requireContext(), "Failed to save user: ${e.message}", Toast.LENGTH_SHORT).show()
+                                        }
                                 }
-                                replaceFragment(gameMenuFragment)
                             }
-                            .addOnFailureListener { e ->
-                                Toast.makeText(requireContext(), "Failed to save user: ${e.message}", Toast.LENGTH_SHORT).show()
+
+                            override fun onCancelled(error: DatabaseError) {
+                                Toast.makeText(requireContext(), "Database error: ${error.message}", Toast.LENGTH_SHORT).show()
                             }
+                        })
                     }
                 } else {
                     Toast.makeText(requireContext(), "Authentication Failed.", Toast.LENGTH_SHORT).show()
                 }
             }
-    }
-
-    private fun scheduleDailyReminder() {
-        val workRequest = PeriodicWorkRequestBuilder<DailyReminderWorker>(1, TimeUnit.DAYS)
-            .setInitialDelay(getDelayUntilTomorrow(), TimeUnit.MILLISECONDS)
-            .build()
-
-        WorkManager.getInstance(requireContext()).enqueueUniquePeriodicWork(
-            "daily_reminder",
-            ExistingPeriodicWorkPolicy.UPDATE,
-            workRequest
-        )
-    }
-
-    private fun getDelayUntilTomorrow(): Long {
-        val now = Calendar.getInstance()
-        val tomorrow = Calendar.getInstance().apply {
-            add(Calendar.DAY_OF_YEAR, 1)
-            set(Calendar.HOUR_OF_DAY, 9)   // e.g. 9 AM reminder
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }
-        return tomorrow.timeInMillis - now.timeInMillis
     }
     // Helper method to replace fragment
     private fun replaceFragment(fragment: Fragment) {
