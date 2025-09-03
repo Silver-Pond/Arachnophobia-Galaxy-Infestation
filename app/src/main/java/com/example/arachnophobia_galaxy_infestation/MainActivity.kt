@@ -1,16 +1,11 @@
 package com.example.arachnophobia_galaxy_infestation
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.content.Context
 import android.media.MediaPlayer
-import android.os.Build
 import android.os.Bundle
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 
 class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
@@ -58,11 +53,15 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
         networkMonitor.register()
 
         // Load saved volume
-        val prefs = getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
-        val savedVolume = prefs.getFloat("music_volume", 0.5f)
+        val prefs = getSharedPreferences("AppSettings", MODE_PRIVATE)
 
-        // Apply it to MusicPlayerManager + MediaPlayer
-        MusicPlayerManager.updateVolume(savedVolume)
+        // Restore music volume
+        val savedMusicVolume = prefs.getFloat("music_volume", 0.5f)
+        MusicPlayerManager.updateVolume(savedMusicVolume)
+
+        // Restore effects volume
+        val savedEffectsVolume = prefs.getFloat("effects_volume", 1.0f)
+        SoundEffectsManager.updateVolume(savedEffectsVolume)
 
         // Start music when activity is visible
         MusicPlayerManager.mediaPlayer?.start()

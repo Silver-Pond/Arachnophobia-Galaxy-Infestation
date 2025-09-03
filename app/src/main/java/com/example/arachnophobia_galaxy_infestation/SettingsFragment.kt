@@ -99,12 +99,15 @@ class SettingsFragment : Fragment() {
             MusicPlayerManager.updateVolume(volume)
             prefs.edit().putFloat("music_volume", volume).apply()
         }
-        // Load saved value or default to 1.0
-        effectsvolumeSlider.value = savedEffectsVolume
+        // Load saved effects volume
+        effectsvolumeSlider.value = savedEffectsVolume * effectsvolumeSlider.valueTo
+        SoundEffectsManager.updateVolume(savedEffectsVolume)
 
+        // Listen for changes
         effectsvolumeSlider.addOnChangeListener { _, value, _ ->
-            // Save volume whenever slider changes
-            prefs.edit().putFloat("effects_volume", value).apply()
+            val volume = value / effectsvolumeSlider.valueTo // normalize 0.0–1.0
+            SoundEffectsManager.updateVolume(volume)
+            prefs.edit().putFloat("effects_volume", volume).apply()
         }
 
         // Load saved biometric setting (default = false)

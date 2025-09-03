@@ -1,10 +1,7 @@
 package com.example.arachnophobia_galaxy_infestation
 
 import android.content.Context
-import android.content.pm.PackageManager
-import android.media.AudioAttributes
 import android.media.SoundPool
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -16,9 +13,6 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -74,7 +68,6 @@ class GameFragment : Fragment() {
     private lateinit var soundPool: SoundPool
     private var shootSoundId: Int = 0
     private var gameOverSoundId: Int = 0
-    private var effectsVolume: Float = 1.0f
 
     private val scoreText: TextView
         get() = requireActivity().findViewById(R.id.scoreText)
@@ -112,26 +105,20 @@ class GameFragment : Fragment() {
         pauseText = view.findViewById(R.id.pauseText)
         livesText = view.findViewById(R.id.livesText)
 
-        // Load effects volume
-        val prefs = requireContext().getSharedPreferences("game_prefs", Context.MODE_PRIVATE)
-        effectsVolume = prefs.getFloat("effects_volume", 1.0f)
-
-        // Initialize sound pool
-        val audioAttributes = AudioAttributes.Builder()
-            .setUsage(AudioAttributes.USAGE_GAME)
-            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-            .build()
-
-        soundPool = SoundPool.Builder()
-            .setMaxStreams(5) // max simultaneous sounds
-            .setAudioAttributes(audioAttributes)
-            .build()
+        // Initialize SoundPool once
+        val soundPool = SoundPool.Builder().setMaxStreams(5).build()
+        SoundEffectsManager.soundPool = soundPool
 
         // Load shooting sound
         shootSoundId = soundPool.load(requireContext(), R.raw.cannon_shot, 1)
 
         // Load game over sound
         gameOverSoundId = soundPool.load(requireContext(), R.raw.game_over, 1)
+
+        // Restore effects volume from prefs
+        val prefs = requireActivity().getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
+        val savedEffectsVolume = prefs.getFloat("effects_volume", 1.0f)
+        SoundEffectsManager.updateVolume(savedEffectsVolume)
 
         // Initialize game
         gameArea.post {
@@ -152,11 +139,8 @@ class GameFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         handler.removeCallbacks(gameRunnable)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        soundPool.release() // free memory
+        SoundEffectsManager.soundPool?.release()
+        SoundEffectsManager.soundPool = null
     }
 
     // Player movement
@@ -188,8 +172,10 @@ class GameFragment : Fragment() {
         bullet.y = player.y - bulletSize
         bullets.add(bullet)
 
-        // Play shooting sound
-        soundPool.play(shootSoundId, effectsVolume, effectsVolume, 1, 0, 1f)
+        // Play sound (already loaded at startup)
+        if (shootSoundId != 0) {
+            SoundEffectsManager.playSound(shootSoundId)
+        }
     }
 
     // Enemy spawn logic
@@ -598,8 +584,10 @@ class GameFragment : Fragment() {
         pauseText.visibility = View.VISIBLE
         pauseText.bringToFront()
 
-        // Play Game Over sound
-        soundPool.play(gameOverSoundId, effectsVolume, effectsVolume, 1, 0, 1f)
+        // Play sound (already loaded at startup)
+        if (gameOverSoundId != 0) {
+            SoundEffectsManager.playSound(gameOverSoundId)
+        }
 
         // Save Highscore & Currency
         saveHighScore()
