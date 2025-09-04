@@ -87,7 +87,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
                 android:fontFamily="@font/black_ops_one"
-                android:text=""
+                android:text="SPIDER SILK: "
                 android:textColor="#E91E63"
                 android:textSize="16sp"
                 android:textStyle="italic" />
@@ -124,6 +124,17 @@
             android:background="@drawable/custom_button"
             android:fontFamily="@font/black_ops_one"
             android:text="@string/btnback"
+            android:textColor="#FFFFFF" />
+
+        <Button
+            android:id="@+id/btnlogout"
+            android:layout_width="287dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/custom_button"
+            android:fontFamily="@font/black_ops_one"
+            android:text="@string/btnlogout"
             android:textColor="#FFFFFF" />
     </LinearLayout>
 </FrameLayout>

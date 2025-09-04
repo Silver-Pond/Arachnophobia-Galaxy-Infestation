@@ -1,5 +1,7 @@
 package com.example.arachnophobia_galaxy_infestation
 
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -141,6 +143,8 @@ class LoginHubFragment : Fragment() {
                                     // User exists → don’t overwrite
                                     val existingUsername = snapshot.child("username").getValue(String::class.java) ?: it.displayName ?: "Guest"
 
+                                    cancelReminder() // cancel reminders every 30 min
+
                                     // Go to GameMenuFragment with existing username
                                     val gameMenuFragment = GameMenuFragment().apply {
                                         arguments = Bundle().apply {
@@ -181,6 +185,18 @@ class LoginHubFragment : Fragment() {
                     Toast.makeText(requireContext(), "Authentication Failed.", Toast.LENGTH_SHORT).show()
                 }
             }
+    }
+
+    private fun cancelReminder() {
+        val alarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(requireContext(), ReminderReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            requireContext(),
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        alarmManager.cancel(pendingIntent)
     }
     // Helper method to replace fragment
     private fun replaceFragment(fragment: Fragment) {

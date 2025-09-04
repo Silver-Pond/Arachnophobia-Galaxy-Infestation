@@ -18,6 +18,7 @@
     <string name="btngooglelogin">GOOGLE AANMELD</string>
     <string name="btnbiologin">BIO AANMELD</string>
     <string name="btnguest">GAAN VOORT AS GAS</string>
+    <string name="btnlogout">TEKEN UIT</string>
 
     <string name="start">BEGIN SPEL</string>
 

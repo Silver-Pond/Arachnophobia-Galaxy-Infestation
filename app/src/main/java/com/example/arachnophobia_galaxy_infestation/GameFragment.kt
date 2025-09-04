@@ -62,7 +62,7 @@ class GameFragment : Fragment() {
     private val enemySets = mutableListOf<List<Enemy>>()
     private var currentSetIndex = 0
     private var currentLevel = 1
-    private val maxLevels = 10
+    private val maxLevels = 20
     private val setsPerLevel = 4
     private var shootSoundId: Int = 0
     private var gameOverSoundId: Int = 0
@@ -198,9 +198,9 @@ class GameFragment : Fragment() {
 
     // Enemy spawn logic
     private fun spawnCurrentSet() {
-        // Remove previous enemies
         val ctx = context ?: return
 
+        // Clear old enemies
         enemies.forEach { gameArea.removeView(it.imageView) }
         enemies.clear()
 
@@ -216,12 +216,17 @@ class GameFragment : Fragment() {
             for (col in 0 until 5) {
                 val enemyView = ImageView(ctx)
 
-                // If you truly want shooters from L5+, use >= 5
-                val isShooter = (currentLevel >= 5 && row == 1)
+                // Shooter rules:
+                // Row 1 becomes shooter from level 5+
+                // Row 2 becomes shooter only from level 15–20
+                val isShooter =
+                    (currentLevel >= 5 && row == 1) ||
+                            (currentLevel in 15..20 && row == 2)
 
                 enemyView.setImageResource(
                     if (isShooter) R.drawable.spider_maroon else R.drawable.spider_blue
                 )
+
                 // Enemy position
                 val x = startX + col * (enemyWidth + spacingX)
                 val y = startY + row * (enemyHeight + spacingY)
@@ -239,21 +244,20 @@ class GameFragment : Fragment() {
                 enemies.add(enemy)
             }
         }
-        // Enemy set index
+
+        // Save this set
         if (currentSetIndex < enemySets.size) {
             enemySets[currentSetIndex] = set
         } else {
             enemySets.add(set)
         }
-        // Find how far we are past the last reset level
-        val offset = (currentLevel % 5)
 
+        // Enemy speed scaling
+        val offset = (currentLevel % 5)
         if (offset == 0) {
-            // Exact multiple of 5 → reset
             enemySpeed = 5f
             enemyFallSpeed = 1f
         } else {
-            // Scale starting from reset point
             enemySpeed = 5f + (offset * 1.2f)
             enemyFallSpeed = 1f + (offset * 1.005f)
         }

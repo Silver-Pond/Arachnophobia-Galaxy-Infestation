@@ -86,7 +86,7 @@
             android:background="@drawable/custom_button"
             android:backgroundTint="#673AB7"
             android:fontFamily="@font/black_ops_one"
-            android:text="CONTINUE AS GUEST"
+            android:text="@string/btnguest"
             android:textColor="#FFFFFF" />
     </LinearLayout>
 </FrameLayout>

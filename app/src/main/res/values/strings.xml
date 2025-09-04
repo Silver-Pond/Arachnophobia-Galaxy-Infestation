@@ -19,6 +19,7 @@
     <string name="btngooglelogin">GOOGLE LOGIN</string>
     <string name="btnbiologin">BIOLOGIN</string>
     <string name="btnguest">CONTINUE AS GUEST</string>
+    <string name="btnlogout">LOG OUT</string>
 
     <string name="start">START GAME</string>
 

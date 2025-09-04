@@ -29,6 +29,12 @@
             </intent-filter>
         </activity>
 
+        <!-- Your worker/receiver must be declared here inside <application> -->
+        <receiver
+            android:name=".ReminderReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
