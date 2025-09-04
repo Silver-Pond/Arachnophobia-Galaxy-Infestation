@@ -65,6 +65,9 @@ class GameFragment : Fragment() {
     private val maxLevels = 20
     private val setsPerLevel = 4
     private var shootSoundId: Int = 0
+    private var enemyfireId: Int = 0
+    private var enemykilledId: Int = 0
+    private var explosionId: Int = 0
     private var gameOverSoundId: Int = 0
 
     private val scoreText: TextView
@@ -114,6 +117,15 @@ class GameFragment : Fragment() {
 
         // Load shooting sound
         shootSoundId = soundPool.load(requireContext(), R.raw.cannon_shot, 1)
+
+        // Load enemy shooting sound
+        enemyfireId = soundPool.load(requireContext(), R.raw.shoot, 1)
+
+        // Load enemy killed sound
+        enemykilledId = soundPool.load(requireContext(), R.raw.invaderkilled, 1)
+
+        // Load explosion sound
+        explosionId = soundPool.load(requireContext(), R.raw.explosion, 1)
 
         // Load game over sound
         gameOverSoundId = soundPool.load(requireContext(), R.raw.game_over, 1)
@@ -284,6 +296,10 @@ class GameFragment : Fragment() {
             if (hitEnemy != null) {
                 hitEnemy.isAlive = false
                 hitEnemy.imageView.setImageResource(R.drawable.spider_death)
+
+                // Play enemy death sound (already loaded at startup)
+                if (enemykilledId != 0) SoundEffectsManager.playSound(enemykilledId)
+
                 handler.postDelayed({
                     val ga = gameArea
                     if (isAdded && ga != null && ga.isAttachedToWindow) {
@@ -324,6 +340,11 @@ class GameFragment : Fragment() {
                 // Shooters fire randomly
                 if (enemy.isShooter && (0..1000).random() < 5) {
                     shootEnemyBullet(enemy)
+
+                    // Play enemy shooting sound (already loaded at startup)
+                    if (enemyfireId != 0) {
+                        SoundEffectsManager.playSound(enemyfireId)
+                    }
                 }
 
                 // Enemy collides with player
@@ -422,6 +443,9 @@ class GameFragment : Fragment() {
 
     private fun handlePlayerHit() {
         if (isPaused) return
+
+        // Play sound (already loaded at startup)
+        if (explosionId != 0) SoundEffectsManager.playSound(explosionId)
 
         player.setImageResource(R.drawable.moth_death)
         loseLife()
