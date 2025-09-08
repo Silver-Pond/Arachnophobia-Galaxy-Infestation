@@ -47,7 +47,7 @@ class GameFragment : Fragment() {
     private var takingHit = false
     private var lives = 3
     private var score = 0
-
+    private var isGameFinished = false
     private val handler = Handler(Looper.getMainLooper())
     private val bullets = mutableListOf<ImageView>()
     private val enemyBullets = mutableListOf<ImageView>()
@@ -383,7 +383,7 @@ class GameFragment : Fragment() {
         }
 
         // Level progression
-        if (enemies.none { it.isAlive }) {
+        if (!isGameFinished && enemies.none { it.isAlive }) {
             if (currentSetIndex < setsPerLevel - 1) {
                 currentSetIndex++
                 spawnCurrentSet()
@@ -398,6 +398,7 @@ class GameFragment : Fragment() {
                         pauseText.visibility = View.GONE
                     }, 1000)
                 } else {
+                    isGameFinished = true  // prevent gameOver from firing too
                     gameWin()
                 }
             }
@@ -442,7 +443,7 @@ class GameFragment : Fragment() {
     }
 
     private fun handlePlayerHit() {
-        if (isPaused) return
+        if (isPaused || isGameFinished) return  // prevent double calls
 
         // Play sound (already loaded at startup)
         if (explosionId != 0) SoundEffectsManager.playSound(explosionId)
@@ -461,6 +462,7 @@ class GameFragment : Fragment() {
                 resetGameState()
             }, 1000)
         } else {
+            isGameFinished = true  // mark game as finished
             gameOver()
         }
     }
@@ -636,38 +638,44 @@ class GameFragment : Fragment() {
     }
 
     private fun gameOver() {
+        if (isGameFinished) return
+        isGameFinished = true
         isPaused = true
+
+        // Stop the game loop
+        handler.removeCallbacks(gameRunnable)
+
         pauseText.text = "GAME OVER"
         pauseText.visibility = View.VISIBLE
         pauseText.bringToFront()
 
-        // Play sound (already loaded at startup)
-        if (gameOverSoundId != 0) {
-            SoundEffectsManager.playSound(gameOverSoundId)
-        }
-
         // Save Highscore & Currency
         saveHighScore()
         saveInGameCurrency()
 
         Handler(Looper.getMainLooper()).postDelayed({
             requireActivity().finish()
-        }, 1500)
+        }, 2000)
+
+        // Play sound
+        if (gameOverSoundId != 0) SoundEffectsManager.playSound(gameOverSoundId)
     }
 
     private fun gameWin() {
+        if (isGameFinished) return
+        isGameFinished = true
         isPaused = true
-        pauseText.text = "VICTORY!"
+
+        // Stop the game loop
+        handler.removeCallbacks(gameRunnable)
+
+        pauseText.text = "BOSS MOVES DUDE!"
         pauseText.visibility = View.VISIBLE
         pauseText.bringToFront()
 
-        // Save Highscore & Currency
-        saveHighScore()
-        saveInGameCurrency()
-
         Handler(Looper.getMainLooper()).postDelayed({
             requireActivity().finish()
-        }, 1500)
+        }, 2000)
     }
 
     companion object {

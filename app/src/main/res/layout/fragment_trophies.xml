@@ -4,14 +4,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/black"
-    tools:context=".LeaderboardFragment">
+    tools:context=".TrophiesFragment">
 
     <LinearLayout
+        android:id="@+id/trophiesLayout"
         android:layout_width="match_parent"
         android:layout_height="703dp"
         android:layout_marginVertical="30dp"
         android:background="@android:color/black"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="16dp">
 
         <Button
             android:id="@+id/btnBack"
@@ -26,20 +28,21 @@
             android:textColor="#FFFFFF" />
 
         <TextView
-            android:id="@+id/highscoresTitle"
+            android:id="@+id/trophiesTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:fontFamily="@font/black_ops_one"
             android:paddingBottom="8dp"
-            android:text="HIGHSCORES"
+            android:text="TROPHIES"
             android:textColor="#009688"
             android:textSize="20sp"
             android:textStyle="bold" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
+            android:id="@+id/recyclerViewTrophies"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:dividerHeight="8dp" />
     </LinearLayout>
 </FrameLayout>

@@ -1,14 +1,15 @@
 package com.example.arachnophobia_galaxy_infestation
 
+import android.app.AlertDialog
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -21,17 +22,17 @@ private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
- * Use the [LeaderboardFragment.newInstance] factory method to
+ * Use the [TrophiesFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class LeaderboardFragment : Fragment() {
+class TrophiesFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
     private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: LeaderboardAdapter
-    private val players = mutableListOf<HighScore>()
-
+    private lateinit var adapter: TrophyAdapter
+    private val trophies = mutableListOf<Trophy>()
+    private val userTrophies = mutableSetOf<String>() // store earned trophies
     private lateinit var loggedInUser: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,70 +48,84 @@ class LeaderboardFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_leaderboard, container, false)
+        return inflater.inflate(R.layout.fragment_trophies, container, false)
     }
-    // Use this method to safely access views
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         // Initialize views
         val btnBack = view.findViewById<Button>(R.id.btnBack)
-        recyclerView = view.findViewById(R.id.recyclerView)
-
-        // Set up RecyclerView
+        recyclerView = view.findViewById(R.id.recyclerViewTrophies)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        adapter = TrophyAdapter(trophies, userTrophies) { trophy ->
+            showDescriptionDialog(trophy)
+        }
+        recyclerView.adapter = adapter
+
+        fetchUserTrophies()
 
         // Get username from arguments or fallback
         loggedInUser = arguments?.getString("username") ?: "Guest"
 
-        // Load leaderboard data
-        loadLeaderboard()
-
         // Set up back button
         btnBack.setOnClickListener {
-            // Create a new instance of HighscoresMenuFragment with the username
-            val highscoresMenuFragment = HighscoresMenuFragment().apply {
+            // Create a new instance of GameMenuFragment with the username
+            val gameMenuFragment = GameMenuFragment().apply {
                 arguments = Bundle().apply {
                     putString("username", loggedInUser)
                 }
             }
             // Navigate to high scores fragment
-            replaceFragment(highscoresMenuFragment)
+            replaceFragment(gameMenuFragment)
         }
     }
 
-    private fun loadLeaderboard() {
-        // Clear existing data
-        val dbRef = FirebaseDatabase.getInstance().getReference("players")
+    private fun fetchUserTrophies() {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid).child("trophies")
 
         dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                players.clear()
-
-                for (playerSnap in snapshot.children) {
-                    val username = playerSnap.child("username").getValue(String::class.java) ?: "Guest"
-                    val highscore = playerSnap.child("highscore").getValue(Int::class.java) ?: 0
-
-                    players.add(HighScore(username, highscore))
+                userTrophies.clear()
+                snapshot.children.forEach { child ->
+                    val trophyId = child.key
+                    if (trophyId != null && child.getValue(Boolean::class.java) == true) {
+                        userTrophies.add(trophyId)
+                    }
                 }
-
-                // Sort by score descending
-                players.sortByDescending { it.score }
-
-                adapter = LeaderboardAdapter(players, loggedInUser)
-                recyclerView.adapter = adapter
-
-                // Scroll to logged-in user's position
-                val position = players.indexOfFirst { it.username == loggedInUser }
-                if (position != -1) {
-                    recyclerView.scrollToPosition(position)
-                }
+                fetchAllTrophies()
             }
 
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(requireContext(), "Error loading leaderboard", Toast.LENGTH_SHORT).show()
-            }
+            override fun onCancelled(error: DatabaseError) {}
         })
+    }
+
+    private fun fetchAllTrophies() {
+        val dbRef = FirebaseDatabase.getInstance().getReference("Arachnotrophies")
+
+        dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                trophies.clear()
+                snapshot.children.forEach { child ->
+                    val trophy = child.getValue(Trophy::class.java)
+                    if (trophy != null) {
+                        trophies.add(trophy)
+                    }
+                }
+                adapter.notifyDataSetChanged()
+            }
+
+            override fun onCancelled(error: DatabaseError) {}
+        })
+    }
+
+    private fun showDescriptionDialog(trophy: Trophy) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(trophy.name)
+            .setMessage(trophy.description)
+            .setPositiveButton("OK", null)
+            .show()
     }
 
     // Helper method to replace fragment
@@ -123,7 +138,7 @@ class LeaderboardFragment : Fragment() {
     companion object {
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            LeaderboardFragment().apply {
+            TrophiesFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
                     putString(ARG_PARAM2, param2)
