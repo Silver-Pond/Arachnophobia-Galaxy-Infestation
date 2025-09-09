@@ -55,6 +55,7 @@ class GameMenuFragment : Fragment() {
         val btnarcademode = view.findViewById<Button>(R.id.btnarcademode)
         val btnsurvivalmode = view.findViewById<Button>(R.id.btnsurvivalmode)
         val btnhighscores = view.findViewById<Button>(R.id.btnhighscores)
+        val btntrophies = view.findViewById<Button>(R.id.btntrophies)
         val btnsettings = view.findViewById<Button>(R.id.btnsettings)
         val btnexit = view.findViewById<Button>(R.id.btnexit)
 
@@ -100,6 +101,17 @@ class GameMenuFragment : Fragment() {
             replaceFragment(highscoresMenuFragment)
         }
 
+        btntrophies.setOnClickListener {
+            // Create a new instance of TrophiesFragment with the username
+            val trophiesFragment = TrophiesFragment().apply {
+                arguments = Bundle().apply {
+                    putString("username", username)
+                }
+            }
+            // Navigate to trophies fragment
+            replaceFragment(trophiesFragment)
+        }
+
         btnsettings.setOnClickListener {
             // Create a new instance of LeaderboardFragment with the username
             val settingsFragment = SettingsFragment().apply {
@@ -107,7 +119,7 @@ class GameMenuFragment : Fragment() {
                     putString("username", username)
                 }
             }
-            // Navigate to high scores fragment
+            // Navigate to settings fragment
             replaceFragment(settingsFragment)
         }
 
