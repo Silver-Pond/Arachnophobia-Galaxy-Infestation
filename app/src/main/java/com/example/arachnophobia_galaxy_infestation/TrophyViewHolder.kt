@@ -16,10 +16,14 @@ class TrophyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         trophyName.text = trophy.name
         trophyCheckBox.isChecked = isEarned
 
-        Glide.with(itemView.context)
-            .load(trophy.image_url)
-            .placeholder(R.drawable.ic_launcher_foreground)
-            .into(trophyImage)
+        val context = itemView.context
+        val resId = context.resources.getIdentifier(trophy.image_url, "drawable", context.packageName)
+
+        if (resId != 0) {
+            trophyImage.setImageResource(resId)
+        } else {
+            trophyImage.setImageResource(R.drawable.ic_launcher_foreground) // fallback
+        }
 
         itemView.setOnClickListener {
             onItemClick(trophy)

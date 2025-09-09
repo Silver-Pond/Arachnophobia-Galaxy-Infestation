@@ -102,7 +102,7 @@ class TrophiesFragment : Fragment() {
     }
 
     private fun fetchAllTrophies() {
-        val dbRef = FirebaseDatabase.getInstance().getReference("Arachnotrophies")
+        val dbRef = FirebaseDatabase.getInstance().getReference("arachnotrophies")
 
         dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
