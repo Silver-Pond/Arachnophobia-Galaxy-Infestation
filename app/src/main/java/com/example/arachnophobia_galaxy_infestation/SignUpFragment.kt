@@ -87,7 +87,7 @@ class SignUpFragment : Fragment() {
             val auth = FirebaseAuth.getInstance()
             val dbRef = FirebaseDatabase.getInstance().getReference("players")
 
-            // First, check if the username already exists in the database
+// First, check if the username already exists in the database
             dbRef.orderByChild("username").equalTo(username)
                 .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
@@ -107,16 +107,17 @@ class SignUpFragment : Fragment() {
                                                 id = uid,
                                                 username = username,
                                                 email = email,
-                                                password = password,   // ⚠️ optional – you can remove for security
+                                                password = password,
                                                 highscore = 0,
-                                                spider_silk = 0.00
+                                                spider_silk = 0.00,
+                                                trophies = emptyList()
                                             )
 
                                             // Save Player in Realtime Database
                                             dbRef.child(uid).setValue(player)
                                                 .addOnSuccessListener {
                                                     Toast.makeText(requireContext(), "User created successfully", Toast.LENGTH_SHORT).show()
-                                                    replaceFragment(LoginFragment()) // go back to login
+                                                    replaceFragment(LoginFragment())
                                                 }
                                                 .addOnFailureListener { e ->
                                                     Toast.makeText(requireContext(), "Database error: ${e.message}", Toast.LENGTH_SHORT).show()

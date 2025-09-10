@@ -159,7 +159,8 @@ class LoginHubFragment : Fragment() {
                                         email = it.email ?: "No Email",
                                         password = "N/A", // Google Sign-In does not provide password
                                         highscore = 0,
-                                        spider_silk = 0.00
+                                        spider_silk = 0.00,
+                                        trophies = emptyList()
                                     )
                                     database.child(playerId).setValue(player)
                                         .addOnSuccessListener {

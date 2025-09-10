@@ -9,5 +9,6 @@ data class Player(
     val email: String = "",
     val password: String = "",
     val highscore: Int = 0,
-    val spider_silk: Double = 0.00
+    val spider_silk: Double = 0.00,
+    val trophies: List<Trophy> = emptyList()
 )

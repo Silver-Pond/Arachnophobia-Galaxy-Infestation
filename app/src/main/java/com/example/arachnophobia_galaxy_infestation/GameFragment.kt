@@ -5,6 +5,7 @@ import android.media.SoundPool
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -317,6 +318,9 @@ class GameFragment : Fragment() {
                 }
                 // Update UI
                 updateScoreUI()
+
+                // Award trophies
+                checkAndAwardTrophies()
             }
         }
 
@@ -637,6 +641,52 @@ class GameFragment : Fragment() {
         })
     }
 
+    private fun checkAndAwardTrophies() {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val dbRef = FirebaseDatabase.getInstance()
+            .getReference("players")
+            .child(uid)
+            .child("trophies")
+
+        val trophiesToAward = mutableListOf<Trophy>()
+
+        // Level-based trophies
+        when (currentLevel) {
+            1 -> trophiesToAward.add(Trophy("trophy01", "Hero lvl 1", "Completed Level 1!", "lvl_trophy"))
+            4 -> trophiesToAward.add(Trophy("trophy02", "Hero lvl 4", "Completed Level 4!", "lvl_trophy"))
+            9 -> trophiesToAward.add(Trophy("trophy03", "Hero lvl 9", "Completed Level 9!", "lvl_trophy"))
+            14 -> trophiesToAward.add(Trophy("trophy04", "Hero lvl 14", "Completed Level 14!", "lvl_trophy"))
+            19 -> trophiesToAward.add(Trophy("trophy05", "Hero lvl 19", "Completed Level 19!", "lvl_trophy"))
+        }
+
+        // Score-based trophies
+        if (score >= 1000) trophiesToAward.add(Trophy("trophy06", "New User", "Obtained A Score of 1000!", "score_trophy"))
+        if (score >= 2500) trophiesToAward.add(Trophy("trophy07", "Space Cadet", "Obtained A Score of 2500!", "score_trophy"))
+        if (score >= 5000) trophiesToAward.add(Trophy("trophy08", "Space Lieutenant", "Obtained A Score of 5000!", "score_trophy"))
+        if (score >= 7500) trophiesToAward.add(Trophy("trophy09", "Space Captain", "Obtained A Score of 7500!", "score_trophy"))
+        if (score >= 9000) trophiesToAward.add(Trophy("trophy10", "Galactic Trooper", "Obtained A Score of 9000!", "score_trophy"))
+        if (score >= 10000) trophiesToAward.add(Trophy("trophy11", "Space Invader", "Obtained A Score of 10000!", "score_trophy"))
+
+        // Save & show toast only for NEW trophies
+        trophiesToAward.forEach { trophy ->
+            dbRef.child(trophy.id).get().addOnSuccessListener { snapshot ->
+                if (!snapshot.exists()) {
+                    // Award trophy in Firebase
+                    dbRef.child(trophy.id).setValue(true)
+
+                    // Show toast at the top
+                    val toast = Toast.makeText(
+                        requireContext(),
+                        "🏆 ${trophy.name} unlocked!\n${trophy.description}",
+                        Toast.LENGTH_LONG
+                    )
+                    toast.setGravity(Gravity.TOP or Gravity.CENTER_HORIZONTAL, 0, 100) // 100 px offset from top
+                    toast.show()
+                }
+            }
+        }
+    }
+
     private fun gameOver() {
         if (isGameFinished) return
         isGameFinished = true
@@ -652,6 +702,9 @@ class GameFragment : Fragment() {
         // Save Highscore & Currency
         saveHighScore()
         saveInGameCurrency()
+
+        // Award trophies
+        checkAndAwardTrophies()
 
         Handler(Looper.getMainLooper()).postDelayed({
             requireActivity().finish()
@@ -672,6 +725,13 @@ class GameFragment : Fragment() {
         pauseText.text = "BOSS MOVES DUDE!"
         pauseText.visibility = View.VISIBLE
         pauseText.bringToFront()
+
+        // Save Highscore & Currency
+        saveHighScore()
+        saveInGameCurrency()
+
+        // Award trophies
+        checkAndAwardTrophies()
 
         Handler(Looper.getMainLooper()).postDelayed({
             requireActivity().finish()

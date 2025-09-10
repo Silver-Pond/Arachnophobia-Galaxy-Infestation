@@ -652,7 +652,15 @@
       <option name="project" value="LOCAL" />
       <updated>1757421460549</updated>
     </task>
-    <option name="localTasksCounter" value="41" />
+    <task id="LOCAL-00041" summary="Merged remote history with local changes">
+      <option name="closed" value="true" />
+      <created>1757435133033</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1757435133033</updated>
+    </task>
+    <option name="localTasksCounter" value="42" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
