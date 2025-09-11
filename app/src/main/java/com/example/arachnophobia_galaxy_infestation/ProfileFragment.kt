@@ -99,8 +99,6 @@ class ProfileFragment : Fragment() {
                 remove("username")
                 apply()
             }
-            // Schedule reminders since user is now logged out
-            scheduleReminder()
 
             // Navigate back to login screen
             replaceFragment(LoginHubFragment())
@@ -124,32 +122,6 @@ class ProfileFragment : Fragment() {
             }
         })
     }
-
-    private fun scheduleReminder() {
-        val alarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(requireContext(), ReminderReceiver::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(
-            requireContext(),
-            0,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        // Cancel existing alarms
-        alarmManager.cancel(pendingIntent)
-
-        // Schedule repeating alarm every 30 minutes
-        val intervalMillis = 30 * 60 * 1000L // 30 minutes
-        val triggerAtMillis = System.currentTimeMillis() + intervalMillis
-
-        alarmManager.setRepeating(
-            AlarmManager.RTC_WAKEUP,
-            triggerAtMillis,
-            intervalMillis,
-            pendingIntent
-        )
-    }
-
     // Helper method to replace fragment
     private fun replaceFragment(fragment: Fragment) {
         parentFragmentManager.beginTransaction()

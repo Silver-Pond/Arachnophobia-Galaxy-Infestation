@@ -22,6 +22,9 @@
     <string name="btnlogout">LOG OUT</string>
 
     <string name="start">START GAME</string>
+    <string name="usernameinput">ENTER USERNAME</string>
+    <string name="emailinput">ENTER EMAIL</string>
+    <string name="passwordinput">ENTER PASSWORD</string>
 
     <string name="btnarcadehighscore">ARCADE HIGHSCORES</string>
     <string name="btnsurvivalhighscore">SURVIVAL HIGHSCORES</string>

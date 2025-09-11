@@ -1,6 +1,9 @@
 package com.example.arachnophobia_galaxy_infestation
 
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.widget.TextView
@@ -9,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import java.util.Locale
 import android.content.res.Configuration
-
 class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
 
     private lateinit var networkMonitor: NetworkMonitor
@@ -50,6 +52,39 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
         }
     }
 
+    private fun scheduleRepeatingNotification() {
+        val intent = Intent(this, NotificationReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            this,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val interval = 30 * 60 * 1000L // 30 minutes in milliseconds
+
+        // Start after 30 minutes, repeat every 30 minutes
+        alarmManager.setRepeating(
+            AlarmManager.RTC_WAKEUP,
+            System.currentTimeMillis() + interval,
+            interval,
+            pendingIntent
+        )
+    }
+
+    private fun cancelRepeatingNotification() {
+        val intent = Intent(this, NotificationReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            this,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.cancel(pendingIntent)
+    }
+
     private fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.main, fragment)
@@ -69,6 +104,9 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
         SoundEffectsManager.updateVolume(savedEffectsVolume)
 
         mediaPlayer?.start()
+
+        // Cancel notifications since user is inside the app
+        cancelRepeatingNotification()
     }
 
     override fun onPause() {
@@ -81,6 +119,9 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
         super.onDestroy()
         mediaPlayer?.release()
         mediaPlayer = null
+
+        // Schedule push notifications when app is closed
+        scheduleRepeatingNotification()
     }
 
     override fun onNetworkAvailable() {

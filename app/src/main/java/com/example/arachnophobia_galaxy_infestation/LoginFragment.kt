@@ -110,8 +110,6 @@ class LoginFragment : Fragment() {
                                         }
                                         Toast.makeText(requireContext(), "Welcome $username", Toast.LENGTH_SHORT).show()
 
-                                        cancelReminder() // cancel reminders every 30 min
-
                                         // Navigate to GameMenuFragment
                                         val gameMenuFragment = GameMenuFragment().apply {
                                             arguments = Bundle().apply {
@@ -134,18 +132,6 @@ class LoginFragment : Fragment() {
                     }
                 }
         }
-    }
-
-    private fun cancelReminder() {
-        val alarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(requireContext(), ReminderReceiver::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(
-            requireContext(),
-            0,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-        alarmManager.cancel(pendingIntent)
     }
     // Helper method to replace fragment
     private fun replaceFragment(fragment: Fragment) {

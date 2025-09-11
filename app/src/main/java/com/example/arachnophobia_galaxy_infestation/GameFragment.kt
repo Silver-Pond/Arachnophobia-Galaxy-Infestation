@@ -680,7 +680,7 @@ class GameFragment : Fragment() {
                         "🏆 ${trophy.name} unlocked!\n${trophy.description}",
                         Toast.LENGTH_LONG
                     )
-                    toast.setGravity(Gravity.TOP or Gravity.CENTER_HORIZONTAL, 0, 100) // 100 px offset from top
+                    toast.setGravity(Gravity.TOP or Gravity.CENTER_HORIZONTAL, 0, 0)
                     toast.show()
                 }
             }

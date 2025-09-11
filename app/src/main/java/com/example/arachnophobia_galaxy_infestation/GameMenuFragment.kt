@@ -1,5 +1,6 @@
 package com.example.arachnophobia_galaxy_infestation
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -12,6 +13,7 @@ import android.widget.Toast
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.google.firebase.auth.FirebaseAuth
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
@@ -124,6 +126,19 @@ class GameMenuFragment : Fragment() {
         }
 
         btnexit.setOnClickListener {
+            // Logout from Firebase
+            val auth = FirebaseAuth.getInstance()
+            auth.signOut() // Firebase logout
+
+            // Clear saved user data
+            val prefs = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            with(prefs.edit()) {
+                putBoolean("is_logged_in", false) // mark as logged out
+                remove("email")
+                remove("password")
+                remove("username")
+                apply()
+            }
             // Exit the app
             requireActivity().finish()
         }

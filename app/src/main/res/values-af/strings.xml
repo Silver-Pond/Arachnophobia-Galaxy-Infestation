@@ -21,6 +21,9 @@
     <string name="btnlogout">TEKEN UIT</string>
 
     <string name="start">BEGIN SPEL</string>
+    <string name="usernameinput">VOER GEBRUIKERSNAAM IN</string>
+    <string name="emailinput">VOER E-POS IN</string>
+    <string name="passwordinput">VOER WAGWOORD IN</string>
 
     <string name="btnarcadehighscore">ARCADE HOOGTELLINGE</string>
     <string name="btnsurvivalhighscore">SURVIVAL HOOGTELLINGE</string>
