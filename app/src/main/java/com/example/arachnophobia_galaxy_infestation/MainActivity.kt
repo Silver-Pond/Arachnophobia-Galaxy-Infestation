@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
         val interval = 30 * 60 * 1000L // 30 minutes in milliseconds
 
         // Start after 30 minutes, repeat every 30 minutes
@@ -134,7 +134,7 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
 
     // Helper function to apply saved language
     private fun applySavedLocale(context: Context) {
-        val prefs = context.getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
+        val prefs = context.getSharedPreferences("AppSettings", MODE_PRIVATE)
         val languageCode = prefs.getString("language", "en") ?: "en"
 
         val locale = Locale(languageCode)
