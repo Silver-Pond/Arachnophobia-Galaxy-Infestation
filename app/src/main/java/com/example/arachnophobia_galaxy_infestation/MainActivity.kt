@@ -52,39 +52,6 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
         }
     }
 
-    private fun scheduleRepeatingNotification() {
-        val intent = Intent(this, NotificationReceiver::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(
-            this,
-            0,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
-        val interval = 30 * 60 * 1000L // 30 minutes in milliseconds
-
-        // Start after 30 minutes, repeat every 30 minutes
-        alarmManager.setRepeating(
-            AlarmManager.RTC_WAKEUP,
-            System.currentTimeMillis() + interval,
-            interval,
-            pendingIntent
-        )
-    }
-
-    private fun cancelRepeatingNotification() {
-        val intent = Intent(this, NotificationReceiver::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(
-            this,
-            0,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarmManager.cancel(pendingIntent)
-    }
-
     private fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.main, fragment)
@@ -93,16 +60,14 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
 
     override fun onStart() {
         super.onStart()
-        // App is visible again → stop notifications
-        // Cancel notifications since user is inside the app
-        cancelRepeatingNotification()
+        // Cancel scheduled notifications because user is back in the app
+        NotificationReceiver.cancelAlarm(this)
     }
 
     override fun onStop() {
         super.onStop()
-        // App is no longer visible → schedule notifications
-        // Schedule push notifications when app is closed
-        scheduleRepeatingNotification()
+        // App went to background → schedule next notification (one exact alarm)
+        NotificationReceiver.scheduleNextAlarm(this)
     }
 
     override fun onResume() {

@@ -31,8 +31,13 @@
             </intent-filter>
         </activity>
 
-        <!--Broadcast Receiver-->
-        <receiver android:name=".NotificationReceiver" android:enabled="true" android:exported="true"/>
+        <!--Broadcast Receivers-->
+        <receiver android:name=".NotificationReceiver" android:exported="false" />
+        <receiver android:name=".BootReceiver" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
 
         <meta-data
             android:name="preloaded_fonts"
