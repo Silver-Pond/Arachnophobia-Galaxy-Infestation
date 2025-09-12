@@ -19,16 +19,20 @@ class NotificationReceiver : BroadcastReceiver() {
                 "app_channel",
                 "App Notifications",
                 NotificationManager.IMPORTANCE_DEFAULT
-            )
+            ).apply {
+                enableVibration(true)
+                vibrationPattern = longArrayOf(0, 500, 200, 500) // wait, vibrate, pause, vibrate
+            }
             notificationManager.createNotificationChannel(channel)
         }
 
-        // Build the notification
+        // Build the notification with vibration
         val notification = NotificationCompat.Builder(context, "app_channel")
-            .setSmallIcon(R.drawable.spider_maroon) // your app icon
+            .setSmallIcon(R.drawable.spider_maroon)
             .setContentTitle("Come back and play!")
             .setContentText("We miss you! Open the app and continue your journey 🚀")
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setPriority(NotificationCompat.PRIORITY_HIGH) // high priority to ensure vibration
+            .setVibrate(longArrayOf(0, 500, 200, 500)) // works pre-Android O
             .setAutoCancel(true)
             .build()
 

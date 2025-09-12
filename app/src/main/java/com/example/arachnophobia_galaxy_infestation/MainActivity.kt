@@ -91,6 +91,20 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
             .commit()
     }
 
+    override fun onStart() {
+        super.onStart()
+        // App is visible again → stop notifications
+        // Cancel notifications since user is inside the app
+        cancelRepeatingNotification()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        // App is no longer visible → schedule notifications
+        // Schedule push notifications when app is closed
+        scheduleRepeatingNotification()
+    }
+
     override fun onResume() {
         super.onResume()
         networkMonitor.register()
@@ -104,9 +118,6 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
         SoundEffectsManager.updateVolume(savedEffectsVolume)
 
         mediaPlayer?.start()
-
-        // Cancel notifications since user is inside the app
-        cancelRepeatingNotification()
     }
 
     override fun onPause() {
@@ -119,9 +130,6 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
         super.onDestroy()
         mediaPlayer?.release()
         mediaPlayer = null
-
-        // Schedule push notifications when app is closed
-        scheduleRepeatingNotification()
     }
 
     override fun onNetworkAvailable() {
