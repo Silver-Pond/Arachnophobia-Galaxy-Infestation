@@ -1,6 +1,6 @@
 package com.example.arachnophobia_galaxy_infestation
 
-import android.content.Context
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -13,6 +13,7 @@ class GameActivity : AppCompatActivity() {
 
     private val handler = Handler(Looper.getMainLooper())
     private var moveRunnable: Runnable? = null
+    private var mediaPlayer: MediaPlayer? = null
     private lateinit var leftBtn: Button
     private lateinit var rightBtn: Button
     private lateinit var blastBtn: Button
@@ -41,6 +42,16 @@ class GameActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction()
             .replace(R.id.gameframe, gameFragment)
             .commit()
+
+        // Initialize background music
+        mediaPlayer = MediaPlayer.create(this, R.raw.comos).apply {
+            isLooping = true
+        }
+
+        // Load saved music volume from preferences
+        val prefs = getSharedPreferences("AppSettings", MODE_PRIVATE)
+        val savedMusicVolume = prefs.getFloat("music_volume", 0.5f)
+        MusicPlayerManager.updateVolume(savedMusicVolume)
 
         // Set up buttons
         leftBtn = findViewById(R.id.leftbtn)
@@ -127,5 +138,32 @@ class GameActivity : AppCompatActivity() {
         leftBtn.isEnabled = enabled
         rightBtn.isEnabled = enabled
         blastBtn.isEnabled = enabled
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        // Reload saved volumes
+        val prefs = getSharedPreferences("AppSettings", MODE_PRIVATE)
+        val savedMusicVolume = prefs.getFloat("music_volume", 0.5f)
+        MusicPlayerManager.updateVolume(savedMusicVolume)
+
+        val savedEffectsVolume = prefs.getFloat("effects_volume", 1.0f)
+        SoundEffectsManager.updateVolume(savedEffectsVolume)
+
+        // Restart music from beginning every time
+        mediaPlayer?.seekTo(0)
+        mediaPlayer?.start()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mediaPlayer?.pause()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mediaPlayer?.release()
+        mediaPlayer = null
     }
 }

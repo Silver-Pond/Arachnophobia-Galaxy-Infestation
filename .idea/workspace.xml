@@ -117,7 +117,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0fa8f017-5757-4b80-8e2d-5853bd444b49" name="Changes" comment="Merged remote history with local changes">
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/BootReceiver.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.13/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/executionHistory/executionHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.13/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/executionHistory/executionHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.bin" afterDir="false" />
@@ -126,9 +125,13 @@
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/MainActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Enemy.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Enemy.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/GameActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/GameActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/GameFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/GameFragment.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/NotificationReceiver.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/NotificationReceiver.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable/moth.png" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/drawable/moth.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable/spider_web.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/raw/cannon_shot.wav" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/raw/cannon_shot.wav" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -138,7 +141,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=PhysicalDevice, isTemplate=false, identifier=serial=R9PR80GS35H)]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=C:\Users\ashfo\.android\avd\Medium_Phone.avd)]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -705,7 +708,15 @@
       <option name="project" value="LOCAL" />
       <updated>1757696497120</updated>
     </task>
-    <option name="localTasksCounter" value="46" />
+    <task id="LOCAL-00046" summary="Merged remote history with local changes">
+      <option name="closed" value="true" />
+      <created>1757718280008</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1757718280008</updated>
+    </task>
+    <option name="localTasksCounter" value="47" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">

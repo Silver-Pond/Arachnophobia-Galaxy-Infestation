@@ -229,15 +229,25 @@ class GameFragment : Fragment() {
             for (col in 0 until 5) {
                 val enemyView = ImageView(ctx)
 
+                // Special zig-zag enemy: only 1 in row 0, col 2, on levels 10,20,30...
+                val isZigZagger = (currentLevel % 10 == 0 && row == 0 && col == 2)
+
                 // Shooter rules:
                 // Row 1 becomes shooter from level 5+
                 // Row 2 becomes shooter only from level 15–20
                 val isShooter =
-                    (currentLevel >= 5 && row == 1) ||
-                            (currentLevel in 15..20 && row == 2)
+                    !isZigZagger && ( // zig-zag overrides shooter type
+                            (currentLevel >= 5 && row == 1) ||
+                                    (currentLevel in 15..20 && row == 2)
+                            )
 
+                // Pick sprite based on type
                 enemyView.setImageResource(
-                    if (isShooter) R.drawable.spider_maroon else R.drawable.spider_blue
+                    when {
+                        isZigZagger -> R.drawable.spider_purple
+                        isShooter -> R.drawable.spider_maroon
+                        else -> R.drawable.spider_blue
+                    }
                 )
 
                 // Enemy position
@@ -252,7 +262,16 @@ class GameFragment : Fragment() {
 
                 gameArea.addView(enemyView)
 
-                val enemy = Enemy(enemyView, true, x.toFloat(), y.toFloat(), isShooter)
+                // Add enemy with zig-zag flag
+                val enemy = Enemy(
+                    imageView = enemyView,
+                    isAlive = true,
+                    startX = x.toFloat(),
+                    startY = y.toFloat(),
+                    isShooter = isShooter,
+                    isZigZagger = isZigZagger // <-- new flag in Enemy class
+                )
+
                 set.add(enemy)
                 enemies.add(enemy)
             }
