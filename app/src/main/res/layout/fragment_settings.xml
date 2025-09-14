@@ -161,6 +161,5 @@
             android:background="@drawable/custom_button"
             android:fontFamily="@font/black_ops_one"
             android:text="@string/btnsavesettings" />
-
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

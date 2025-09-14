@@ -158,7 +158,9 @@ class LoginHubFragment : Fragment() {
                                         password = "N/A", // Google Sign-In does not provide password
                                         highscore = 0,
                                         spider_silk = 0.00,
-                                        trophies = emptyList()
+                                        trophies = emptyList(),
+                                        ownedSkins = listOf("Moth", "Mario", "Invader"), // initial owned skins
+                                        equippedSkin = "Moth" // default equipped skin
                                     )
                                     database.child(playerId).setValue(player)
                                         .addOnSuccessListener {

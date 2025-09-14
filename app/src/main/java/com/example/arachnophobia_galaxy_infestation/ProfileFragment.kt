@@ -73,7 +73,15 @@ class ProfileFragment : Fragment() {
         // Set up click listeners
         btnprofilechange.setOnClickListener {}
 
-        btnskin.setOnClickListener {}
+        btnskin.setOnClickListener {
+            // Navigate to SkinsFragment
+            val skinsFragment = SkinsFragment().apply {
+                arguments = Bundle().apply {
+                    putString("username", username)
+                }
+            }
+            replaceFragment(skinsFragment)
+        }
 
         btnback.setOnClickListener {
             // Navigate to GameMenuFragment

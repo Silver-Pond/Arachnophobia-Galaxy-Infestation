@@ -31,7 +31,6 @@ class LeaderboardFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: LeaderboardAdapter
     private val players = mutableListOf<HighScore>()
-
     private lateinit var loggedInUser: String
 
     override fun onCreate(savedInstanceState: Bundle?) {

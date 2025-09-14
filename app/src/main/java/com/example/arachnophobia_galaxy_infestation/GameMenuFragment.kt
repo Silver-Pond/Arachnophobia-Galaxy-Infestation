@@ -140,7 +140,7 @@ class GameMenuFragment : Fragment() {
                 apply()
             }
             // Exit the app
-            requireActivity().finish()
+            requireActivity().finishAffinity()
         }
     }
     // Helper method to replace fragment

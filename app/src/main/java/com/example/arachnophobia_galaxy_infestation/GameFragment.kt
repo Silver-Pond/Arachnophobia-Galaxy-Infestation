@@ -335,6 +335,12 @@ class GameFragment : Fragment() {
                     hitEnemy.isShooter -> 15
                     else -> 10
                 }
+                // Award bonus for zig-zag
+                if (hitEnemy.isZigZagger) {
+                    lives += 1
+                    updateLivesUI()
+                    score += 50
+                }
                 // Update UI
                 updateScoreUI()
 
@@ -367,6 +373,16 @@ class GameFragment : Fragment() {
                     // Play enemy shooting sound (already loaded at startup)
                     if (enemyfireId != 0) {
                         SoundEffectsManager.playSound(enemyfireId)
+                    }
+                }
+
+                if (enemy.isZigZagger) {
+                    // Moves independently in zig-zag
+                    enemy.imageView.x += enemyDirection * (enemySpeed * 2f)
+                    enemy.imageView.y += enemyFallSpeed * 6.5f
+
+                    if (enemy.imageView.x <= 0f || enemy.imageView.x + enemy.imageView.width >= gameArea.width) {
+                        enemyDirection *= -1
                     }
                 }
 
@@ -699,7 +715,7 @@ class GameFragment : Fragment() {
                         "🏆 ${trophy.name} unlocked!\n${trophy.description}",
                         Toast.LENGTH_LONG
                     )
-                    toast.setGravity(Gravity.TOP or Gravity.CENTER_HORIZONTAL, 0, 0)
+                    toast.setGravity(Gravity.TOP or Gravity.CENTER_HORIZONTAL, 0, 100)
                     toast.show()
                 }
             }

@@ -32,7 +32,7 @@
             android:layout_gravity="center"
             android:fontFamily="@font/black_ops_one"
             android:paddingBottom="8dp"
-            android:text="HIGHSCORES"
+            android:text="@string/highscorestext"
             android:textColor="#009688"
             android:textSize="20sp"
             android:textStyle="bold" />

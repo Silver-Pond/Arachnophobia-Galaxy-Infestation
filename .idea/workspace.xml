@@ -10,6 +10,16 @@
           <theme>@style/Theme.Arachnophobia_Galaxy_Infestation</theme>
         </config>
       </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/drawable/bg_skin_default.xml">
+        <config>
+          <theme>@style/Theme.Arachnophobia_Galaxy_Infestation</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/drawable/bg_skin_owned.xml">
+        <config>
+          <theme>@style/Theme.Arachnophobia_Galaxy_Infestation</theme>
+        </config>
+      </layout>
       <layout url="file://$PROJECT_DIR$/app/src/main/res/drawable/control_buttons_a.xml">
         <config>
           <theme>@style/Theme.Arachnophobia_Galaxy_Infestation</theme>
@@ -100,6 +110,11 @@
           <theme>@style/Theme.Arachnophobia_Galaxy_Infestation</theme>
         </config>
       </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/item_skin.xml">
+        <config>
+          <theme>@style/Theme.Arachnophobia_Galaxy_Infestation</theme>
+        </config>
+      </layout>
       <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/item_spinner.xml">
         <config>
           <theme>@style/Theme.Arachnophobia_Galaxy_Infestation</theme>
@@ -117,6 +132,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0fa8f017-5757-4b80-8e2d-5853bd444b49" name="Changes" comment="Merged remote history with local changes">
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Skin.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/SkinAdapter.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/SkinViewHolder.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/bg_skin_default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/bg_skin_owned.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/item_skin.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.13/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/executionHistory/executionHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.13/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/executionHistory/executionHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.bin" afterDir="false" />
@@ -125,13 +146,21 @@
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Enemy.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Enemy.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/GameActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/GameActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle.kts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/GameFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/GameFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/NotificationReceiver.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/NotificationReceiver.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable/moth.png" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/drawable/moth.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable/spider_web.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/raw/cannon_shot.wav" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/raw/cannon_shot.wav" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/GameMenuFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/GameMenuFragment.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/LeaderboardFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/LeaderboardFragment.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/LoginHubFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/LoginHubFragment.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Player.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Player.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/ProfileFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/ProfileFragment.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/SignUpFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/SignUpFragment.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/SkinsFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/SkinsFragment.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/fragment_leaderboard.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/fragment_leaderboard.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/fragment_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/fragment_settings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/fragment_skins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/fragment_skins.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-af/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-af/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle/libs.versions.toml" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/libs.versions.toml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -141,7 +170,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=C:\Users\ashfo\.android\avd\Medium_Phone.avd)]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=PhysicalDevice, isTemplate=false, identifier=serial=R9PR80GS35H)]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -205,8 +234,8 @@
         <option value="Interface" />
         <option value="Class" />
         <option value="valueResourceFile" />
-        <option value="resourceFile" />
         <option value="layoutResourceFile" />
+        <option value="resourceFile" />
         <option value="Kotlin Class" />
       </list>
     </option>
@@ -716,7 +745,15 @@
       <option name="project" value="LOCAL" />
       <updated>1757718280008</updated>
     </task>
-    <option name="localTasksCounter" value="47" />
+    <task id="LOCAL-00047" summary="Merged remote history with local changes">
+      <option name="closed" value="true" />
+      <created>1757774624353</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1757774624353</updated>
+    </task>
+    <option name="localTasksCounter" value="48" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -728,12 +765,12 @@
       <map>
         <entry key="com.example.arachnophobia_galaxy_infestation">
           <value>
-            <CheckInfo lastCheckTimestamp="1757712778656" />
+            <CheckInfo lastCheckTimestamp="1757802280926" />
           </value>
         </entry>
         <entry key="com.example.arachnophobia_galaxy_infestation.test">
           <value>
-            <CheckInfo lastCheckTimestamp="1757712778661" />
+            <CheckInfo lastCheckTimestamp="1757802280925" />
           </value>
         </entry>
       </map>
