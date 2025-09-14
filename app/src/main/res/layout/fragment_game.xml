@@ -5,7 +5,7 @@
     android:id="@+id/mainGameFrame"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0E0423"
+    android:background="#080114"
     tools:context=".GameFragment">
 
     <ImageView
@@ -18,28 +18,28 @@
         android:id="@+id/livesLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
         android:layout_gravity="top|end"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
         android:padding="16dp">
 
         <ImageView
             android:id="@+id/lifeIcon"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/moth"
             android:adjustViewBounds="true"
-            android:scaleType="fitCenter" />
+            android:scaleType="fitCenter"
+            android:src="@drawable/moth" />
 
         <TextView
             android:id="@+id/livesText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
             android:fontFamily="@font/black_ops_one"
             android:text="x3"
-            android:textSize="18sp"
             android:textColor="#FFFFFF"
-            android:layout_marginStart="6dp" />
+            android:textSize="18sp" />
     </LinearLayout>
 
     <TextView
@@ -47,11 +47,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:background="#80000000"
+        android:fontFamily="@font/black_ops_one"
+        android:padding="20dp"
         android:text="PAUSED"
         android:textColor="#FFFFFF"
         android:textSize="32sp"
-        android:visibility="gone"
-        android:fontFamily="@font/black_ops_one"
-        android:background="#80000000"
-        android:padding="20dp"/>
+        android:visibility="gone" />
 </FrameLayout>

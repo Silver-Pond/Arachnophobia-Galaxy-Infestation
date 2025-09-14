@@ -37,14 +37,14 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/black_ops_one"
                 android:text="Skin Name"
-                android:textSize="14sp" />
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/skinPrice"
-                android:layout_width="40dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/black_ops_one"
-                android:textSize="14sp"
+                android:textSize="12sp"
                 android:textColor="#888888"/>
         </LinearLayout>
 

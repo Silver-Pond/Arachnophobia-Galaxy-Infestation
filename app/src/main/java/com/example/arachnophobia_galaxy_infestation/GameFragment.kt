@@ -58,6 +58,7 @@ class GameFragment : Fragment() {
     private var enemySpeed = 5f
     private var enemyDirection = 1
     private var enemyFallSpeed = 1f
+    private var currentBulletDrawable: String = "moth_blast"
 
     // Levels and waves
     private val enemySets = mutableListOf<List<Enemy>>()
@@ -136,6 +137,9 @@ class GameFragment : Fragment() {
         val savedEffectsVolume = prefs.getFloat("effects_volume", 1.0f)
         SoundEffectsManager.updateVolume(savedEffectsVolume)
 
+        // Apply skin once here
+        applyEquippedSkin()
+
         // Initialize game
         gameArea.post {
             playerX = (gameArea.width - player.width) / 2f
@@ -145,20 +149,39 @@ class GameFragment : Fragment() {
 
             spawnCurrentSet()
         }
+
         // Initialize UI
         updateLivesUI()
         updateScoreUI()
         updateHighScoreUI()
     }
 
-    override fun onResume() {
-        super.onResume()
-        handler.post(gameRunnable)
+    private fun applyEquippedSkin() {
+        val prefs = requireActivity().getSharedPreferences("GamePrefs", Context.MODE_PRIVATE)
+        val equippedSkinName = prefs.getString("equippedSkin", "Moth") ?: "Moth"
+
+        // Map name -> drawable key
+        val drawableKey = equippedSkinName.lowercase().replace(" ", "_")
+
+        // Player sprite
+        val drawableId = requireContext().resources.getIdentifier(
+            drawableKey,
+            "drawable",
+            requireContext().packageName
+        )
+        player.setImageResource(if (drawableId != 0) drawableId else R.drawable.moth)
+
+        // Bullets
+        currentBulletDrawable = drawableKey + "_blast"
     }
 
-    override fun onPause() {
-        super.onPause()
-        handler.removeCallbacks(gameRunnable)
+    override fun onResume() {
+        super.onResume()
+
+        // Apply skin once here
+        applyEquippedSkin()
+
+        handler.post(gameRunnable)
     }
 
     override fun onDestroyView() {
@@ -197,7 +220,13 @@ class GameFragment : Fragment() {
         val ga = gameArea ?: return
         val p = player ?: return
 
-        val bullet = ImageView(ctx).apply { setImageResource(R.drawable.moth_blast) }
+        val bulletResId = requireContext().resources.getIdentifier(
+            currentBulletDrawable,
+            "drawable",
+            requireContext().packageName
+        )
+
+        val bullet = ImageView(ctx).apply { setImageResource(if (bulletResId != 0) bulletResId else R.drawable.moth_blast) }
         val bulletSize = 40
         val params = FrameLayout.LayoutParams(bulletSize, bulletSize)
         ga.addView(bullet, params)
@@ -205,7 +234,7 @@ class GameFragment : Fragment() {
         bullet.y = p.y - bulletSize
         bullets.add(bullet)
 
-        // Play sound (already loaded at startup)
+        // Play shooting sound
         if (shootSoundId != 0) SoundEffectsManager.playSound(shootSoundId)
     }
 
@@ -487,7 +516,13 @@ class GameFragment : Fragment() {
         // Play sound (already loaded at startup)
         if (explosionId != 0) SoundEffectsManager.playSound(explosionId)
 
-        player.setImageResource(R.drawable.moth_death)
+        val prefs = requireActivity().getSharedPreferences("GamePrefs", Context.MODE_PRIVATE)
+        val equippedSkin = prefs.getString("equippedSkin", "Moth") ?: "Moth"
+        val deathKey = equippedSkin.lowercase().replace(" ", "_") + "_death"
+        val deathResId = requireContext().resources.getIdentifier(
+            deathKey, "drawable", requireContext().packageName
+        )
+        player.setImageResource(if (deathResId != 0) deathResId else R.drawable.moth_death)
         loseLife()
 
         if (lives > 0) {
@@ -507,7 +542,8 @@ class GameFragment : Fragment() {
     }
 
     private fun resetGameState() {
-        player.setImageResource(R.drawable.moth)
+        applyEquippedSkin() // Always load from prefs here
+
         playerX = (gameArea.width - player.width) / 2f
         playerY = (gameArea.height - player.height).toFloat()
         player.x = playerX

@@ -1,5 +1,6 @@
 package com.example.arachnophobia_galaxy_infestation
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -47,14 +48,14 @@ class SkinsFragment : Fragment() {
 
         // Set up back button
         btnBack.setOnClickListener {
-            // Create a new instance of HighscoresMenuFragment with the username
-            val highscoresMenuFragment = HighscoresMenuFragment().apply {
+            // Create a new instance of ProfileFragment with the username
+            val profileFragment = ProfileFragment().apply {
                 arguments = Bundle().apply {
                     putString("username", loggedInUser)
                 }
             }
-            // Navigate to high scores fragment
-            replaceFragment(highscoresMenuFragment)
+            // Navigate to profile fragment
+            replaceFragment(profileFragment)
         }
     }
 
@@ -81,9 +82,13 @@ class SkinsFragment : Fragment() {
     }
 
     private fun onSkinAction(skin: Skin) {
+        val prefs = requireContext().getSharedPreferences("GamePrefs", Context.MODE_PRIVATE)
+
         if (player.ownedSkins.contains(skin.name)) {
-            // Equip the skin
+            // Equip skin
             player = player.copy(equippedSkin = skin.name)
+            prefs.edit().putString("equippedSkin", skin.name).apply()
+
             Toast.makeText(requireContext(), "${skin.name} equipped!", Toast.LENGTH_SHORT).show()
         } else {
             // Attempt to buy
