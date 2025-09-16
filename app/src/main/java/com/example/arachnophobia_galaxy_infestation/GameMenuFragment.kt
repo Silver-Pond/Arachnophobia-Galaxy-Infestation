@@ -14,6 +14,10 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.google.firebase.auth.FirebaseAuth
+import com.google.gson.Gson
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
@@ -92,6 +96,28 @@ class GameMenuFragment : Fragment() {
             startActivity(intent)
         }
 
+        btnsurvivalmode.setOnClickListener {
+            // Example: Fetch level 1 when starting
+            ApiClient.instance.getLevel(1).enqueue(object : Callback<Level> {
+                override fun onResponse(call: Call<Level>, response: Response<Level>) {
+                    if (response.isSuccessful) {
+                        val level = response.body()
+                        level?.let {
+                            val intent = Intent(requireContext(), SurvivalGameActivity::class.java)
+                            intent.putExtra("levelData", Gson().toJson(it)) // Pass JSON string
+                            startActivity(intent)
+                        }
+                    } else {
+                        Toast.makeText(requireContext(), "Failed to load level", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<Level>, t: Throwable) {
+                    Toast.makeText(requireContext(), "API error: ${t.message}", Toast.LENGTH_SHORT).show()
+                }
+            })
+        }
+
         btnhighscores.setOnClickListener {
             // Create a new instance of HighscoresMenuFragment with the username
             val highscoresMenuFragment = HighscoresMenuFragment().apply {
@@ -143,6 +169,7 @@ class GameMenuFragment : Fragment() {
             requireActivity().finishAffinity()
         }
     }
+
     // Helper method to replace fragment
     private fun replaceFragment(fragment: Fragment) {
         parentFragmentManager.beginTransaction()

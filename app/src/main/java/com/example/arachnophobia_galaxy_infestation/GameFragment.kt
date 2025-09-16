@@ -14,6 +14,8 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -588,7 +590,6 @@ class GameFragment : Fragment() {
         })
     }
 
-
     fun togglePause(): Boolean {
         isPaused = !isPaused
         pauseText.visibility = if (isPaused) View.VISIBLE else View.GONE
@@ -745,14 +746,28 @@ class GameFragment : Fragment() {
                     // Award trophy in Firebase
                     dbRef.child(trophy.id).setValue(true)
 
-                    // Show toast at the top
-                    val toast = Toast.makeText(
-                        requireContext(),
+                    val snackbar = Snackbar.make(
+                        requireView(),
                         "🏆 ${trophy.name} unlocked!\n${trophy.description}",
-                        Toast.LENGTH_LONG
+                        Snackbar.LENGTH_LONG
                     )
-                    toast.setGravity(Gravity.TOP or Gravity.CENTER_HORIZONTAL, 0, 100)
-                    toast.show()
+
+                    // Access the Snackbar's view
+                    val snackbarView = snackbar.view
+
+                    // Change the layout params to show at the top center
+                    val params = snackbarView.layoutParams as FrameLayout.LayoutParams
+                    params.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
+                    params.topMargin = 100 // same offset you had for Toast
+                    snackbarView.layoutParams = params
+
+                    // Optionally style it (background, text color, etc.)
+                    snackbarView.setBackgroundColor(
+                        ContextCompat.getColor(requireContext(), com.google.android.material.R.color.design_default_color_primary_variant) // example color
+                    )
+
+                    snackbar.show()
+
                 }
             }
         }

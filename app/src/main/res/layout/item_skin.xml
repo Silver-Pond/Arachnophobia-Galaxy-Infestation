@@ -52,7 +52,7 @@
             android:id="@+id/actionButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/custom_button"
+            android:background="@drawable/ripple_effect"
             android:backgroundTint="#9C27B0"
             android:fontFamily="@font/black_ops_one"
             android:text="Buy"

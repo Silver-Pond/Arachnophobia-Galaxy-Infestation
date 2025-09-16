@@ -99,7 +99,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="10dp"
-            android:background="@drawable/custom_button"
+            android:background="@drawable/ripple_effect"
             android:fontFamily="@font/black_ops_one"
             android:text="@string/btnprofilechange"
             android:textColor="#FFFFFF" />
@@ -110,7 +110,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="10dp"
-            android:background="@drawable/custom_button"
+            android:background="@drawable/ripple_effect"
             android:fontFamily="@font/black_ops_one"
             android:text="@string/btnskin"
             android:textColor="#FFFFFF" />
@@ -121,7 +121,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="10dp"
-            android:background="@drawable/custom_button"
+            android:background="@drawable/ripple_effect"
             android:fontFamily="@font/black_ops_one"
             android:text="@string/btnback"
             android:textColor="#FFFFFF" />
@@ -132,7 +132,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="10dp"
-            android:background="@drawable/custom_button"
+            android:background="@drawable/ripple_effect"
             android:fontFamily="@font/black_ops_one"
             android:text="@string/btnlogout"
             android:textColor="#FFFFFF" />
