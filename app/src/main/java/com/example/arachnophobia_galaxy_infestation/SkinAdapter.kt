@@ -1,6 +1,7 @@
 package com.example.arachnophobia_galaxy_infestation
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -31,7 +32,13 @@ class SkinAdapter(
         val resId = holder.itemView.context.resources.getIdentifier(
             skin.image_url, "drawable", holder.itemView.context.packageName
         )
-        holder.skinImage.setImageResource(resId)
+
+        if (resId != 0) {
+            holder.skinImage.setImageResource(resId)
+        } else {
+            holder.skinImage.setImageResource(R.drawable.moth) // fallback
+            Log.w("SkinAdapter", "Drawable not found for ${skin.image_url}, using fallback.")
+        }
 
         // Set button state
         holder.actionButton.text = when {
