@@ -1,9 +1,6 @@
 package com.example.arachnophobia_galaxy_infestation
 
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.widget.TextView
@@ -82,6 +79,8 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
         val savedEffectsVolume = prefs.getFloat("effects_volume", 1.0f)
         SoundEffectsManager.updateVolume(savedEffectsVolume)
 
+        // Restart music from beginning every time
+        mediaPlayer?.seekTo(0)
         mediaPlayer?.start()
     }
 
