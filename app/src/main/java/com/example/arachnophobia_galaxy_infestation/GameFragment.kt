@@ -66,7 +66,7 @@ class GameFragment : Fragment() {
     private val enemySets = mutableListOf<List<Enemy>>()
     private var currentSetIndex = 0
     private var currentLevel = 1
-    private val maxLevels = 20
+    private val maxLevels = 30
     private val setsPerLevel = 4
 
     // Sound Effects
@@ -266,26 +266,36 @@ class GameFragment : Fragment() {
             for (col in 0 until 5) {
                 val enemyView = ImageView(ctx)
 
-                // Special zig-zag enemy: only 1 in row 0, col 2, on levels 10,20,30...
-                val isZigZagger = (currentLevel % 10 == 0 && currentSetIndex == 0 && row == 0 && col == 2)
+                // --- Special phases ---
+                val isSpecialBluePhase = currentLevel in 21..25
+                val isSpecialMaroonPhase = currentLevel in 26..30
 
-                // Shooter rules:
-                val isShooter =
-                    !isZigZagger && (
+                // Zig-zagger only outside the blue-only phase
+                val isZigZagger = !isSpecialBluePhase &&
+                        (currentLevel % 10 == 0 && currentSetIndex == 0 && row == 0 && col == 2)
+
+                // Shooter rules
+                val isShooter = when {
+                    isSpecialBluePhase -> false
+                    isSpecialMaroonPhase -> (row == 1) // middle row shooters
+                    else -> !isZigZagger && (
                             (currentLevel >= 5 && row == 1) ||
                                     (currentLevel in 15..20 && row == 2)
                             )
+                }
 
-                // Determine fire rate chance
+                // Fire rate logic
                 val fireChance = when {
-                    !isShooter -> 0      // non-shooters don't fire
-                    currentLevel >= 15 -> 15 // higher chance for level 15+
-                    else -> 5           // default firing chance
+                    isSpecialBluePhase -> 0
+                    !isShooter -> 0
+                    currentLevel >= 15 -> 15
+                    else -> 5
                 }
 
                 // Pick sprite
                 enemyView.setImageResource(
                     when {
+                        isSpecialBluePhase -> R.drawable.spider_blue
                         isZigZagger -> R.drawable.spider_purple
                         isShooter -> R.drawable.spider_maroon
                         else -> R.drawable.spider_blue
@@ -301,7 +311,7 @@ class GameFragment : Fragment() {
                 enemyView.y = y.toFloat()
                 gameArea.addView(enemyView)
 
-                // Add enemy with fireChance
+                // Add enemy
                 val enemy = Enemy(
                     imageView = enemyView,
                     isAlive = true,
@@ -324,14 +334,27 @@ class GameFragment : Fragment() {
             enemySets.add(set)
         }
 
-        // Enemy speed scaling
+        // --- Speed Scaling ---
         val offset = (currentLevel % 5)
-        if (offset == 0) {
-            enemySpeed = 5f
-            enemyFallSpeed = 1f
+
+        if (currentLevel in 21..25) {
+            // Double base speed for blue-only levels
+            if (offset == 0) {
+                enemySpeed = 10f
+                enemyFallSpeed = 2f
+            } else {
+                enemySpeed = 10f + (offset * 1.2f)
+                enemyFallSpeed = 2f + (offset * 1.005f)
+            }
         } else {
-            enemySpeed = 5f + (offset * 1.2f)
-            enemyFallSpeed = 1f + (offset * 1.005f)
+            // Normal scaling
+            if (offset == 0) {
+                enemySpeed = 5f
+                enemyFallSpeed = 1f
+            } else {
+                enemySpeed = 5f + (offset * 1.2f)
+                enemyFallSpeed = 1f + (offset * 1.005f)
+            }
         }
     }
 
@@ -419,7 +442,7 @@ class GameFragment : Fragment() {
                 if (enemy.isZigZagger) {
                     // Moves independently in zig-zag
                     enemy.imageView.x += enemyDirection * (enemySpeed * 2f)
-                    enemy.imageView.y += enemyFallSpeed * 0.5f
+                    enemy.imageView.y += enemyFallSpeed * 0f
 
                     if (enemy.imageView.x <= 0f || enemy.imageView.x + enemy.imageView.width >= gameArea.width) {
                         enemyDirection *= -1

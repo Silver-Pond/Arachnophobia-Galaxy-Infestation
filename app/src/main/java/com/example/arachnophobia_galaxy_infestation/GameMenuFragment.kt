@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.graphics.Paint
-import android.media.MediaPlayer
 import android.media.SoundPool
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -14,16 +13,11 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.util.Calendar
-import java.util.concurrent.TimeUnit
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -92,6 +86,9 @@ class GameMenuFragment : Fragment() {
         }
 
         usernameview.setOnClickListener {
+            // Play button click sound
+            if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
+
             if (username.isNullOrBlank() || username.equals("Guest", ignoreCase = true)) {
                 Toast.makeText(requireContext(), "Guest users cannot access profiles", Toast.LENGTH_SHORT).show()
             } else {
