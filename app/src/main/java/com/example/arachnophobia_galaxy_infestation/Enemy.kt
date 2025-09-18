@@ -7,4 +7,5 @@ class Enemy(val imageView: ImageView,
             val startX: Float,
             val startY: Float,
             val isShooter: Boolean = false,
-            var isZigZagger: Boolean = false)
+            var isZigZagger: Boolean = false,
+            var fireChance: Int = 0)

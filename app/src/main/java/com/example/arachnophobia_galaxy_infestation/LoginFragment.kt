@@ -133,6 +133,7 @@ class LoginFragment : Fragment() {
                 }
         }
     }
+
     // Helper method to replace fragment
     private fun replaceFragment(fragment: Fragment) {
         parentFragmentManager.beginTransaction()

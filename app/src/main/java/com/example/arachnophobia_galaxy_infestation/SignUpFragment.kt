@@ -87,7 +87,7 @@ class SignUpFragment : Fragment() {
             val auth = FirebaseAuth.getInstance()
             val dbRef = FirebaseDatabase.getInstance().getReference("players")
 
-// First, check if the username already exists in the database
+            // First, check if the username already exists in the database
             dbRef.orderByChild("username").equalTo(username)
                 .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {

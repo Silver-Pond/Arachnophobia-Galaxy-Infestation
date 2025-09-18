@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.database.FirebaseDatabase
 
 // TODO: Rename parameter arguments, choose names that match
 class SkinsFragment : Fragment() {
@@ -23,49 +24,78 @@ class SkinsFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_skins, container, false)
-    }
+    ): View? = inflater.inflate(R.layout.fragment_skins, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Load player (replace with real player data from database or SharedPreferences)
-        loadPlayer()
-
-        // Initialize views
-        val btnBack = view.findViewById<Button>(R.id.btnBack)
         recyclerView = view.findViewById(R.id.skinsRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        skinAdapter = SkinAdapter(skins, player, ::onSkinAction)
-        recyclerView.adapter = skinAdapter
 
-        // Get username from arguments or fallback
-        loggedInUser = arguments?.getString("username") ?: "Guest"
-
-        // Load skins from JSON (hardcoded here, but could be from assets)
+        // Load skins
         loadSkinsFromJson()
 
-        // Set up back button
-        btnBack.setOnClickListener {
-            // Create a new instance of ProfileFragment with the username
-            val profileFragment = ProfileFragment().apply {
-                arguments = Bundle().apply {
-                    putString("username", loggedInUser)
-                }
-            }
-            // Navigate to profile fragment
-            replaceFragment(profileFragment)
+        // Get username from arguments
+        loggedInUser = arguments?.getString("username") ?: "Guest"
+
+        // Load player from Firebase
+        loadPlayer {
+            // Initialize adapter only after player loads
+            skinAdapter = SkinAdapter(skins, player, ::onSkinAction)
+            recyclerView.adapter = skinAdapter
+        }
+
+        // Back button
+        view.findViewById<Button>(R.id.btnBack).setOnClickListener {
+            replaceFragment(ProfileFragment().apply {
+                arguments = Bundle().apply { putString("username", loggedInUser) }
+            })
         }
     }
 
-    private fun loadPlayer() {
-        // Replace with real data fetching; using defaults for demo
-        player = Player()
+    private fun loadPlayer(onLoaded: () -> Unit) {
+        if (loggedInUser == "Guest") {
+            Toast.makeText(requireContext(), "No username provided!", Toast.LENGTH_SHORT).show()
+            player = Player()
+            onLoaded()
+            return
+        }
+
+        val playerRef = FirebaseDatabase.getInstance()
+            .getReference("players")
+            .child(loggedInUser)
+
+        playerRef.get().addOnSuccessListener { snapshot ->
+            if (snapshot.exists()) {
+                val map = snapshot.value as? Map<*, *>
+                val silk = when (val v = map?.get("spider_silk")) {
+                    is Long -> v.toDouble()
+                    is Double -> v
+                    is String -> v.toDoubleOrNull() ?: 0.0
+                    else -> 0.0
+                }
+
+                val owned = (map?.get("ownedSkins") as? List<*>)?.map { it.toString() } ?: listOf("Moth", "Super Mario", "Space Invader")
+                val equipped = map?.get("equippedSkin")?.toString() ?: "Moth"
+
+                player = Player(
+                    username = loggedInUser,
+                    spider_silk = silk,
+                    ownedSkins = owned,
+                    equippedSkin = equipped
+                )
+            } else {
+                player = Player(username = loggedInUser)
+            }
+
+            onLoaded()
+        }.addOnFailureListener {
+            player = Player(username = loggedInUser)
+            onLoaded()
+        }
     }
 
     private fun loadSkinsFromJson() {
-        // Normally you'd parse JSON from assets. We'll hardcode for now:
         skins.addAll(
             listOf(
                 Skin("skin01","Moth",0.0,"moth"),
@@ -75,37 +105,57 @@ class SkinsFragment : Fragment() {
                 Skin("skin05","Space Invader",0.0,"space_invader"),
                 Skin("skin06","Fly",399.99,"fly"),
                 Skin("skin07","Firefly",599.99,"firefly"),
-                Skin("skin08","Ladybug",799.99,"ladybug"),
+                Skin("skin08","Ladybug",799.99,"ladybug")
             )
         )
-        skinAdapter.notifyDataSetChanged()
     }
 
     private fun onSkinAction(skin: Skin) {
-        val prefs = requireContext().getSharedPreferences("GamePrefs", Context.MODE_PRIVATE)
+        val playerRef = FirebaseDatabase.getInstance()
+            .getReference("players")
+            .child(loggedInUser)
 
-        if (player.ownedSkins.contains(skin.name)) {
+        val ownedSkins = player.ownedSkins ?: emptyList()
+
+        if (ownedSkins.contains(skin.name)) {
             // Equip skin
             player = player.copy(equippedSkin = skin.name)
-            prefs.edit().putString("equippedSkin", skin.name).apply()
-
+            playerRef.child("equippedSkin").setValue(skin.name)
+            saveEquippedSkinLocally(skin.name)
             Toast.makeText(requireContext(), "${skin.name} equipped!", Toast.LENGTH_SHORT).show()
+            skinAdapter.updatePlayer(player)
         } else {
-            // Attempt to buy
-            if (player.spider_silk >= skin.price) {
-                player = player.copy(
-                    spider_silk = player.spider_silk - skin.price,
-                    ownedSkins = player.ownedSkins + skin.name
+            // Buy skin
+            val playerSilk = player.spider_silk
+            val skinPrice = skin.price
+
+            if (playerSilk >= skinPrice) {
+                val newSilk = playerSilk - skinPrice
+                val newOwned = ownedSkins + skin.name
+
+                val updates = mapOf(
+                    "spider_silk" to newSilk,
+                    "ownedSkins" to newOwned
                 )
-                Toast.makeText(requireContext(), "You bought ${skin.name}!", Toast.LENGTH_SHORT).show()
+
+                playerRef.updateChildren(updates).addOnSuccessListener {
+                    player = player.copy(spider_silk = newSilk, ownedSkins = newOwned)
+                    Toast.makeText(requireContext(), "You bought ${skin.name}!", Toast.LENGTH_SHORT).show()
+                    skinAdapter.updatePlayer(player)
+                }.addOnFailureListener {
+                    Toast.makeText(requireContext(), "Purchase failed. Try again.", Toast.LENGTH_SHORT).show()
+                }
             } else {
                 Toast.makeText(requireContext(), "Not enough spider silk!", Toast.LENGTH_SHORT).show()
             }
         }
-        skinAdapter.updatePlayer(player)
     }
 
-    // Helper method to replace fragment
+    private fun saveEquippedSkinLocally(skinName: String) {
+        val prefs = requireContext().getSharedPreferences("GamePrefs", Context.MODE_PRIVATE)
+        prefs.edit().putString("equippedSkin", skinName).apply()
+    }
+
     private fun replaceFragment(fragment: Fragment) {
         parentFragmentManager.beginTransaction()
             .replace(R.id.main, fragment)

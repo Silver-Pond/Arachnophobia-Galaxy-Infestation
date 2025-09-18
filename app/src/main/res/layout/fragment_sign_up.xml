@@ -27,7 +27,7 @@
             android:id="@+id/signupTitleImage"
             android:layout_width="match_parent"
             android:layout_height="217dp"
-            app:srcCompat="@drawable/spider_purple" />
+            app:srcCompat="@drawable/spider_purple_wallpaper" />
 
         <TextView
             android:id="@+id/appTitle"

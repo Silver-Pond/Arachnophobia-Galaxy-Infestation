@@ -4,6 +4,7 @@ import android.app.*
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.media.MediaPlayer
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -52,6 +53,17 @@ class NotificationReceiver : BroadcastReceiver() {
 
         val id = (System.currentTimeMillis() % Int.MAX_VALUE).toInt()
         notificationManager.notify(id, notification)
+
+        // Play sound from res/raw/notification_sound.mp3
+        try {
+            val mediaPlayer = MediaPlayer.create(context, R.raw.notification)
+            mediaPlayer?.apply {
+                setOnCompletionListener { release() }
+                start()
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to play notification sound", e)
+        }
 
         // Schedule the next exact alarm
         scheduleNextAlarm(context)

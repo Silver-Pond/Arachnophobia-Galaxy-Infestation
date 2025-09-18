@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
         super.onResume()
         networkMonitor.register()
 
-        // Load saved volume
+        // Reload saved volumes
         val prefs = getSharedPreferences("AppSettings", MODE_PRIVATE)
         val savedMusicVolume = prefs.getFloat("music_volume", 0.5f)
         MusicPlayerManager.updateVolume(savedMusicVolume)
@@ -79,8 +79,6 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
         val savedEffectsVolume = prefs.getFloat("effects_volume", 1.0f)
         SoundEffectsManager.updateVolume(savedEffectsVolume)
 
-        // Restart music from beginning every time
-        mediaPlayer?.seekTo(0)
         mediaPlayer?.start()
     }
 

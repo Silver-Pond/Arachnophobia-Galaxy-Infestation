@@ -68,6 +68,9 @@ class GameFragment : Fragment() {
     private var currentLevel = 1
     private val maxLevels = 20
     private val setsPerLevel = 4
+
+    // Sound Effects
+    private var clickbuttonSoundId: Int = 0
     private var shootSoundId: Int = 0
     private var enemyfireId: Int = 0
     private var enemykilledId: Int = 0
@@ -118,6 +121,9 @@ class GameFragment : Fragment() {
         // Initialize SoundPool once
         val soundPool = SoundPool.Builder().setMaxStreams(5).build()
         SoundEffectsManager.soundPool = soundPool
+
+        // Button click sound
+        clickbuttonSoundId = soundPool.load(requireContext(), R.raw.button_click, 1)
 
         // Load shooting sound
         shootSoundId = soundPool.load(requireContext(), R.raw.cannon_shot, 1)
@@ -261,18 +267,23 @@ class GameFragment : Fragment() {
                 val enemyView = ImageView(ctx)
 
                 // Special zig-zag enemy: only 1 in row 0, col 2, on levels 10,20,30...
-                val isZigZagger = (currentLevel % 10 == 0 && row == 0 && col == 2)
+                val isZigZagger = (currentLevel % 10 == 0 && currentSetIndex == 0 && row == 0 && col == 2)
 
                 // Shooter rules:
-                // Row 1 becomes shooter from level 5+
-                // Row 2 becomes shooter only from level 15–20
                 val isShooter =
-                    !isZigZagger && ( // zig-zag overrides shooter type
+                    !isZigZagger && (
                             (currentLevel >= 5 && row == 1) ||
                                     (currentLevel in 15..20 && row == 2)
                             )
 
-                // Pick sprite based on type
+                // Determine fire rate chance
+                val fireChance = when {
+                    !isShooter -> 0      // non-shooters don't fire
+                    currentLevel >= 15 -> 15 // higher chance for level 15+
+                    else -> 5           // default firing chance
+                }
+
+                // Pick sprite
                 enemyView.setImageResource(
                     when {
                         isZigZagger -> R.drawable.spider_purple
@@ -281,26 +292,24 @@ class GameFragment : Fragment() {
                     }
                 )
 
-                // Enemy position
+                // Position
                 val x = startX + col * (enemyWidth + spacingX)
                 val y = startY + row * (enemyHeight + spacingY)
-
-                // Enemy size
                 val params = FrameLayout.LayoutParams(enemyWidth, enemyHeight)
                 enemyView.layoutParams = params
                 enemyView.x = x.toFloat()
                 enemyView.y = y.toFloat()
-
                 gameArea.addView(enemyView)
 
-                // Add enemy with zig-zag flag
+                // Add enemy with fireChance
                 val enemy = Enemy(
                     imageView = enemyView,
                     isAlive = true,
                     startX = x.toFloat(),
                     startY = y.toFloat(),
                     isShooter = isShooter,
-                    isZigZagger = isZigZagger // <-- new flag in Enemy class
+                    isZigZagger = isZigZagger,
+                    fireChance = fireChance
                 )
 
                 set.add(enemy)
@@ -398,7 +407,7 @@ class GameFragment : Fragment() {
                 enemy.imageView.y += enemyFallSpeed
 
                 // Shooters fire randomly
-                if (enemy.isShooter && (0..1000).random() < 5) {
+                if (enemy.isShooter && (0..1000).random() < enemy.fireChance) {
                     shootEnemyBullet(enemy)
 
                     // Play enemy shooting sound (already loaded at startup)
@@ -410,7 +419,7 @@ class GameFragment : Fragment() {
                 if (enemy.isZigZagger) {
                     // Moves independently in zig-zag
                     enemy.imageView.x += enemyDirection * (enemySpeed * 2f)
-                    enemy.imageView.y += enemyFallSpeed * 6.5f
+                    enemy.imageView.y += enemyFallSpeed * 0.5f
 
                     if (enemy.imageView.x <= 0f || enemy.imageView.x + enemy.imageView.width >= gameArea.width) {
                         enemyDirection *= -1
@@ -591,6 +600,9 @@ class GameFragment : Fragment() {
     }
 
     fun togglePause(): Boolean {
+        // Play button click sound
+        if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
+
         isPaused = !isPaused
         pauseText.visibility = if (isPaused) View.VISIBLE else View.GONE
         if (isPaused) pauseText.bringToFront()

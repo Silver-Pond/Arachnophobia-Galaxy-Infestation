@@ -1,7 +1,11 @@
 package com.example.arachnophobia_galaxy_infestation
 
 import android.content.Context
+import android.content.Context.MODE_PRIVATE
 import android.content.Intent
+import android.graphics.Paint
+import android.media.MediaPlayer
+import android.media.SoundPool
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -35,6 +39,7 @@ class GameMenuFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    private var clickbuttonSoundId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,6 +70,18 @@ class GameMenuFragment : Fragment() {
         val btnsettings = view.findViewById<Button>(R.id.btnsettings)
         val btnexit = view.findViewById<Button>(R.id.btnexit)
 
+        // Initialize SoundPool once
+        val soundPool = SoundPool.Builder().setMaxStreams(5).build()
+        SoundEffectsManager.soundPool = soundPool
+
+        // Button click sound
+        clickbuttonSoundId = soundPool.load(requireContext(), R.raw.button_click, 1)
+
+        // Restore effects volume from prefs
+        val prefs = requireActivity().getSharedPreferences("AppSettings", MODE_PRIVATE)
+        val savedEffectsVolume = prefs.getFloat("effects_volume", 1.0f)
+        SoundEffectsManager.updateVolume(savedEffectsVolume)
+
         // Retrieve username from arguments
         val username = arguments?.getString("username") ?: "Guest"
 
@@ -78,6 +95,9 @@ class GameMenuFragment : Fragment() {
             if (username.isNullOrBlank() || username.equals("Guest", ignoreCase = true)) {
                 Toast.makeText(requireContext(), "Guest users cannot access profiles", Toast.LENGTH_SHORT).show()
             } else {
+                // Underline the TextView when clicked
+                usernameview.paintFlags = usernameview.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+
                 // Create a new instance of ProfileFragment with the username
                 val profileFragment = ProfileFragment().apply {
                     arguments = Bundle().apply {
@@ -90,6 +110,9 @@ class GameMenuFragment : Fragment() {
         }
 
         btnarcademode.setOnClickListener {
+            // Play button click sound
+            if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
+
             // Navigate to game activity
             val intent = Intent(requireContext(), GameActivity::class.java)
             intent.putExtra("username", username)
@@ -97,6 +120,9 @@ class GameMenuFragment : Fragment() {
         }
 
         btnsurvivalmode.setOnClickListener {
+            // Play button click sound
+            if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
+
             // Example: Fetch level 1 when starting
             ApiClient.instance.getLevel(1).enqueue(object : Callback<Level> {
                 override fun onResponse(call: Call<Level>, response: Response<Level>) {
@@ -119,6 +145,9 @@ class GameMenuFragment : Fragment() {
         }
 
         btnhighscores.setOnClickListener {
+            // Play button click sound
+            if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
+
             // Create a new instance of HighscoresMenuFragment with the username
             val highscoresMenuFragment = HighscoresMenuFragment().apply {
                 arguments = Bundle().apply {
@@ -130,6 +159,9 @@ class GameMenuFragment : Fragment() {
         }
 
         btntrophies.setOnClickListener {
+            // Play button click sound
+            if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
+
             // Create a new instance of TrophiesFragment with the username
             val trophiesFragment = TrophiesFragment().apply {
                 arguments = Bundle().apply {
@@ -141,6 +173,9 @@ class GameMenuFragment : Fragment() {
         }
 
         btnsettings.setOnClickListener {
+            // Play button click sound
+            if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
+
             // Create a new instance of LeaderboardFragment with the username
             val settingsFragment = SettingsFragment().apply {
                 arguments = Bundle().apply {
@@ -152,6 +187,9 @@ class GameMenuFragment : Fragment() {
         }
 
         btnexit.setOnClickListener {
+            // Play button click sound
+            if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
+
             // Logout from Firebase
             val auth = FirebaseAuth.getInstance()
             auth.signOut() // Firebase logout
@@ -168,6 +206,12 @@ class GameMenuFragment : Fragment() {
             // Exit the app
             requireActivity().finishAffinity()
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        SoundEffectsManager.soundPool?.release()
+        SoundEffectsManager.soundPool = null
     }
 
     // Helper method to replace fragment

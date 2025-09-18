@@ -27,7 +27,7 @@
             android:id="@+id/titleImage"
             android:layout_width="match_parent"
             android:layout_height="280dp"
-            app:srcCompat="@drawable/spider_blue" />
+            app:srcCompat="@drawable/spider_blue_wallpaper" />
 
         <TextView
             android:id="@+id/appTitle"
@@ -46,7 +46,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:background="@drawable/custom_button"
+            android:background="@drawable/ripple_effect"
             android:backgroundTint="#3F51B5"
             android:fontFamily="@font/black_ops_one"
             android:text="@string/start"

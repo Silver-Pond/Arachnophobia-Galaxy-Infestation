@@ -27,7 +27,7 @@
             android:id="@+id/loginTitleImage"
             android:layout_width="match_parent"
             android:layout_height="221dp"
-            app:srcCompat="@drawable/spider_blue" />
+            app:srcCompat="@drawable/spider_blue_wallpaper" />
 
         <TextView
             android:id="@+id/appTitle"
