@@ -606,20 +606,27 @@ class GameFragment : Fragment() {
     }
 
     private fun updateHighScoreUI() {
-        val auth = FirebaseAuth.getInstance()
-        val uid = auth.currentUser?.uid ?: "Guest"  // fallback for guest users
-        val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
+        
+        val username = arguments?.getString("username") ?: "Guest"
 
-        dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val storedHighscore = snapshot.child("highscore").getValue(Int::class.java) ?: 0
-                highScoreText.text = "HIGHSCORE: $storedHighscore"
-            }
+        if(username.equals("Guest")  || username.isNullOrEmpty()){
+            highScoreText.text = "HIGHSCORE: 0"
+        }else{
+            val auth = FirebaseAuth.getInstance()
+            val uid = auth.currentUser?.uid ?: "Guest"  // fallback for guest users
+            val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
 
-            override fun onCancelled(error: DatabaseError) {
-                highScoreText.text = "HIGHSCORE: 0"
-            }
-        })
+            dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val storedHighscore = snapshot.child("highscore").getValue(Int::class.java) ?: 0
+                    highScoreText.text = "HIGHSCORE: $storedHighscore"
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    highScoreText.text = "HIGHSCORE: 0"
+                }
+            })
+        }
     }
 
     fun togglePause(): Boolean {
@@ -698,54 +705,59 @@ class GameFragment : Fragment() {
     }
 
     private fun saveInGameCurrency() {
-        val spider_silk = (score * 0.5) / 100
-        val auth = FirebaseAuth.getInstance()
-        val uid = auth.currentUser?.uid ?: return
-        val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
 
-        dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val username = snapshot.child("username").getValue(String::class.java) ?: "Guest"
-                val showToasts = username.isNotBlank() && !username.equals("Guest", ignoreCase = true)
+        val username = arguments?.getString("username") ?: "Guest"
 
-                if (snapshot.exists()) {
-                    val currentSilk = snapshot.child("spider_silk").getValue(Double::class.java) ?: 0.0
-                    val updatedSilk = currentSilk + spider_silk
+        if(!username.equals("Guest")  || !username.isNullOrEmpty()){
+            val spider_silk = (score * 0.5) / 100
+            val auth = FirebaseAuth.getInstance()
+            val uid = auth.currentUser?.uid ?: return
+            val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
 
-                    dbRef.child("spider_silk").setValue(updatedSilk)
-                        .addOnSuccessListener {
-                            if (showToasts) {
-                                Toast.makeText(requireContext(), "You have earned $spider_silk silk!", Toast.LENGTH_SHORT).show()
+            dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val username = snapshot.child("username").getValue(String::class.java) ?: "Guest"
+                    val showToasts = username.isNotBlank() && !username.equals("Guest", ignoreCase = true)
+
+                    if (snapshot.exists()) {
+                        val currentSilk = snapshot.child("spider_silk").getValue(Double::class.java) ?: 0.0
+                        val updatedSilk = currentSilk + spider_silk
+
+                        dbRef.child("spider_silk").setValue(updatedSilk)
+                            .addOnSuccessListener {
+                                if (showToasts) {
+                                    Toast.makeText(requireContext(), "You have earned $spider_silk silk!", Toast.LENGTH_SHORT).show()
+                                }
                             }
-                        }
-                } else {
-                    val user = mapOf(
-                        "id" to uid,
-                        "username" to username.ifBlank { "Guest" },
-                        "email" to (snapshot.child("email").getValue(String::class.java) ?: ""),
-                        "password" to (snapshot.child("password").getValue(String::class.java) ?: ""),
-                        "highscore" to (snapshot.child("highscore").getValue(Int::class.java) ?: 0),
-                        "spider_silk" to spider_silk
-                    )
+                    } else {
+                        val user = mapOf(
+                            "id" to uid,
+                            "username" to username.ifBlank { "Guest" },
+                            "email" to (snapshot.child("email").getValue(String::class.java) ?: ""),
+                            "password" to (snapshot.child("password").getValue(String::class.java) ?: ""),
+                            "highscore" to (snapshot.child("highscore").getValue(Int::class.java) ?: 0),
+                            "spider_silk" to spider_silk
+                        )
 
-                    dbRef.setValue(user)
-                        .addOnSuccessListener {
-                            if (showToasts) {
-                                Toast.makeText(requireContext(), "Player created with spider silk!", Toast.LENGTH_SHORT).show()
+                        dbRef.setValue(user)
+                            .addOnSuccessListener {
+                                if (showToasts) {
+                                    Toast.makeText(requireContext(), "Player created with spider silk!", Toast.LENGTH_SHORT).show()
+                                }
                             }
-                        }
-                        .addOnFailureListener {
-                            if (showToasts) {
-                                Toast.makeText(requireContext(), "Failed to save spider silk!", Toast.LENGTH_SHORT).show()
+                            .addOnFailureListener {
+                                if (showToasts) {
+                                    Toast.makeText(requireContext(), "Failed to save spider silk!", Toast.LENGTH_SHORT).show()
+                                }
                             }
-                        }
+                    }
                 }
-            }
 
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(requireContext(), "Database error: ${error.message}", Toast.LENGTH_SHORT).show()
-            }
-        })
+                override fun onCancelled(error: DatabaseError) {
+                    Toast.makeText(requireContext(), "Database error: ${error.message}", Toast.LENGTH_SHORT).show()
+                }
+            })
+        }
     }
 
     private fun checkAndAwardTrophies() {
