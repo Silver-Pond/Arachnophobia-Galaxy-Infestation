@@ -53,6 +53,7 @@ class SurvivalGameFragment : Fragment() {
     private var level: Level? = null
 
     private var currentBulletDrawable: String = "moth_blast"
+    private var bulletSpeed = 15f
     private var shootSoundId: Int = 0
     private var enemyfireId: Int = 0
     private var enemykilledId: Int = 0
@@ -67,7 +68,7 @@ class SurvivalGameFragment : Fragment() {
     private val gameRunnable = object : Runnable {
         override fun run() {
             if (isAdded && view != null && !isPaused) {
-
+                updateGame()
             }
             // Re-post ONLY if still added and the view exists
             if (isAdded && view != null) {
@@ -213,6 +214,20 @@ class SurvivalGameFragment : Fragment() {
             val maxRight = gameArea.width - player.width
             playerX = min(maxRight.toFloat(), playerX + moveStep)
             player.x = playerX
+        }
+    }
+
+    private fun updateGame() {
+        // Player bullets
+        val bulletIterator = bullets.iterator()
+        while (bulletIterator.hasNext()) {
+            val bullet = bulletIterator.next()
+            bullet.y -= bulletSpeed
+            if (bullet.y + bullet.height < 0) {
+                gameArea.removeView(bullet)
+                bulletIterator.remove()
+                continue
+            }
         }
     }
 

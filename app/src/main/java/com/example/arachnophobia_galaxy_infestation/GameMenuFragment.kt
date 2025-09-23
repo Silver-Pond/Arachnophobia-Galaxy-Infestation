@@ -120,25 +120,10 @@ class GameMenuFragment : Fragment() {
             // Play button click sound
             if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
 
-            // Example: Fetch level 1 when starting
-            ApiClient.instance.getLevel(1).enqueue(object : Callback<Level> {
-                override fun onResponse(call: Call<Level>, response: Response<Level>) {
-                    if (response.isSuccessful) {
-                        val level = response.body()
-                        level?.let {
-                            val intent = Intent(requireContext(), SurvivalGameActivity::class.java)
-                            intent.putExtra("levelData", Gson().toJson(it)) // Pass JSON string
-                            startActivity(intent)
-                        }
-                    } else {
-                        Toast.makeText(requireContext(), "Failed to load level", Toast.LENGTH_SHORT).show()
-                    }
-                }
-
-                override fun onFailure(call: Call<Level>, t: Throwable) {
-                    Toast.makeText(requireContext(), "API error: ${t.message}", Toast.LENGTH_SHORT).show()
-                }
-            })
+            // Navigate to game activity
+            val intent = Intent(requireContext(), SurvivalGameActivity::class.java)
+            intent.putExtra("username", username)
+            startActivity(intent)
         }
 
         btnhighscores.setOnClickListener {

@@ -523,7 +523,6 @@ class GameFragment : Fragment() {
     private fun playerHitBy(view: ImageView): Boolean {
         if (isPaused || takingHit) return false
 
-
         val vw = if (view.width > 0) view.width else (view.layoutParams?.width ?: 0)
         val vh = if (view.height > 0) view.height else (view.layoutParams?.height ?: 0)
         val pw = if (player.width > 0) player.width else (player.layoutParams?.width ?: 0)
@@ -708,7 +707,9 @@ class GameFragment : Fragment() {
 
         val username = arguments?.getString("username") ?: "Guest"
 
-        if(!username.equals("Guest")  || !username.isNullOrEmpty()){
+        if(username.equals("Guest")  || username.isNullOrEmpty()){
+            // Airball deez nutz!
+        } else{
             val spider_silk = (score * 0.5) / 100
             val auth = FirebaseAuth.getInstance()
             val uid = auth.currentUser?.uid ?: return
