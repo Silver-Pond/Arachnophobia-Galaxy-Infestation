@@ -145,27 +145,51 @@ class SurvivalGameFragment : Fragment() {
         level?.let { lvl ->
             for (enemy in lvl.enemies) {
                 val enemyView = ImageView(requireContext())
-                enemyView.setImageResource(R.drawable.spider_blue) // Replace with actual enemy sprite
-                val params = FrameLayout.LayoutParams(100, 100)
 
+                // Use sprite type from API
+                val drawableId = requireContext().resources.getIdentifier(
+                    enemy.type, "drawable", requireContext().packageName
+                )
+                enemyView.setImageResource(if (drawableId != 0) drawableId else R.drawable.spider_blue)
+
+                val params = FrameLayout.LayoutParams(100, 100)
                 gameArea.addView(enemyView, params)
 
                 // Position enemy from API data
                 enemyView.x = enemy.spawnX
                 enemyView.y = enemy.spawnY
 
-                // TODO: Apply movement patterns
-                // Example: random horizontal oscillation
-                enemyView.animate()
-                    .translationXBy(200f)
-                    .setDuration((enemy.speed * 1000).toLong())
-                    .withEndAction {
+                // Apply API-defined movement pattern
+                when (enemy.pattern) {
+                    "straight" -> {
                         enemyView.animate()
-                            .translationXBy(-200f)
-                            .setDuration((enemy.speed * 1000).toLong())
+                            .translationYBy(1000f)
+                            .setDuration((enemy.speed * 2000).toLong())
                             .start()
                     }
-                    .start()
+                    "zigzag" -> {
+                        enemyView.animate()
+                            .translationXBy(200f).translationYBy(800f)
+                            .setDuration((enemy.speed * 2000).toLong())
+                            .withEndAction {
+                                enemyView.animate().translationXBy(-200f).translationYBy(800f)
+                                    .setDuration((enemy.speed * 2000).toLong()).start()
+                            }
+                            .start()
+                    }
+                    "swoop" -> {
+                        enemyView.animate()
+                            .translationXBy(400f).translationYBy(1000f)
+                            .setDuration((enemy.speed * 2500).toLong())
+                            .start()
+                    }
+                    "cluster" -> {
+                        enemyView.animate()
+                            .translationYBy(1200f)
+                            .setDuration((enemy.speed * 3000).toLong())
+                            .start()
+                    }
+                }
             }
         }
 

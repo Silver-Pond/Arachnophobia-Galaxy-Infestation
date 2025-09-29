@@ -9,10 +9,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import java.util.Locale
 import android.content.res.Configuration
+import android.widget.Toast
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
+
 class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
 
     private lateinit var networkMonitor: NetworkMonitor
-    private var isOnline = false
+    var isOnline = false
     private lateinit var start: TextView
     private var mediaPlayer: MediaPlayer? = null
 
@@ -96,6 +100,14 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
 
     override fun onNetworkAvailable() {
         isOnline = true
+
+        val user = FirebaseAuth.getInstance().currentUser ?: return
+        val uid = user.uid
+
+        val pendingScore = HighScoreManager.getPendingHighScore(this, uid)
+        if (pendingScore != -1) {
+            syncHighScoreToDatabase(pendingScore)
+        }
     }
 
     override fun onNetworkLost() {
@@ -112,5 +124,31 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
         val config = Configuration()
         config.setLocale(locale)
         context.resources.updateConfiguration(config, context.resources.displayMetrics)
+    }
+
+    fun syncHighScoreToDatabase(score: Int) {
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user == null) {
+            Toast.makeText(this, "Not logged in. Cannot sync high score.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Use UID as the unique identifier
+        val uid = user.uid
+
+        val playerRef = FirebaseDatabase.getInstance()
+            .getReference("players")
+            .child(uid)
+            .child("highscore")
+
+        playerRef.setValue(score)
+            .addOnSuccessListener {
+                HighScoreManager.clearPendingHighScore(this, uid)
+                Toast.makeText(this, "High score synced!", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener {
+                // If sync failed, keep it locally for retry
+                HighScoreManager.savePendingHighScore(this, uid, score)
+            }
     }
 }
