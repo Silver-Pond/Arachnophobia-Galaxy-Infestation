@@ -16,7 +16,6 @@ import com.google.firebase.database.FirebaseDatabase
 class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
 
     private lateinit var networkMonitor: NetworkMonitor
-    var isOnline = false
     private lateinit var start: TextView
     private var mediaPlayer: MediaPlayer? = null
 
@@ -45,7 +44,7 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
         start = findViewById(R.id.pressStart)
 
         start.setOnClickListener {
-            if (isOnline) {
+            if (NetworkUtils.isOnline) {
                 replaceFragment(LoginHubFragment())
             } else {
                 replaceFragment(GameMenuFragment())
@@ -99,19 +98,41 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
     }
 
     override fun onNetworkAvailable() {
-        isOnline = true
+        NetworkUtils.isOnline = true
 
-        val user = FirebaseAuth.getInstance().currentUser ?: return
-        val uid = user.uid
+        val prefs = getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
+        val pendingScore = prefs.getInt("pending_highscore", -1)
 
-        val pendingScore = HighScoreManager.getPendingHighScore(this, uid)
-        if (pendingScore != -1) {
-            syncHighScoreToDatabase(pendingScore)
+        if (pendingScore > -1) {
+            val auth = FirebaseAuth.getInstance()
+            val uid = auth.currentUser?.uid ?: return
+            val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
+
+            dbRef.child("highscore").get().addOnSuccessListener { snapshot ->
+                val existingHighscore = snapshot.getValue(Int::class.java) ?: 0
+
+                if (pendingScore > existingHighscore) {
+                    dbRef.child("highscore").setValue(pendingScore)
+                        .addOnSuccessListener {
+                            Toast.makeText(this, "Pending highscore synced: $pendingScore", Toast.LENGTH_SHORT).show()
+                            // Clear pending value only after successful sync
+                            prefs.edit().remove("pending_highscore").apply()
+                        }
+                        .addOnFailureListener {
+                            Toast.makeText(this, "Failed to sync pending highscore", Toast.LENGTH_SHORT).show()
+                        }
+                } else {
+                    // Even if pending score is lower, clear it (to avoid stale data)
+                    prefs.edit().remove("pending_highscore").apply()
+                }
+            }.addOnFailureListener {
+                Toast.makeText(this, "Error fetching highscore from server", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
     override fun onNetworkLost() {
-        isOnline = false
+        NetworkUtils.isOnline = false
     }
 
     // Helper function to apply saved language

@@ -173,9 +173,11 @@ class GameFragment : Fragment() {
 
         val uid = user.uid
 
-        if ((activity as? MainActivity)?.isOnline == true) {
-            (activity as MainActivity).syncHighScoreToDatabase(newScore)
+        if (NetworkUtils.isOnline) {
+            // Sync directly to Firebase
+            (activity as? MainActivity)?.syncHighScoreToDatabase(newScore)
         } else {
+            // Save highscore locally
             HighScoreManager.savePendingHighScore(requireContext(), uid, newScore)
             Toast.makeText(requireContext(), "No internet. High score saved locally.", Toast.LENGTH_SHORT).show()
         }
@@ -665,51 +667,36 @@ class GameFragment : Fragment() {
 
     private fun saveHighScore() {
         val auth = FirebaseAuth.getInstance()
-        val uid = auth.currentUser?.uid ?: return  // Ensure user is logged in
+        val uid = auth.currentUser?.uid
+        if (uid == null) {
+            // Not logged in → just skip
+            return
+        }
+
         val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
+
+        // Use NetworkUtils for global online check
+        if (!NetworkUtils.isOnline) {
+            // Offline → store locally
+            val prefs = requireActivity().getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
+            prefs.edit().putInt("pending_highscore", score).apply()
+
+            Toast.makeText(requireContext(), "No internet. High score saved locally.", Toast.LENGTH_SHORT).show()
+            return
+        }
 
         dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val username = snapshot.child("username").getValue(String::class.java) ?: "Guest"
+                val existingHighscore = snapshot.child("highscore").getValue(Int::class.java) ?: 0
 
-                val showToasts = username.isNotBlank() && !username.equals("guest", ignoreCase = true)
-
-                if (snapshot.exists()) {
-                    val existingHighscore = snapshot.child("highscore").getValue(Int::class.java) ?: 0
-
-                    if (score > existingHighscore) {
-                        dbRef.child("highscore").setValue(score)
-                            .addOnSuccessListener {
-                                if (showToasts) {
-                                    Toast.makeText(requireContext(), "New Highscore!", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                            .addOnFailureListener {
-                                if (showToasts) {
-                                    Toast.makeText(requireContext(), "Failed to update highscore", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                    }
-                } else {
-                    val user = mapOf(
-                        "id" to uid,
-                        "username" to username.ifBlank { "Guest" },
-                        "email" to (snapshot.child("email").getValue(String::class.java) ?: ""),
-                        "password" to (snapshot.child("password").getValue(String::class.java) ?: ""),
-                        "spider_silk" to (snapshot.child("spider_silk").getValue(String::class.java)),
-                        "highscore" to score
-                    )
-
-                    dbRef.setValue(user)
+                // Only update if higher
+                if (score > existingHighscore) {
+                    dbRef.child("highscore").setValue(score)
                         .addOnSuccessListener {
-                            if (showToasts) {
-                                Toast.makeText(requireContext(), "Player created with highscore!", Toast.LENGTH_SHORT).show()
-                            }
+                            Toast.makeText(requireContext(), "New Highscore!", Toast.LENGTH_SHORT).show()
                         }
                         .addOnFailureListener {
-                            if (showToasts) {
-                                Toast.makeText(requireContext(), "Failed to save highscore", Toast.LENGTH_SHORT).show()
-                            }
+                            Toast.makeText(requireContext(), "Failed to update highscore", Toast.LENGTH_SHORT).show()
                         }
                 }
             }
