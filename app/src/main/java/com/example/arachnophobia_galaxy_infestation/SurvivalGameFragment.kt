@@ -5,6 +5,7 @@ import android.media.SoundPool
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -19,6 +20,9 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.gson.Gson
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import kotlin.math.max
 import kotlin.math.min
 
@@ -136,62 +140,29 @@ class SurvivalGameFragment : Fragment() {
         // Apply skin once here
         applyEquippedSkin()
 
-        // Use username (if available)
-        username?.let {
-            Toast.makeText(requireContext(), "Welcome $it!", Toast.LENGTH_SHORT).show()
-        }
+        // Example: load level 1 from API
+        ApiClient.instance.getLevel(1).enqueue(object : Callback<Level> {
+            override fun onResponse(call: Call<Level>, response: Response<Level>) {
+                if (response.isSuccessful) {
+                    response.body()?.let { loadedLevel ->
+                        level = loadedLevel // update fragment's level
+                        Toast.makeText(requireContext(), "Loaded level: ${loadedLevel.levelNumber}", Toast.LENGTH_SHORT).show()
 
-        // Spawn enemies from the API-generated level
-        level?.let { lvl ->
-            for (enemy in lvl.enemies) {
-                val enemyView = ImageView(requireContext())
-
-                // Use sprite type from API
-                val drawableId = requireContext().resources.getIdentifier(
-                    enemy.type, "drawable", requireContext().packageName
-                )
-                enemyView.setImageResource(if (drawableId != 0) drawableId else R.drawable.spider_blue)
-
-                val params = FrameLayout.LayoutParams(100, 100)
-                gameArea.addView(enemyView, params)
-
-                // Position enemy from API data
-                enemyView.x = enemy.spawnX
-                enemyView.y = enemy.spawnY
-
-                // Apply API-defined movement pattern
-                when (enemy.pattern) {
-                    "straight" -> {
-                        enemyView.animate()
-                            .translationYBy(1000f)
-                            .setDuration((enemy.speed * 2000).toLong())
-                            .start()
+                        // Must run on UI thread
+                        requireActivity().runOnUiThread {
+                            spawnEnemies()
+                        }
                     }
-                    "zigzag" -> {
-                        enemyView.animate()
-                            .translationXBy(200f).translationYBy(800f)
-                            .setDuration((enemy.speed * 2000).toLong())
-                            .withEndAction {
-                                enemyView.animate().translationXBy(-200f).translationYBy(800f)
-                                    .setDuration((enemy.speed * 2000).toLong()).start()
-                            }
-                            .start()
-                    }
-                    "swoop" -> {
-                        enemyView.animate()
-                            .translationXBy(400f).translationYBy(1000f)
-                            .setDuration((enemy.speed * 2500).toLong())
-                            .start()
-                    }
-                    "cluster" -> {
-                        enemyView.animate()
-                            .translationYBy(1200f)
-                            .setDuration((enemy.speed * 3000).toLong())
-                            .start()
-                    }
+                } else {
+                    Log.e("API_ERROR", "Response code: ${response.code()} - ${response.message()}")
                 }
             }
-        }
+
+            override fun onFailure(call: Call<Level>, t: Throwable) {
+                Log.e("API_ERROR", "Call failed", t)
+                Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_LONG).show()
+            }
+        })
 
         // Initialize game (player positioning)
         gameArea.post {
@@ -316,6 +287,31 @@ class SurvivalGameFragment : Fragment() {
 
         // Play shooting sound
         if (shootSoundId != 0) SoundEffectsManager.playSound(shootSoundId)
+    }
+
+    private fun spawnEnemies() {
+        level?.let { lvl ->
+            for (enemy in lvl.enemies) {
+                val enemyView = ImageView(requireContext())
+                val drawableId = requireContext().resources.getIdentifier(
+                    enemy.type, "drawable", requireContext().packageName
+                )
+                enemyView.setImageResource(if (drawableId != 0) drawableId else R.drawable.spider_blue)
+
+                val params = FrameLayout.LayoutParams(100, 100)
+                gameArea.addView(enemyView, params)
+
+                enemyView.x = enemy.spawnX
+                enemyView.y = enemy.spawnY
+
+                when (enemy.pattern) {
+                    "straight" -> { /* animation code */ }
+                    "zigzag"   -> { /* animation code */ }
+                    "swoop"    -> { /* animation code */ }
+                    "cluster"  -> { /* animation code */ }
+                }
+            }
+        }
     }
 
     companion object {
