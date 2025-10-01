@@ -832,9 +832,7 @@ class GameFragment : Fragment() {
                     snackbarView.setBackgroundColor(
                         ContextCompat.getColor(requireContext(), com.google.android.material.R.color.design_default_color_primary_variant) // example color
                     )
-
                     snackbar.show()
-
                 }
             }
         }

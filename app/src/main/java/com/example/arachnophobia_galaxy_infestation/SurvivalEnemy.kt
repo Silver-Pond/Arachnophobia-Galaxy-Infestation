@@ -1,9 +1,13 @@
 package com.example.arachnophobia_galaxy_infestation
 
-data class SurvivalEnemy (
-    val type: String = "spider_blue",
+import android.widget.ImageView
+
+data class SurvivalEnemy(
+    val view: ImageView,
+    val type: String,
     val spawnX: Float,
     val spawnY: Float,
     val speed: Float,
-    val pattern: String = "straight"
+    val pattern: String,
+    var directionX: Int = 1 // +1 = right, -1 = left
 )
