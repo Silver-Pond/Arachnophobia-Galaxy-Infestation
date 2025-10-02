@@ -55,19 +55,21 @@ class SurvivalGameFragment : Fragment() {
     private var playerLives = 3
     private var isPlayerDead = false
     private var score = 0
+
     private val handler = Handler(Looper.getMainLooper())
     private val bullets = mutableListOf<ImageView>()
     private val enemies = mutableListOf<SurvivalEnemy>()
+    private val projectiles = mutableListOf<ImageView>()
     private var username: String? = null
     private var level: Level? = null
     private var currentLevel = 1
     private var currentWave = 1
     private val maxWaves = 3
-    private val enemiesPerWave = 15
+    private var baseEnemySpeed = 3f
+    private var currentEnemySpeed = baseEnemySpeed
 
     private var currentBulletDrawable: String = "moth_blast"
     private var bulletSpeed = 15f
-    private val enemySpeed = 5f
     private var shootSoundId: Int = 0
     private var enemyfireId: Int = 0
     private var enemykilledId: Int = 0
@@ -155,7 +157,7 @@ class SurvivalGameFragment : Fragment() {
             override fun onResponse(call: Call<Level>, response: Response<Level>) {
                 if (response.isSuccessful) {
                     level = response.body()
-                    Toast.makeText(requireContext(), "Loaded level: ${level?.levelNumber}", Toast.LENGTH_SHORT).show()
+                    // Toast.makeText(requireContext(), "Loaded level: ${level?.levelNumber}", Toast.LENGTH_SHORT).show()
 
                     // Clear old enemies from screen
                     for (enemy in enemies) {
@@ -223,21 +225,20 @@ class SurvivalGameFragment : Fragment() {
     }
 
     private fun updateGame() {
+        if (isPaused) return // freeze game when paused or player dead
+
+        // === Enemy Movement ===
         val enemyIterator = enemies.iterator()
         while (enemyIterator.hasNext()) {
             val enemy = enemyIterator.next()
             val view = enemy.view
 
-            // Movement by pattern
+            // Movement
             when (enemy.pattern) {
-                "straight" -> {
-                    view.y += enemy.speed
-                }
+                "straight" -> view.y += enemy.speed
                 "zigzag" -> {
                     view.y += enemy.speed
                     view.x += (enemy.directionX * enemy.speed)
-
-                    // Bounce on left/right edges
                     if (view.x <= 0f || view.x + view.width >= gameArea.width) {
                         enemy.directionX *= -1
                     }
@@ -246,9 +247,6 @@ class SurvivalGameFragment : Fragment() {
                     view.y += enemy.speed * 1.5f
                     view.x = enemy.spawnX + (cos(view.y / 40.0) * 50.0).toFloat()
                 }
-                "cluster" -> {
-                    view.y += enemy.speed
-                }
             }
 
             // Collision with player
@@ -256,17 +254,40 @@ class SurvivalGameFragment : Fragment() {
             val enemyRect = RectF(view.x, view.y, view.x + view.width, view.y + view.height)
             if (playerRect.intersect(enemyRect) && !isPlayerDead) {
                 handlePlayerDeath()
-                continue
             }
 
-            // Off-screen cleanup
+            // Offscreen cleanup
             if (view.y > gameArea.height) {
                 gameArea.removeView(view)
                 enemyIterator.remove()
             }
         }
 
-        // Handle bullets hitting enemies
+        // === Projectile Movement ===
+        if (!isPaused && !isPlayerDead) {
+            val projIterator = projectiles.iterator()
+            while (projIterator.hasNext()) {
+                val proj = projIterator.next()
+                proj.y += 5f // projectile speed
+
+                // Collision with player
+                val playerRect = RectF(player.x, player.y, player.x + player.width, player.y + player.height)
+                val projRect = RectF(proj.x, proj.y, proj.x + proj.width, proj.y + proj.height)
+
+                if (playerRect.intersect(projRect) && !isPlayerDead ) {
+                    handlePlayerDeath()
+                    break // stop checking further projectiles this frame
+                }
+
+                // Offscreen cleanup
+                if (proj.y > gameArea.height) {
+                    try { gameArea.removeView(proj) } catch (_: Exception) {}
+                    projIterator.remove()
+                }
+            }
+        }
+
+        // === Bullets Hitting Enemies ===
         val bulletIterator = bullets.iterator()
         while (bulletIterator.hasNext()) {
             val bullet = bulletIterator.next()
@@ -285,7 +306,12 @@ class SurvivalGameFragment : Fragment() {
                 gameArea.removeView(bullet)
                 bulletIterator.remove()
 
-                score += 10
+                // Add score based on enemy type
+                score += when (hitEnemy.type) {
+                    "spider_maroon" -> 15
+                    else -> 10 // spider_blue or default
+                }
+
                 updateScoreUI()
                 SoundEffectsManager.playSound(enemykilledId)
                 continue
@@ -297,16 +323,24 @@ class SurvivalGameFragment : Fragment() {
             }
         }
 
-        // Level / Wave progression
-        if (enemies.isEmpty() && !isPlayerDead) {
+        // === Wave / Level Progression ===
+        if (enemies.isEmpty() && !isPlayerDead && !isPaused) {
             if (currentWave < maxWaves) {
                 currentWave++
                 spawnWave()
-            } else {
+            } else if (currentWave == maxWaves) {
+                // After last wave, go to next level
                 currentLevel++
                 currentWave = 1
-                spawnWave()
 
+                // Adjust enemy speed
+                if (currentLevel % 5 == 0) {
+                    currentEnemySpeed = baseEnemySpeed
+                } else {
+                    currentEnemySpeed += 1f
+                }
+
+                // Show LEVEL text and pause game
                 pauseText.text = "LEVEL $currentLevel"
                 pauseText.visibility = View.VISIBLE
                 isPaused = true
@@ -314,78 +348,132 @@ class SurvivalGameFragment : Fragment() {
                 Handler(Looper.getMainLooper()).postDelayed({
                     pauseText.visibility = View.GONE
                     isPaused = false
+                    spawnWave() // Only spawn after unpausing
                 }, 1000)
-            }
-        }
-    }
-
-    // Enemy Spawn Code
-    private fun spawnEnemies() {
-        level?.let { lvl ->
-            for (enemy in lvl.enemies) {
-                val enemyView = ImageView(requireContext())
-                val drawableId = requireContext().resources.getIdentifier(
-                    enemy.type, "drawable", requireContext().packageName
-                )
-                enemyView.setImageResource(if (drawableId != 0) drawableId else R.drawable.spider_blue)
-
-                val size = 100
-                val params = FrameLayout.LayoutParams(size, size)
-                gameArea.addView(enemyView, params)
-
-                // Clamp spawnX so it’s always on screen
-                val safeX = enemy.spawnX.coerceIn(0f, gameArea.width - size.toFloat())
-                val safeY = enemy.spawnY
-
-                enemyView.x = safeX
-                enemyView.y = safeY
-
-                enemies.add(
-                    SurvivalEnemy(
-                        view = enemyView,
-                        type = enemy.type,
-                        spawnX = safeX,
-                        spawnY = safeY,
-                        speed = enemy.speed,
-                        pattern = enemy.pattern
-                    )
-                )
             }
         }
     }
 
     // Enemy Spawn Waves Code
     private fun spawnWave() {
-        enemies.clear() // remove leftover enemies from previous wave
+        val ctx = context ?: return
+        val setSize = 20
 
-        repeat(enemiesPerWave) {
-            val enemyView = ImageView(requireContext())
-            val drawableId = requireContext().resources.getIdentifier(
-                "spider_blue", "drawable", requireContext().packageName
-            )
-            enemyView.setImageResource(if (drawableId != 0) drawableId else R.drawable.spider_blue)
+        // Clear any leftovers
+        enemies.forEach { gameArea.removeView(it.view) }
+        enemies.clear()
 
-            val size = 100
-            val params = FrameLayout.LayoutParams(size, size)
-            gameArea.addView(enemyView, params)
+        // Spawn for this wave only
+        repeat(setSize) { i ->
+            val enemyView = ImageView(ctx).apply {
+                layoutParams = FrameLayout.LayoutParams(100, 100)
+            }
 
-            val spawnX = (50..(gameArea.width - size - 50)).random().toFloat()
+            // Decide type: half maroon if level 5–10
+            val enemyType = if (currentLevel in 5..10 && i < setSize / 4) {
+                "spider_maroon"
+            } else {
+                "spider_blue"
+            }
+
+            // Position
+            val spawnX = (50..(gameArea.width - 150)).random().toFloat()
             val spawnY = (-500..-100).random().toFloat()
+
+            // Drawable
+            val drawableRes = when (enemyType) {
+                "spider_maroon" -> R.drawable.spider_maroon
+                else -> R.drawable.spider_blue
+            }
+            enemyView.setImageResource(drawableRes)
+
+            // Add to screen
+            gameArea.addView(enemyView)
+
+            // Create enemy
+            val enemy = SurvivalEnemy(
+                view = enemyView,
+                type = enemyType,
+                spawnX = spawnX,
+                spawnY = spawnY,
+                speed = currentEnemySpeed,
+                pattern = listOf("straight", "zigzag", "swoop").random()
+            )
 
             enemyView.x = spawnX
             enemyView.y = spawnY
+            enemies.add(enemy)
 
-            enemies.add(
-                SurvivalEnemy(
-                    view = enemyView,
-                    type = "spider_blue",
-                    spawnX = spawnX,
-                    spawnY = spawnY,
-                    speed = (3..6).random().toFloat(),
-                    pattern = listOf("straight", "zigzag", "swoop").random()
-                )
-            )
+            if (enemyType == "spider_maroon") {
+                startMaroonShooting(enemy)
+            }
         }
+    }
+
+    private fun startMaroonShooting(enemy: SurvivalEnemy) {
+        val handler = Handler(Looper.getMainLooper())
+
+        val shootRunnable = object : Runnable {
+            override fun run() {
+                // Only fire if enemy is alive, game not paused, and player not dead
+                if (!isPaused && !isPlayerDead && enemies.contains(enemy)) {
+                    shootEnemyProjectile(enemy)
+                }
+
+                // Random shooting interval between 3s–5s
+                handler.postDelayed(this, (3000..5000).random().toLong())
+            }
+        }
+
+        handler.post(shootRunnable)
+    }
+
+    private fun shootEnemyProjectile(enemy: SurvivalEnemy) {
+        val proj = ImageView(requireContext())
+        proj.setImageResource(R.drawable.spider_web_shot)
+
+        val size = 30
+        val params = FrameLayout.LayoutParams(size, size)
+        gameArea.addView(proj, params)
+
+        proj.x = enemy.view.x + enemy.view.width / 2f - size / 2f
+        proj.y = enemy.view.y + enemy.view.height
+
+        projectiles.add(proj)
+
+        val handler = Handler(Looper.getMainLooper())
+
+        val moveRunnable = object : Runnable {
+            override fun run() {
+                if (isPaused || isPlayerDead) {
+                    // Stop movement until game resumes
+                    handler.postDelayed(this, 16L)
+                    return
+                }
+
+                proj.y += 12f
+
+                // Remove if offscreen
+                if (proj.y > gameArea.height) {
+                    try { gameArea.removeView(proj) } catch (_: Exception) {}
+                    projectiles.remove(proj)
+                    return
+                }
+
+                // Collision with player
+                val playerRect = RectF(player.x, player.y, player.x + player.width, player.y + player.height)
+                val projRect = RectF(proj.x, proj.y, proj.x + proj.width, proj.y + proj.height)
+
+                if (playerRect.intersect(projRect) && !isPlayerDead) {
+                    handlePlayerDeath()
+                    return
+                }
+
+                handler.postDelayed(this, 16L)
+            }
+        }
+
+        handler.post(moveRunnable)
     }
 
     // Player shooting
@@ -413,10 +501,12 @@ class SurvivalGameFragment : Fragment() {
         if (shootSoundId != 0) SoundEffectsManager.playSound(shootSoundId)
     }
 
-    // Player Death Code
+    // Also in handlePlayerDeath():
     private fun handlePlayerDeath() {
+        if (isPlayerDead) return // 🔥 prevent multiple life losses
+
         isPlayerDead = true
-        isPaused = true // 🔥 freeze game temporarily
+        isPaused = true
         playerLives--
         updateLivesUI()
 
@@ -425,12 +515,10 @@ class SurvivalGameFragment : Fragment() {
         SoundEffectsManager.playSound(explosionId)
 
         if (playerLives <= 0) {
-            // Immediately end game
             gameOver()
             return
         }
 
-        // Otherwise, respawn after a short delay
         Handler(Looper.getMainLooper()).postDelayed({
             // Respawn player at bottom center
             val centerX = (gameArea.width - player.width) / 2f
@@ -441,10 +529,9 @@ class SurvivalGameFragment : Fragment() {
             player.x = playerX
             player.y = playerY
 
-            // Reapply equipped skin
             applyEquippedSkin()
 
-            // Reset enemies to original spawn positions
+            // Reset enemies to spawn positions
             enemies.forEach { enemy ->
                 enemy.view.x = enemy.spawnX
                 enemy.view.y = enemy.spawnY
@@ -453,7 +540,7 @@ class SurvivalGameFragment : Fragment() {
             // Resume game
             isPlayerDead = false
             isPaused = false
-        }, 2000) // freeze duration before respawn
+        }, 2000)
     }
 
     // Skins Code

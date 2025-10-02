@@ -31,36 +31,39 @@ class SurvivalGameActivity : AppCompatActivity() {
         setContentView(R.layout.activity_survival_game)
 
         // Retrieve the username from the Intent
-        username = intent.getStringExtra("username") ?: ""
+        username = intent.getStringExtra("username") ?: "Guest"
 
-        // Load SurvivalGameFragment into gameframe
-        // Retrieve data from Intent
-        val levelJson = intent.getStringExtra("levelData") ?: ""
-        username = intent.getStringExtra("username") ?: ""
+        // Retrieve level JSON safely
+        val levelJson = intent.getStringExtra("levelData")
 
-        // Pass both level and username into the fragment
+        // Pass data into the fragment
         val gameFragment = SurvivalGameFragment().apply {
             arguments = Bundle().apply {
-                putString("levelData", levelJson)
+                levelJson?.let { putString("levelData", it) }
                 putString("username", username)
             }
         }
 
+        // Load fragment
         supportFragmentManager.beginTransaction()
-            .replace(R.id.gameframe, gameFragment) // use gameframe as container
+            .replace(R.id.gameframe, gameFragment)
             .commit()
 
         // Initialize background music
         mediaPlayer = MediaPlayer.create(this, R.raw.comos).apply {
             isLooping = true
+            start()
         }
 
-        // Load saved music volume from preferences
+        // Load saved music volume
         val prefs = getSharedPreferences("AppSettings", MODE_PRIVATE)
         val savedMusicVolume = prefs.getFloat("music_volume", 0.5f)
         MusicPlayerManager.updateVolume(savedMusicVolume)
 
-        // Set up buttons
+        // Set up buttons after fragment is attached
+        supportFragmentManager.executePendingTransactions()
+        val fragment = supportFragmentManager.findFragmentById(R.id.gameframe) as? SurvivalGameFragment
+
         leftBtn = findViewById(R.id.leftbtn)
         rightBtn = findViewById(R.id.rightbtn)
         blastBtn = findViewById(R.id.blastbtn)
@@ -71,57 +74,41 @@ class SurvivalGameActivity : AppCompatActivity() {
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     isLeftPressed = true
-                    if (!isRightPressed) {
-                        startMoving { gameFragment.movePlayerLeft() }
-                    } else {
-                        stopMoving()
-                    }
+                    if (!isRightPressed) startMoving { fragment?.movePlayerLeft() } else stopMoving()
                     true
                 }
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                     isLeftPressed = false
-                    if (isRightPressed) {
-                        startMoving { gameFragment.movePlayerRight() }
-                    } else {
-                        stopMoving()
-                    }
+                    if (isRightPressed) startMoving { fragment?.movePlayerRight() } else stopMoving()
                     true
                 }
                 else -> false
             }
         }
 
-// Continuous RIGHT movement
+        // Continuous RIGHT movement
         rightBtn.setOnTouchListener { _, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     isRightPressed = true
-                    if (!isLeftPressed) {
-                        startMoving { gameFragment.movePlayerRight() }
-                    } else {
-                        stopMoving()
-                    }
+                    if (!isLeftPressed) startMoving { fragment?.movePlayerRight() } else stopMoving()
                     true
                 }
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                     isRightPressed = false
-                    if (isLeftPressed) {
-                        startMoving { gameFragment.movePlayerLeft() }
-                    } else {
-                        stopMoving()
-                    }
+                    if (isLeftPressed) startMoving { fragment?.movePlayerLeft() } else stopMoving()
                     true
                 }
                 else -> false
             }
         }
+
         // Shooting
-        blastBtn.setOnClickListener {
-            gameFragment.shoot()
-        }
+        blastBtn.setOnClickListener { fragment?.shoot() }
+
         // Pause
         pauseBtn.setOnClickListener {
-            val isPaused = gameFragment.togglePause()
+            val isPaused = fragment?.togglePause() ?: false
             setControlsEnabled(!isPaused)
         }
     }
