@@ -49,6 +49,8 @@ class SurvivalGameFragment : Fragment() {
     private lateinit var pauseText: TextView
     private lateinit var livesText: TextView
 
+    private var isFragmentActive = false
+    private var apiConnected = false // Add this at class level
     private var playerX = 0f
     private var playerY = 0f
     private val moveStep = 40f
@@ -135,25 +137,13 @@ class SurvivalGameFragment : Fragment() {
         val soundPool = SoundPool.Builder().setMaxStreams(5).build()
         SoundEffectsManager.soundPool = soundPool
 
-        // Load shooting sound
+        // Load sounds
         shootSoundId = soundPool.load(requireContext(), R.raw.cannon_shot, 1)
-
-        // Load enemy shooting sound
         enemyfireId = soundPool.load(requireContext(), R.raw.shoot, 1)
-
-        // Load enemy killed sound
         enemykilledId = soundPool.load(requireContext(), R.raw.invaderkilled, 1)
-
-        // Load enemy killed sound
         purpkilledId = soundPool.load(requireContext(), R.raw.ufo_highpitch, 1)
-
-        // Spider Purple movement sound
         purpleAppearId = soundPool.load(requireContext(), R.raw.ufo_lowpitch, 1)
-
-        // Load explosion sound
         explosionId = soundPool.load(requireContext(), R.raw.explosion, 1)
-
-        // Load game over sound
         gameOverSoundId = soundPool.load(requireContext(), R.raw.game_over, 1)
 
         // Restore effects volume from prefs
@@ -169,22 +159,23 @@ class SurvivalGameFragment : Fragment() {
             override fun onResponse(call: Call<Level>, response: Response<Level>) {
                 if (response.isSuccessful) {
                     level = response.body()
-                    // Toast.makeText(requireContext(), "Loaded level: ${level?.levelNumber}", Toast.LENGTH_SHORT).show()
+                    apiConnected = true // API is connected
 
-                    // Clear old enemies from screen
+                    // Clear old enemies
                     for (enemy in enemies) {
                         gameArea.removeView(enemy.view)
                     }
                     enemies.clear()
 
-                    // Spawn new wave
+                    // Spawn new wave only if connected
                     spawnWave()
+                } else {
+                    handleApiFailure("Server error: ${response.code()}")
                 }
             }
 
             override fun onFailure(call: Call<Level>, t: Throwable) {
-                Log.e("API_ERROR", "Call failed", t)
-                Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_LONG).show()
+                handleApiFailure("API connection failed: ${t.message}")
             }
         })
 
@@ -202,20 +193,52 @@ class SurvivalGameFragment : Fragment() {
         updateHighScoreUI()
     }
 
+    private fun handleApiFailure(message: String) {
+        apiConnected = false
+        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+
+        // Create a new instance of GameMenuFragment with the username
+        val gameMenuFragment = GameMenuFragment().apply {
+            arguments = Bundle().apply {
+                putString("username", username)
+            }
+        }
+        // Navigate to profile fragment
+        replaceFragment(gameMenuFragment)
+    }
+
     override fun onResume() {
         super.onResume()
+        isFragmentActive = true
 
         // Apply skin once here
         applyEquippedSkin()
 
+        // Make sure we don’t double-post the game loop
+        handler.removeCallbacks(gameRunnable)
         handler.post(gameRunnable)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        isFragmentActive = false
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        // Stop ALL pending tasks (not just the game loop)
+
+        // Mark fragment as inactive so no new waves can spawn
+        isFragmentActive = false
+        apiConnected = false // optional safeguard
+
+        // Stop ALL pending tasks (game loop, delayed spawns, etc.)
         handler.removeCallbacksAndMessages(null)
 
+        // Clear any active enemies from the game area
+        enemies.forEach { gameArea.removeView(it.view) }
+        enemies.clear()
+
+        // Release sound resources
         SoundEffectsManager.soundPool?.release()
         SoundEffectsManager.soundPool = null
     }
@@ -380,14 +403,17 @@ class SurvivalGameFragment : Fragment() {
                     else -> currentEnemySpeed + 1f
                 }
 
+                // Show pause text when level changes
                 pauseText.text = "LEVEL $currentLevel"
                 pauseText.visibility = View.VISIBLE
-                isPaused = true
 
                 Handler(Looper.getMainLooper()).postDelayed({
                     pauseText.visibility = View.GONE
-                    isPaused = false
-                    spawnWave()
+
+                    // Only spawn if no enemies exist yet (prevents reloading first wave twice)
+                    if (enemies.isEmpty()) {
+                        spawnWave()
+                    }
                 }, 1000)
             }
         }
@@ -536,50 +562,56 @@ class SurvivalGameFragment : Fragment() {
 
     // Enemy Spawn Waves Code
     private fun spawnWave() {
+        if (!apiConnected || !isFragmentActive) {
+            Log.w("GAME", "Wave spawn blocked: apiConnected=$apiConnected, active=$isFragmentActive")
+            return
+        }
+
         val ctx = context ?: return
         val setSize = 20
 
-        // Clear any leftovers
-        enemies.forEach { gameArea.removeView(it.view) }
+        // Clear leftovers safely
+        enemies.forEach { enemy ->
+            gameArea.removeView(enemy.view)
+        }
         enemies.clear()
 
-        // Decide a random index for spider_purple if level 10
+        // Purple spider logic
         val purpleIndex = if (currentLevel == 10) (0 until setSize).random() else -1
 
-        // Spawn for this wave
         repeat(setSize) { i ->
-            val enemyView = ImageView(ctx).apply {
-                layoutParams = FrameLayout.LayoutParams(100, 100)
-            }
-
-            // Decide type
             val enemyType = when {
-                i == purpleIndex -> "spider_purple" // only one in the set
+                i == purpleIndex -> "spider_purple"
                 currentLevel in 5..10 && i < setSize / 4 -> "spider_maroon"
                 else -> "spider_blue"
             }
 
-            // Position
+            val enemyView = ImageView(ctx).apply {
+                layoutParams = FrameLayout.LayoutParams(100, 100)
+                setImageResource(
+                    when (enemyType) {
+                        "spider_maroon" -> R.drawable.spider_maroon
+                        "spider_purple" -> R.drawable.spider_purple
+                        else -> R.drawable.spider_blue
+                    }
+                )
+            }
+
+            // Position before adding
             val spawnX = (50..(gameArea.width - 150)).random().toFloat()
             val spawnY = (-500..-100).random().toFloat()
-
-            // Drawable
-            val drawableRes = when (enemyType) {
-                "spider_maroon" -> R.drawable.spider_maroon
-                "spider_purple" -> R.drawable.spider_purple
-                else -> R.drawable.spider_blue
-            }
-            enemyView.setImageResource(drawableRes)
+            enemyView.x = spawnX
+            enemyView.y = spawnY
 
             // Add to screen
             gameArea.addView(enemyView)
 
-            // Play sound once if spider_purple
+            // Spider purple: appearance sound + glow effect
             if (enemyType == "spider_purple" && purpleAppearId != 0) {
                 SoundEffectsManager.playSound(purpleAppearId)
             }
 
-            // Create enemy
+            // Create enemy object
             val enemy = SurvivalEnemy(
                 view = enemyView,
                 type = enemyType,
@@ -589,11 +621,8 @@ class SurvivalGameFragment : Fragment() {
                 pattern = listOf("straight", "zigzag", "swoop").random()
             )
 
-            enemyView.x = spawnX
-            enemyView.y = spawnY
             enemies.add(enemy)
 
-            // Special behavior
             if (enemyType == "spider_maroon") {
                 startMaroonShooting(enemy)
             }
@@ -796,7 +825,7 @@ class SurvivalGameFragment : Fragment() {
 
         val trophiesToAward = mutableListOf<Trophy>()
 
-        // 🎯 Level-based trophies for Survival Mode
+        // Level-based trophies for Survival Mode
         when (currentLevel) {
             1 -> trophiesToAward.add(Trophy("trophy12", "Survivor lvl 1", "Completed Level 1 of Survival Mode!", "lvl_trophy"))
             4 -> trophiesToAward.add(Trophy("trophy13", "Survivor lvl 4", "Completed Level 4 of Survival Mode!", "lvl_trophy"))
@@ -805,7 +834,7 @@ class SurvivalGameFragment : Fragment() {
             19 -> trophiesToAward.add(Trophy("trophy16", "Survivor lvl 19", "Completed Level 19 of Survival Mode!", "lvl_trophy"))
         }
 
-        // 🎯 Score-based trophies for Survival Mode
+        // Score-based trophies for Survival Mode
         if (score >= 2000) trophiesToAward.add(Trophy("trophy17", "Arachno-Loser", "Obtained a score of 2000 in Survival Mode!", "score_trophy"))
         if (score >= 4000) trophiesToAward.add(Trophy("trophy18", "New Survivor", "Obtained a score of 4000 in Survival Mode!", "score_trophy"))
         if (score >= 6000) trophiesToAward.add(Trophy("trophy19", "Spider Hunter lvl 1", "Obtained a score of 6000 in Survival Mode!", "score_trophy"))
@@ -866,6 +895,13 @@ class SurvivalGameFragment : Fragment() {
 
         // Play sound
         if (gameOverSoundId != 0) SoundEffectsManager.playSound(gameOverSoundId)
+    }
+
+    // Helper method to replace fragment
+    private fun replaceFragment(fragment: Fragment) {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.main, fragment)
+            .commit()
     }
 
     companion object {
