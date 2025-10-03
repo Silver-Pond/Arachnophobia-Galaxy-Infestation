@@ -10,6 +10,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
@@ -74,6 +76,8 @@ class GameFragment : Fragment() {
     private var shootSoundId: Int = 0
     private var enemyfireId: Int = 0
     private var enemykilledId: Int = 0
+    private var purpkilledId: Int = 0
+    private var zigzagMoveSoundId: Int = 0
     private var explosionId: Int = 0
     private var gameOverSoundId: Int = 0
 
@@ -134,6 +138,12 @@ class GameFragment : Fragment() {
         // Load enemy killed sound
         enemykilledId = soundPool.load(requireContext(), R.raw.invaderkilled, 1)
 
+        // Load enemy killed sound
+        purpkilledId = soundPool.load(requireContext(), R.raw.ufo_highpitch, 1)
+
+        // Spider Purple movement sound
+        zigzagMoveSoundId = soundPool.load(requireContext(), R.raw.ufo_lowpitch, 1)
+
         // Load explosion sound
         explosionId = soundPool.load(requireContext(), R.raw.explosion, 1)
 
@@ -171,16 +181,8 @@ class GameFragment : Fragment() {
             return
         }
 
-        val uid = user.uid
-
-        if (NetworkUtils.isOnline) {
-            // Sync directly to Firebase
-            (activity as? MainActivity)?.syncHighScoreToDatabase(newScore)
-        } else {
-            // Save highscore locally
-            HighScoreManager.savePendingHighScore(requireContext(), uid, newScore)
-            Toast.makeText(requireContext(), "No internet. High score saved locally.", Toast.LENGTH_SHORT).show()
-        }
+        // Use HighScoreManager to handle offline/online logic
+        HighScoreManager.saveHighScore(requireContext(), newScore)
     }
 
     private fun applyEquippedSkin() {
@@ -343,6 +345,20 @@ class GameFragment : Fragment() {
 
                 set.add(enemy)
                 enemies.add(enemy)
+
+                // --- Special ZigZagger Effects ---
+                if (isZigZagger) {
+                    // Glow / pulse animation
+                    val pulse = AlphaAnimation(0.5f, 1.0f).apply {
+                        duration = 500
+                        repeatMode = Animation.REVERSE
+                        repeatCount = Animation.INFINITE
+                    }
+                    enemyView.startAnimation(pulse)
+
+                    // Looping sound effect
+                    if (zigzagMoveSoundId != 0) SoundEffectsManager.playSound(zigzagMoveSoundId)
+                }
             }
         }
 
@@ -399,8 +415,18 @@ class GameFragment : Fragment() {
                 hitEnemy.isAlive = false
                 hitEnemy.imageView.setImageResource(R.drawable.spider_death)
 
-                // Play enemy death sound (already loaded at startup)
-                if (enemykilledId != 0) SoundEffectsManager.playSound(enemykilledId)
+                // Play correct death sound
+                if (hitEnemy.imageView.drawable.constantState ==
+                    ContextCompat.getDrawable(requireContext(), R.drawable.spider_purple)?.constantState
+                ) {
+                    if (purpkilledId != 0) {
+                        SoundEffectsManager.playSound(purpkilledId)
+                    }
+                } else {
+                    if (enemykilledId != 0) {
+                        SoundEffectsManager.playSound(enemykilledId)
+                    }
+                }
 
                 handler.postDelayed({
                     val ga = gameArea

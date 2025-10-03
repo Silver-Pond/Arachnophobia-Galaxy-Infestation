@@ -100,36 +100,8 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
     override fun onNetworkAvailable() {
         NetworkUtils.isOnline = true
 
-        val prefs = getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
-        val auth = FirebaseAuth.getInstance()
-        val uid = auth.currentUser?.uid ?: return
-        val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
-
-        // ✅ Sync normal highscore
-        val pendingScore = prefs.getInt("pending_highscore", -1)
-        if (pendingScore > -1) {
-            dbRef.child("highscore").get().addOnSuccessListener { snapshot ->
-                val existingHighscore = snapshot.getValue(Int::class.java) ?: 0
-                if (pendingScore > existingHighscore) {
-                    dbRef.child("highscore").setValue(pendingScore)
-                    Toast.makeText(this, "Pending highscore synced: $pendingScore", Toast.LENGTH_SHORT).show()
-                }
-                prefs.edit().remove("pending_highscore").apply()
-            }
-        }
-
-        // ✅ Sync survival highscore
-        val pendingSurvivalScore = prefs.getInt("pending_survival_highscore", -1)
-        if (pendingSurvivalScore > -1) {
-            dbRef.child("survivalHighscore").get().addOnSuccessListener { snapshot ->
-                val existingSurvivalHighscore = snapshot.getValue(Int::class.java) ?: 0
-                if (pendingSurvivalScore > existingSurvivalHighscore) {
-                    dbRef.child("survivalHighscore").setValue(pendingSurvivalScore)
-                    Toast.makeText(this, "Pending survival highscore synced: $pendingSurvivalScore", Toast.LENGTH_SHORT).show()
-                }
-                prefs.edit().remove("pending_survival_highscore").apply()
-            }
-        }
+        // Sync any pending highscores when internet is back
+        HighScoreManager.syncPendingHighScores(this)
     }
 
     override fun onNetworkLost() {

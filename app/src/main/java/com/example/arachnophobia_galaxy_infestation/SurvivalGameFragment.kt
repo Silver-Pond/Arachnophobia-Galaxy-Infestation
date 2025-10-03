@@ -11,6 +11,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
@@ -61,7 +63,6 @@ class SurvivalGameFragment : Fragment() {
     private val bullets = mutableListOf<ImageView>()
     private val enemies = mutableListOf<SurvivalEnemy>()
     private val projectiles = mutableListOf<EnemyProjectile>()
-    private val projectileHandlers = mutableMapOf<ImageView, Handler>()
 
     private var username: String? = null
     private var level: Level? = null
@@ -77,7 +78,9 @@ class SurvivalGameFragment : Fragment() {
     private var shootSoundId: Int = 0
     private var enemyfireId: Int = 0
     private var enemykilledId: Int = 0
+    private var purpkilledId: Int = 0
     private var explosionId: Int = 0
+    private var purpleAppearId: Int = 0
     private var gameOverSoundId: Int = 0
 
     private val scoreText: TextView
@@ -141,6 +144,12 @@ class SurvivalGameFragment : Fragment() {
 
         // Load enemy killed sound
         enemykilledId = soundPool.load(requireContext(), R.raw.invaderkilled, 1)
+
+        // Load enemy killed sound
+        purpkilledId = soundPool.load(requireContext(), R.raw.ufo_highpitch, 1)
+
+        // Spider Purple movement sound
+        purpleAppearId = soundPool.load(requireContext(), R.raw.ufo_lowpitch, 1)
 
         // Load explosion sound
         explosionId = soundPool.load(requireContext(), R.raw.explosion, 1)
@@ -317,7 +326,16 @@ class SurvivalGameFragment : Fragment() {
                 hitEnemy.isAlive = false
                 hitEnemy.view.setImageResource(R.drawable.spider_death)
 
-                if (enemykilledId != 0) SoundEffectsManager.playSound(enemykilledId)
+                // Play enemy death sound
+                if (hitEnemy.type == "spider_purple") {
+                    if (purpkilledId != 0) {
+                        SoundEffectsManager.playSound(purpkilledId)
+                    }
+                } else {
+                    if (enemykilledId != 0) {
+                        SoundEffectsManager.playSound(enemykilledId)
+                    }
+                }
 
                 handler.postDelayed({
                     if (isAdded && gameArea.isAttachedToWindow) {
@@ -557,6 +575,21 @@ class SurvivalGameFragment : Fragment() {
             // Add to screen
             gameArea.addView(enemyView)
 
+            // Play sound once if spider_purple
+            if (enemyType == "spider_purple" && purpleAppearId != 0) {
+                SoundEffectsManager.playSound(purpleAppearId)
+            }
+
+            // Glow / pulse effect for spider_purple
+            if (enemyType == "spider_purple") {
+                val pulse = AlphaAnimation(0.5f, 1.0f).apply {
+                    duration = 500
+                    repeatMode = Animation.REVERSE
+                    repeatCount = Animation.INFINITE
+                }
+                enemyView.startAnimation(pulse)
+            }
+
             // Create enemy
             val enemy = SurvivalEnemy(
                 view = enemyView,
@@ -614,19 +647,19 @@ class SurvivalGameFragment : Fragment() {
     }
 
     private fun updateHighScoreUI() {
-
         val username = arguments?.getString("username") ?: "Guest"
 
-        if(username.equals("Guest")  || username.isNullOrEmpty()){
+        if (username.equals("Guest", ignoreCase = true) || username.isEmpty()) {
             highScoreText.text = "HIGHSCORE: 0"
-        }else{
+        } else {
             val auth = FirebaseAuth.getInstance()
-            val uid = auth.currentUser?.uid ?: "Guest"  // fallback for guest users
+            val uid = auth.currentUser?.uid ?: return  // No UID, just return
             val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
 
             dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    val storedHighscore = snapshot.child("survivalhighscore").getValue(Int::class.java) ?: 0
+                    // Use the correct field name ("survivalHighscore")
+                    val storedHighscore = snapshot.child("survivalHighscore").getValue(Int::class.java) ?: 0
                     highScoreText.text = "HIGHSCORE: $storedHighscore"
                 }
 
@@ -679,23 +712,15 @@ class SurvivalGameFragment : Fragment() {
         })
     }
 
-    fun onNewHighScoreAchieved(newScore: Int) {
+    fun onNewSurvivalHighScoreAchieved(newSurvivalScore: Int) {
         val user = FirebaseAuth.getInstance().currentUser
         if (user == null) {
-            Toast.makeText(requireContext(), "Not logged in. Cannot save high score.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Not logged in. Cannot save survival high score.", Toast.LENGTH_SHORT).show()
             return
         }
 
-        val uid = user.uid
-
-        if (NetworkUtils.isOnline) {
-            // Sync directly to Firebase
-            (activity as? MainActivity)?.syncHighScoreToDatabase(newScore)
-        } else {
-            // Save highscore locally
-            HighScoreManager.savePendingHighScore(requireContext(), uid, newScore)
-            Toast.makeText(requireContext(), "No internet. High score saved locally.", Toast.LENGTH_SHORT).show()
-        }
+        // Use HighScoreManager to handle offline/online logic
+        HighScoreManager.saveSurvivalHighScore(requireContext(), newSurvivalScore)
     }
 
     // Game Over Code
@@ -713,7 +738,7 @@ class SurvivalGameFragment : Fragment() {
         saveHighScore()
 
         // Sync new highscore in case internet was lost during play
-        onNewHighScoreAchieved(score)
+        onNewSurvivalHighScoreAchieved(score)
 
         Handler(Looper.getMainLooper()).postDelayed({
             requireActivity().finish()
