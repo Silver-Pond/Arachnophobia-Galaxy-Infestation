@@ -10,8 +10,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AlphaAnimation
-import android.view.animation.Animation
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
@@ -348,14 +346,6 @@ class GameFragment : Fragment() {
 
                 // --- Special ZigZagger Effects ---
                 if (isZigZagger) {
-                    // Glow / pulse animation
-                    val pulse = AlphaAnimation(0.5f, 1.0f).apply {
-                        duration = 500
-                        repeatMode = Animation.REVERSE
-                        repeatCount = Animation.INFINITE
-                    }
-                    enemyView.startAnimation(pulse)
-
                     // Looping sound effect
                     if (zigzagMoveSoundId != 0) SoundEffectsManager.playSound(zigzagMoveSoundId)
                 }

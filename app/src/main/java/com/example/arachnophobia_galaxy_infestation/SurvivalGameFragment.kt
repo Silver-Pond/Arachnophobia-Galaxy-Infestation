@@ -1,7 +1,6 @@
 package com.example.arachnophobia_galaxy_infestation
 
 import android.content.Context
-import android.graphics.RectF
 import android.media.SoundPool
 import android.os.Bundle
 import android.os.Handler
@@ -11,8 +10,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AlphaAnimation
-import android.view.animation.Animation
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
@@ -29,7 +26,6 @@ import retrofit2.Response
 import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.math.sin
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -580,16 +576,6 @@ class SurvivalGameFragment : Fragment() {
                 SoundEffectsManager.playSound(purpleAppearId)
             }
 
-            // Glow / pulse effect for spider_purple
-            if (enemyType == "spider_purple") {
-                val pulse = AlphaAnimation(0.5f, 1.0f).apply {
-                    duration = 500
-                    repeatMode = Animation.REVERSE
-                    repeatCount = Animation.INFINITE
-                }
-                enemyView.startAnimation(pulse)
-            }
-
             // Create enemy
             val enemy = SurvivalEnemy(
                 view = enemyView,
@@ -723,6 +709,81 @@ class SurvivalGameFragment : Fragment() {
         HighScoreManager.saveSurvivalHighScore(requireContext(), newSurvivalScore)
     }
 
+    private fun saveInGameCurrency() {
+        val username = arguments?.getString("username") ?: "Guest"
+
+        // Guest users do not earn spider silk
+        if (username.equals("Guest", ignoreCase = true) || username.isEmpty()) return
+
+        val spiderSilkEarned = (score * 0.5) / 100.0
+        val auth = FirebaseAuth.getInstance()
+        val uid = auth.currentUser?.uid ?: return
+        val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
+
+        dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (!isAdded || view == null) return // Fragment is not active
+
+                val showToasts = username.isNotBlank() && !username.equals("Guest", ignoreCase = true)
+
+                if (snapshot.exists()) {
+                    val currentSilk = snapshot.child("spider_silk").getValue(Double::class.java) ?: 0.0
+                    if (currentSilk < 100_000) {
+                        val updatedSilk = (currentSilk + spiderSilkEarned).coerceAtMost(100_000.0)
+
+                        dbRef.child("spider_silk").setValue(updatedSilk)
+                            .addOnSuccessListener {
+                                if (showToasts) {
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "You earned ${"%.1f".format(spiderSilkEarned)} silk! (Total: ${"%.1f".format(updatedSilk)})",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                            .addOnFailureListener {
+                                if (showToasts) {
+                                    Toast.makeText(requireContext(), "Failed to update spider silk.", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                    } else {
+                        if (showToasts) {
+                            Toast.makeText(requireContext(), "Max silk reached (100,000).", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } else {
+                    // If the player record doesn't exist, create it
+                    val userMap = mapOf(
+                        "id" to uid,
+                        "username" to username.ifBlank { "Guest" },
+                        "email" to (snapshot.child("email").getValue(String::class.java) ?: ""),
+                        "password" to (snapshot.child("password").getValue(String::class.java) ?: ""),
+                        "highscore" to (snapshot.child("highscore").getValue(Int::class.java) ?: 0),
+                        "survivalHighscore" to (snapshot.child("survivalHighscore").getValue(Int::class.java) ?: 0),
+                        "spider_silk" to spiderSilkEarned.coerceAtMost(100_000.0)
+                    )
+
+                    dbRef.setValue(userMap)
+                        .addOnSuccessListener {
+                            if (showToasts) {
+                                Toast.makeText(requireContext(), "Player record created with spider silk!", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                        .addOnFailureListener {
+                            if (showToasts) {
+                                Toast.makeText(requireContext(), "Failed to save spider silk.", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                if (!isAdded || view == null) return
+                Toast.makeText(requireContext(), "Database error: ${error.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
     // Game Over Code
     private fun gameOver() {
         isPaused = true
@@ -736,6 +797,7 @@ class SurvivalGameFragment : Fragment() {
 
         // Save Highscore & Currency
         saveHighScore()
+        saveInGameCurrency()
 
         // Sync new highscore in case internet was lost during play
         onNewSurvivalHighScoreAchieved(score)

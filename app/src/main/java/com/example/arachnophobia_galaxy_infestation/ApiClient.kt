@@ -6,11 +6,11 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiClient {
-    private const val BASE_URL = "http://192.168.18.57:5055/" // 👈 must end with "/"
+    private const val BASE_URL = "http://192.168.18.57:5055/" // Must end with "/"
 
     val instance: LevelApi by lazy {
         val logging = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY // 👈 logs requests & responses
+            level = HttpLoggingInterceptor.Level.BODY // Logs requests & responses
         }
         val client = OkHttpClient.Builder()
             .addInterceptor(logging)
