@@ -109,6 +109,7 @@ class SignUpFragment : Fragment() {
                                                 email = email,
                                                 password = password,
                                                 highscore = 0,
+                                                survivalhighscore = 0,
                                                 spider_silk = 0.00,
                                                 trophies = emptyList(),
                                                 ownedSkins = listOf("Moth", "Mario", "Invader"), // initial owned skins

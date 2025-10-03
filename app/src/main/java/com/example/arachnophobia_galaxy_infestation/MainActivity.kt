@@ -101,32 +101,33 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
         NetworkUtils.isOnline = true
 
         val prefs = getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
+        val auth = FirebaseAuth.getInstance()
+        val uid = auth.currentUser?.uid ?: return
+        val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
+
+        // ✅ Sync normal highscore
         val pendingScore = prefs.getInt("pending_highscore", -1)
-
         if (pendingScore > -1) {
-            val auth = FirebaseAuth.getInstance()
-            val uid = auth.currentUser?.uid ?: return
-            val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
-
             dbRef.child("highscore").get().addOnSuccessListener { snapshot ->
                 val existingHighscore = snapshot.getValue(Int::class.java) ?: 0
-
                 if (pendingScore > existingHighscore) {
                     dbRef.child("highscore").setValue(pendingScore)
-                        .addOnSuccessListener {
-                            Toast.makeText(this, "Pending highscore synced: $pendingScore", Toast.LENGTH_SHORT).show()
-                            // Clear pending value only after successful sync
-                            prefs.edit().remove("pending_highscore").apply()
-                        }
-                        .addOnFailureListener {
-                            Toast.makeText(this, "Failed to sync pending highscore", Toast.LENGTH_SHORT).show()
-                        }
-                } else {
-                    // Even if pending score is lower, clear it (to avoid stale data)
-                    prefs.edit().remove("pending_highscore").apply()
+                    Toast.makeText(this, "Pending highscore synced: $pendingScore", Toast.LENGTH_SHORT).show()
                 }
-            }.addOnFailureListener {
-                Toast.makeText(this, "Error fetching highscore from server", Toast.LENGTH_SHORT).show()
+                prefs.edit().remove("pending_highscore").apply()
+            }
+        }
+
+        // ✅ Sync survival highscore
+        val pendingSurvivalScore = prefs.getInt("pending_survival_highscore", -1)
+        if (pendingSurvivalScore > -1) {
+            dbRef.child("survivalHighscore").get().addOnSuccessListener { snapshot ->
+                val existingSurvivalHighscore = snapshot.getValue(Int::class.java) ?: 0
+                if (pendingSurvivalScore > existingSurvivalHighscore) {
+                    dbRef.child("survivalHighscore").setValue(pendingSurvivalScore)
+                    Toast.makeText(this, "Pending survival highscore synced: $pendingSurvivalScore", Toast.LENGTH_SHORT).show()
+                }
+                prefs.edit().remove("pending_survival_highscore").apply()
             }
         }
     }
@@ -154,22 +155,17 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
             return
         }
 
-        // Use UID as the unique identifier
-        val uid = user.uid
-
-        val playerRef = FirebaseDatabase.getInstance()
-            .getReference("players")
-            .child(uid)
-            .child("highscore")
-
-        playerRef.setValue(score)
-            .addOnSuccessListener {
-                HighScoreManager.clearPendingHighScore(this, uid)
-                Toast.makeText(this, "High score synced!", Toast.LENGTH_SHORT).show()
+        // Use HighScoreManager to handle syncing
+        if (NetworkUtils.isOnline) {
+            HighScoreManager.saveHighScore(this, score)
+        } else {
+            // Offline → store locally
+            val prefs = getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
+            val pendingScore = prefs.getInt("pending_highscore", -1)
+            if (score > pendingScore) {
+                prefs.edit().putInt("pending_highscore", score).apply()
             }
-            .addOnFailureListener {
-                // If sync failed, keep it locally for retry
-                HighScoreManager.savePendingHighScore(this, uid, score)
-            }
+            Toast.makeText(this, "No internet. High score saved locally.", Toast.LENGTH_SHORT).show()
+        }
     }
 }

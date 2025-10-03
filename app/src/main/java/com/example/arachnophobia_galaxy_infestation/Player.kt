@@ -9,6 +9,7 @@ data class Player(
     val email: String = "",
     val password: String = "",
     val highscore: Int = 0,
+    val survivalhighscore: Int = 0,
     val spider_silk: Double = 0.00,
 
     // Existing trophies

@@ -615,6 +615,87 @@ class SurvivalGameFragment : Fragment() {
 
     private fun updateHighScoreUI() {
 
+        val username = arguments?.getString("username") ?: "Guest"
+
+        if(username.equals("Guest")  || username.isNullOrEmpty()){
+            highScoreText.text = "HIGHSCORE: 0"
+        }else{
+            val auth = FirebaseAuth.getInstance()
+            val uid = auth.currentUser?.uid ?: "Guest"  // fallback for guest users
+            val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
+
+            dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val storedHighscore = snapshot.child("survivalhighscore").getValue(Int::class.java) ?: 0
+                    highScoreText.text = "HIGHSCORE: $storedHighscore"
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    highScoreText.text = "HIGHSCORE: 0"
+                }
+            })
+        }
+    }
+
+    private fun saveHighScore() {
+        val auth = FirebaseAuth.getInstance()
+        val uid = auth.currentUser?.uid
+        if (uid == null) {
+            // Not logged in → just skip
+            return
+        }
+
+        val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
+
+        // Use global network state
+        if (!NetworkUtils.isOnline) {
+            // Offline → store locally
+            val prefs = requireActivity().getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
+            prefs.edit().putInt("pending_survival_highscore", score).apply()
+
+            Toast.makeText(requireContext(), "No internet. Survival high score saved locally.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val existingHighscore = snapshot.child("survivalHighscore").getValue(Int::class.java) ?: 0
+
+                // Only update if higher
+                if (score > existingHighscore) {
+                    dbRef.child("survivalHighscore").setValue(score)
+                        .addOnSuccessListener {
+                            Toast.makeText(requireContext(), "New Survival Highscore!", Toast.LENGTH_SHORT).show()
+                        }
+                        .addOnFailureListener {
+                            Toast.makeText(requireContext(), "Failed to update survival highscore", Toast.LENGTH_SHORT).show()
+                        }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(requireContext(), "Database error: ${error.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    fun onNewHighScoreAchieved(newScore: Int) {
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user == null) {
+            Toast.makeText(requireContext(), "Not logged in. Cannot save high score.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val uid = user.uid
+
+        if (NetworkUtils.isOnline) {
+            // Sync directly to Firebase
+            (activity as? MainActivity)?.syncHighScoreToDatabase(newScore)
+        } else {
+            // Save highscore locally
+            HighScoreManager.savePendingHighScore(requireContext(), uid, newScore)
+            Toast.makeText(requireContext(), "No internet. High score saved locally.", Toast.LENGTH_SHORT).show()
+        }
     }
 
     // Game Over Code
@@ -627,6 +708,12 @@ class SurvivalGameFragment : Fragment() {
         pauseText.text = "GAME OVER"
         pauseText.visibility = View.VISIBLE
         pauseText.bringToFront()
+
+        // Save Highscore & Currency
+        saveHighScore()
+
+        // Sync new highscore in case internet was lost during play
+        onNewHighScoreAchieved(score)
 
         Handler(Looper.getMainLooper()).postDelayed({
             requireActivity().finish()

@@ -157,6 +157,7 @@ class LoginHubFragment : Fragment() {
                                         email = it.email ?: "No Email",
                                         password = "N/A", // Google Sign-In does not provide password
                                         highscore = 0,
+                                        survivalhighscore = 0,
                                         spider_silk = 0.00,
                                         trophies = emptyList(),
                                         ownedSkins = listOf("Moth", "Mario", "Invader"), // initial owned skins
