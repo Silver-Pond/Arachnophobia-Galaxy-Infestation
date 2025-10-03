@@ -21,10 +21,10 @@ private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
- * Use the [LeaderboardFragment.newInstance] factory method to
+ * Use the [SurvivalLeaderboardFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class LeaderboardFragment : Fragment() {
+class SurvivalLeaderboardFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -46,7 +46,7 @@ class LeaderboardFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_leaderboard, container, false)
+        return inflater.inflate(R.layout.fragment_survival_leaderboard, container, false)
     }
 
     // Use this method to safely access views
@@ -80,7 +80,6 @@ class LeaderboardFragment : Fragment() {
     }
 
     private fun loadLeaderboard() {
-        // Clear existing data
         val dbRef = FirebaseDatabase.getInstance().getReference("players")
 
         dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -89,12 +88,12 @@ class LeaderboardFragment : Fragment() {
 
                 for (playerSnap in snapshot.children) {
                     val username = playerSnap.child("username").getValue(String::class.java) ?: "Guest"
-                    val highscore = playerSnap.child("highscore").getValue(Int::class.java) ?: 0
+                    val survivalHighscore = playerSnap.child("survivalHighscore").getValue(Int::class.java) ?: 0
 
-                    players.add(HighScore(username, highscore))
+                    players.add(HighScore(username, survivalHighscore))
                 }
 
-                // Sort by score descending
+                // Sort by survival score descending
                 players.sortByDescending { it.score }
 
                 adapter = LeaderboardAdapter(players, loggedInUser)
@@ -123,7 +122,7 @@ class LeaderboardFragment : Fragment() {
     companion object {
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            LeaderboardFragment().apply {
+            SurvivalLeaderboardFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
                     putString(ARG_PARAM2, param2)

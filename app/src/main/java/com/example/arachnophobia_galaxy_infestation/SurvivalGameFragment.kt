@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,8 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -784,6 +787,58 @@ class SurvivalGameFragment : Fragment() {
         })
     }
 
+    private fun checkAndAwardTrophies() {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val dbRef = FirebaseDatabase.getInstance()
+            .getReference("players")
+            .child(uid)
+            .child("trophies")
+
+        val trophiesToAward = mutableListOf<Trophy>()
+
+        // 🎯 Level-based trophies for Survival Mode
+        when (currentLevel) {
+            1 -> trophiesToAward.add(Trophy("trophy12", "Survivor lvl 1", "Completed Level 1 of Survival Mode!", "lvl_trophy"))
+            4 -> trophiesToAward.add(Trophy("trophy13", "Survivor lvl 4", "Completed Level 4 of Survival Mode!", "lvl_trophy"))
+            9 -> trophiesToAward.add(Trophy("trophy14", "Survivor lvl 9", "Completed Level 9 of Survival Mode!", "lvl_trophy"))
+            14 -> trophiesToAward.add(Trophy("trophy15", "Survivor lvl 14", "Completed Level 14 of Survival Mode!", "lvl_trophy"))
+            19 -> trophiesToAward.add(Trophy("trophy16", "Survivor lvl 19", "Completed Level 19 of Survival Mode!", "lvl_trophy"))
+        }
+
+        // 🎯 Score-based trophies for Survival Mode
+        if (score >= 2000) trophiesToAward.add(Trophy("trophy17", "Arachno-Loser", "Obtained a score of 2000 in Survival Mode!", "score_trophy"))
+        if (score >= 4000) trophiesToAward.add(Trophy("trophy18", "New Survivor", "Obtained a score of 4000 in Survival Mode!", "score_trophy"))
+        if (score >= 6000) trophiesToAward.add(Trophy("trophy19", "Spider Hunter lvl 1", "Obtained a score of 6000 in Survival Mode!", "score_trophy"))
+        if (score >= 8000) trophiesToAward.add(Trophy("trophy20", "Spider Hunter lvl...Legit", "Obtained a score of 8000 in Survival Mode!", "score_trophy"))
+
+        // 🏆 Save & notify only NEW trophies
+        trophiesToAward.forEach { trophy ->
+            dbRef.child(trophy.id).get().addOnSuccessListener { snapshot ->
+                if (!snapshot.exists()) {
+                    dbRef.child(trophy.id).setValue(true)
+
+                    val snackbar = Snackbar.make(
+                        requireView(),
+                        "🏆 ${trophy.name} unlocked!\n${trophy.description}",
+                        Snackbar.LENGTH_LONG
+                    )
+
+                    // Place Snackbar at top center
+                    val snackbarView = snackbar.view
+                    val params = snackbarView.layoutParams as FrameLayout.LayoutParams
+                    params.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
+                    params.topMargin = 100
+                    snackbarView.layoutParams = params
+
+                    snackbarView.setBackgroundColor(
+                        ContextCompat.getColor(requireContext(), com.google.android.material.R.color.design_default_color_primary_variant)
+                    )
+                    snackbar.show()
+                }
+            }
+        }
+    }
+
     // Game Over Code
     private fun gameOver() {
         isPaused = true
@@ -801,6 +856,9 @@ class SurvivalGameFragment : Fragment() {
 
         // Sync new highscore in case internet was lost during play
         onNewSurvivalHighScoreAchieved(score)
+
+        // Award trophies
+        checkAndAwardTrophies()
 
         Handler(Looper.getMainLooper()).postDelayed({
             requireActivity().finish()

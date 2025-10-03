@@ -62,7 +62,16 @@ class HighscoresMenuFragment : Fragment() {
             replaceFragment(leaderboardFragment)
         }
 
-        btnsurvivalhighscore.setOnClickListener {}
+        btnsurvivalhighscore.setOnClickListener {
+            // Create a new instance of SurvivalLeaderboardFragment with the username
+            val survivalLeaderboardFragment = SurvivalLeaderboardFragment().apply {
+                arguments = Bundle().apply {
+                    putString("username", username)
+                }
+            }
+            // Navigate to high scores fragment
+            replaceFragment(survivalLeaderboardFragment)
+        }
 
         btnback.setOnClickListener {
             // Create a new instance of GameMenuFragment with the username
