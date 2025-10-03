@@ -55,11 +55,14 @@ class SurvivalGameFragment : Fragment() {
     private var playerLives = 3
     private var isPlayerDead = false
     private var score = 0
+    private var isGameFinished = false
 
     private val handler = Handler(Looper.getMainLooper())
     private val bullets = mutableListOf<ImageView>()
     private val enemies = mutableListOf<SurvivalEnemy>()
-    private val projectiles = mutableListOf<ImageView>()
+    private val projectiles = mutableListOf<EnemyProjectile>()
+    private val projectileHandlers = mutableMapOf<ImageView, Handler>()
+
     private var username: String? = null
     private var level: Level? = null
     private var currentLevel = 1
@@ -67,6 +70,7 @@ class SurvivalGameFragment : Fragment() {
     private val maxWaves = 3
     private var baseEnemySpeed = 3f
     private var currentEnemySpeed = baseEnemySpeed
+    private var projectileSpeed = 10f
 
     private var currentBulletDrawable: String = "moth_blast"
     private var bulletSpeed = 15f
@@ -224,258 +228,6 @@ class SurvivalGameFragment : Fragment() {
         }
     }
 
-    private fun updateGame() {
-        if (isPaused) return // freeze game when paused or player dead
-
-        // === Enemy Movement ===
-        val enemyIterator = enemies.iterator()
-        while (enemyIterator.hasNext()) {
-            val enemy = enemyIterator.next()
-            val view = enemy.view
-
-            // Movement
-            when (enemy.pattern) {
-                "straight" -> view.y += enemy.speed
-                "zigzag" -> {
-                    view.y += enemy.speed
-                    view.x += (enemy.directionX * enemy.speed)
-                    if (view.x <= 0f || view.x + view.width >= gameArea.width) {
-                        enemy.directionX *= -1
-                    }
-                }
-                "swoop" -> {
-                    view.y += enemy.speed * 1.5f
-                    view.x = enemy.spawnX + (cos(view.y / 40.0) * 50.0).toFloat()
-                }
-            }
-
-            // Collision with player
-            val playerRect = RectF(player.x, player.y, player.x + player.width, player.y + player.height)
-            val enemyRect = RectF(view.x, view.y, view.x + view.width, view.y + view.height)
-            if (playerRect.intersect(enemyRect) && !isPlayerDead) {
-                handlePlayerDeath()
-            }
-
-            // Offscreen cleanup
-            if (view.y > gameArea.height) {
-                gameArea.removeView(view)
-                enemyIterator.remove()
-            }
-        }
-
-        // === Projectile Movement ===
-        if (!isPaused && !isPlayerDead) {
-            val projIterator = projectiles.iterator()
-            while (projIterator.hasNext()) {
-                val proj = projIterator.next()
-                proj.y += 5f // projectile speed
-
-                // Collision with player
-                val playerRect = RectF(player.x, player.y, player.x + player.width, player.y + player.height)
-                val projRect = RectF(proj.x, proj.y, proj.x + proj.width, proj.y + proj.height)
-
-                if (playerRect.intersect(projRect) && !isPlayerDead ) {
-                    handlePlayerDeath()
-                    break // stop checking further projectiles this frame
-                }
-
-                // Offscreen cleanup
-                if (proj.y > gameArea.height) {
-                    try { gameArea.removeView(proj) } catch (_: Exception) {}
-                    projIterator.remove()
-                }
-            }
-        }
-
-        // === Bullets Hitting Enemies ===
-        val bulletIterator = bullets.iterator()
-        while (bulletIterator.hasNext()) {
-            val bullet = bulletIterator.next()
-            bullet.y -= bulletSpeed
-
-            val hitEnemy = enemies.find { e ->
-                val enemyRect = RectF(e.view.x, e.view.y, e.view.x + e.view.width, e.view.y + e.view.height)
-                val bulletRect = RectF(bullet.x, bullet.y, bullet.x + bullet.width, bullet.y + bullet.height)
-                enemyRect.intersect(bulletRect)
-            }
-
-            if (hitEnemy != null) {
-                gameArea.removeView(hitEnemy.view)
-                enemies.remove(hitEnemy)
-
-                gameArea.removeView(bullet)
-                bulletIterator.remove()
-
-                // Add score based on enemy type
-                score += when (hitEnemy.type) {
-                    "spider_maroon" -> 15
-                    else -> 10 // spider_blue or default
-                }
-
-                updateScoreUI()
-                SoundEffectsManager.playSound(enemykilledId)
-                continue
-            }
-
-            if (bullet.y + bullet.height < 0) {
-                gameArea.removeView(bullet)
-                bulletIterator.remove()
-            }
-        }
-
-        // === Wave / Level Progression ===
-        if (enemies.isEmpty() && !isPlayerDead && !isPaused) {
-            if (currentWave < maxWaves) {
-                currentWave++
-                spawnWave()
-            } else if (currentWave == maxWaves) {
-                // After last wave, go to next level
-                currentLevel++
-                currentWave = 1
-
-                // Adjust enemy speed
-                if (currentLevel % 5 == 0) {
-                    currentEnemySpeed = baseEnemySpeed
-                } else {
-                    currentEnemySpeed += 1f
-                }
-
-                // Show LEVEL text and pause game
-                pauseText.text = "LEVEL $currentLevel"
-                pauseText.visibility = View.VISIBLE
-                isPaused = true
-
-                Handler(Looper.getMainLooper()).postDelayed({
-                    pauseText.visibility = View.GONE
-                    isPaused = false
-                    spawnWave() // Only spawn after unpausing
-                }, 1000)
-            }
-        }
-    }
-
-    // Enemy Spawn Waves Code
-    private fun spawnWave() {
-        val ctx = context ?: return
-        val setSize = 20
-
-        // Clear any leftovers
-        enemies.forEach { gameArea.removeView(it.view) }
-        enemies.clear()
-
-        // Spawn for this wave only
-        repeat(setSize) { i ->
-            val enemyView = ImageView(ctx).apply {
-                layoutParams = FrameLayout.LayoutParams(100, 100)
-            }
-
-            // Decide type: half maroon if level 5–10
-            val enemyType = if (currentLevel in 5..10 && i < setSize / 4) {
-                "spider_maroon"
-            } else {
-                "spider_blue"
-            }
-
-            // Position
-            val spawnX = (50..(gameArea.width - 150)).random().toFloat()
-            val spawnY = (-500..-100).random().toFloat()
-
-            // Drawable
-            val drawableRes = when (enemyType) {
-                "spider_maroon" -> R.drawable.spider_maroon
-                else -> R.drawable.spider_blue
-            }
-            enemyView.setImageResource(drawableRes)
-
-            // Add to screen
-            gameArea.addView(enemyView)
-
-            // Create enemy
-            val enemy = SurvivalEnemy(
-                view = enemyView,
-                type = enemyType,
-                spawnX = spawnX,
-                spawnY = spawnY,
-                speed = currentEnemySpeed,
-                pattern = listOf("straight", "zigzag", "swoop").random()
-            )
-
-            enemyView.x = spawnX
-            enemyView.y = spawnY
-            enemies.add(enemy)
-
-            if (enemyType == "spider_maroon") {
-                startMaroonShooting(enemy)
-            }
-        }
-    }
-
-    private fun startMaroonShooting(enemy: SurvivalEnemy) {
-        val handler = Handler(Looper.getMainLooper())
-
-        val shootRunnable = object : Runnable {
-            override fun run() {
-                // Only fire if enemy is alive, game not paused, and player not dead
-                if (!isPaused && !isPlayerDead && enemies.contains(enemy)) {
-                    shootEnemyProjectile(enemy)
-                }
-
-                // Random shooting interval between 3s–5s
-                handler.postDelayed(this, (3000..5000).random().toLong())
-            }
-        }
-
-        handler.post(shootRunnable)
-    }
-
-    private fun shootEnemyProjectile(enemy: SurvivalEnemy) {
-        val proj = ImageView(requireContext())
-        proj.setImageResource(R.drawable.spider_web_shot)
-
-        val size = 30
-        val params = FrameLayout.LayoutParams(size, size)
-        gameArea.addView(proj, params)
-
-        proj.x = enemy.view.x + enemy.view.width / 2f - size / 2f
-        proj.y = enemy.view.y + enemy.view.height
-
-        projectiles.add(proj)
-
-        val handler = Handler(Looper.getMainLooper())
-
-        val moveRunnable = object : Runnable {
-            override fun run() {
-                if (isPaused || isPlayerDead) {
-                    // Stop movement until game resumes
-                    handler.postDelayed(this, 16L)
-                    return
-                }
-
-                proj.y += 12f
-
-                // Remove if offscreen
-                if (proj.y > gameArea.height) {
-                    try { gameArea.removeView(proj) } catch (_: Exception) {}
-                    projectiles.remove(proj)
-                    return
-                }
-
-                // Collision with player
-                val playerRect = RectF(player.x, player.y, player.x + player.width, player.y + player.height)
-                val projRect = RectF(proj.x, proj.y, proj.x + proj.width, proj.y + proj.height)
-
-                if (playerRect.intersect(projRect) && !isPlayerDead) {
-                    handlePlayerDeath()
-                    return
-                }
-
-                handler.postDelayed(this, 16L)
-            }
-        }
-
-        handler.post(moveRunnable)
-    }
-
     // Player shooting
     fun shoot() {
         if (isPaused) return
@@ -501,46 +253,329 @@ class SurvivalGameFragment : Fragment() {
         if (shootSoundId != 0) SoundEffectsManager.playSound(shootSoundId)
     }
 
-    // Also in handlePlayerDeath():
+    // ================= Survival Game Loop =================
+
+    private fun updateGame() {
+        if (isPaused || isGameFinished) return
+
+        // === Enemy Movement ===
+        val enemyIterator = enemies.iterator()
+        while (enemyIterator.hasNext()) {
+            val enemy = enemyIterator.next()
+            if (!enemy.isAlive) continue
+
+            val view = enemy.view
+
+            // Movement patterns
+            when (enemy.pattern) {
+                "straight" -> view.y += enemy.speed
+                "zigzag" -> {
+                    view.y += enemy.speed
+                    view.x += (enemy.directionX * enemy.speed)
+                    if (view.x <= 0f || view.x + view.width >= gameArea.width) {
+                        enemy.directionX *= -1
+                    }
+                }
+                "swoop" -> {
+                    view.y += enemy.speed * 1.5f
+                    view.x = enemy.spawnX + (cos(view.y / 40.0) * 50.0).toFloat()
+                }
+            }
+
+            // Enemy collides with player
+            if (!isPlayerDead && playerHitBy(view)) {
+                handlePlayerDeath()
+                return
+            }
+
+            // Remove offscreen
+            if (view.y > gameArea.height) {
+                gameArea.removeView(view)
+                enemyIterator.remove()
+            }
+        }
+
+        // === Player Bullets ===
+        val bulletIterator = bullets.iterator()
+        while (bulletIterator.hasNext()) {
+            val bullet = bulletIterator.next()
+            bullet.y -= bulletSpeed
+
+            if (bullet.y + bullet.height < 0) {
+                gameArea.removeView(bullet)
+                bulletIterator.remove()
+                continue
+            }
+
+            val hitEnemy = enemies.firstOrNull { it.isAlive &&
+                    bullet.x < it.view.x + it.view.width &&
+                    bullet.x + bullet.width > it.view.x &&
+                    bullet.y < it.view.y + it.view.height &&
+                    bullet.y + bullet.height > it.view.y }
+
+            if (hitEnemy != null) {
+                hitEnemy.isAlive = false
+                hitEnemy.view.setImageResource(R.drawable.spider_death)
+
+                if (enemykilledId != 0) SoundEffectsManager.playSound(enemykilledId)
+
+                handler.postDelayed({
+                    if (isAdded && gameArea.isAttachedToWindow) {
+                        gameArea.removeView(hitEnemy.view)
+                    }
+                }, 300)
+
+                enemies.remove(hitEnemy)
+                gameArea.removeView(bullet)
+                bulletIterator.remove()
+
+                // === Score system ===
+                score += when (hitEnemy.type) {
+                    "spider_maroon" -> 15
+                    "spider_purple" -> {
+                        playerLives += 1
+                        updateLivesUI()
+                        50
+                    }
+                    else -> 10
+                }
+
+                updateScoreUI()
+            }
+        }
+
+        // === Enemy Projectiles ===
+        updateEnemyProjectiles()
+
+        // === Level / Wave Progression ===
+        if (enemies.isEmpty() && !isPlayerDead) {
+            if (currentWave < maxWaves) {
+                currentWave++
+                spawnWave()
+            } else {
+                currentLevel++
+                currentWave = 1
+
+                // Adjust enemy speed scaling
+                currentEnemySpeed = when {
+                    currentLevel % 5 == 0 -> baseEnemySpeed
+                    currentLevel in 10..15 -> baseEnemySpeed + 1f
+                    else -> currentEnemySpeed + 1f
+                }
+
+                pauseText.text = "LEVEL $currentLevel"
+                pauseText.visibility = View.VISIBLE
+                isPaused = true
+
+                Handler(Looper.getMainLooper()).postDelayed({
+                    pauseText.visibility = View.GONE
+                    isPaused = false
+                    spawnWave()
+                }, 1000)
+            }
+        }
+    }
+
+    // ================= Enemy Projectiles =================
+    private fun updateEnemyProjectiles() {
+        val projIterator = projectiles.iterator()
+        while (projIterator.hasNext()) {
+            val proj = projIterator.next()
+            proj.imageView.y += projectileSpeed
+
+            if (proj.imageView.y > gameArea.height) {
+                gameArea.removeView(proj.imageView)
+                projIterator.remove()
+                continue
+            }
+
+            if (!isPaused && !isPlayerDead && playerHitBy(proj.imageView)) {
+                gameArea.removeView(proj.imageView)
+                projIterator.remove()
+                handlePlayerDeath()
+                return
+            }
+        }
+    }
+
+    private fun shootEnemyProjectile(enemy: SurvivalEnemy) {
+        val ctx = context ?: return
+
+        val bullet = ImageView(ctx).apply {
+            setImageResource(R.drawable.spider_web_shot)
+        }
+        val size = 30
+        val params = FrameLayout.LayoutParams(size, size)
+        gameArea.addView(bullet, params)
+
+        bullet.x = enemy.view.x + enemy.view.width / 2f - size / 2f
+        bullet.y = enemy.view.y + enemy.view.height
+
+        projectiles.add(EnemyProjectile(bullet))
+    }
+
+    private fun startMaroonShooting(enemy: SurvivalEnemy) {
+        val handler = Handler(Looper.getMainLooper())
+
+        val shootRunnable = object : Runnable {
+            override fun run() {
+                // Only shoot if game is active AND player is alive AND enemy still exists
+                if (!isPaused && !isPlayerDead && enemies.contains(enemy)) {
+                    shootEnemyProjectile(enemy)
+
+                    // Play shooting sound
+                    if (enemyfireId != 0) {
+                        SoundEffectsManager.playSound(enemyfireId)
+                    }
+                }
+
+                // Schedule next attempt only if enemy still exists
+                if (enemies.contains(enemy)) {
+                    handler.postDelayed(this, (1000..3000).random().toLong())
+                }
+            }
+        }
+
+        handler.post(shootRunnable)
+    }
+
+    // ================= Player Death Handling =================
     private fun handlePlayerDeath() {
-        if (isPlayerDead) return // 🔥 prevent multiple life losses
+        if (isPaused || isPlayerDead || isGameFinished) return
 
         isPlayerDead = true
         isPaused = true
         playerLives--
         updateLivesUI()
 
-        // Show explosion sprite
-        player.setImageResource(R.drawable.moth_death)
-        SoundEffectsManager.playSound(explosionId)
+        if (explosionId != 0) SoundEffectsManager.playSound(explosionId)
 
-        if (playerLives <= 0) {
-            gameOver()
-            return
+        val prefs = requireActivity().getSharedPreferences("GamePrefs", Context.MODE_PRIVATE)
+        val equippedSkin = prefs.getString("equippedSkin", "Moth") ?: "Moth"
+        val deathKey = equippedSkin.lowercase().replace(" ", "_") + "_death"
+        val deathResId = requireContext().resources.getIdentifier(
+            deathKey, "drawable", requireContext().packageName
+        )
+        player.setImageResource(if (deathResId != 0) deathResId else R.drawable.moth_death)
+
+        if (playerLives > 0) {
+            enemies.forEach { gameArea.removeView(it.view) }
+            enemies.clear()
+            projectiles.forEach { gameArea.removeView(it.imageView) }
+            projectiles.clear()
+
+            Handler(Looper.getMainLooper()).postDelayed({
+                resetSurvivalGameState()
+            }, 1200)
+        } else {
+            isGameFinished = true
+            pauseText.text = "GAME OVER"
+            pauseText.visibility = View.VISIBLE
+            Handler(Looper.getMainLooper()).postDelayed({
+                gameOver()
+            }, 1000)
         }
+    }
 
-        Handler(Looper.getMainLooper()).postDelayed({
-            // Respawn player at bottom center
-            val centerX = (gameArea.width - player.width) / 2f
-            val bottomY = (gameArea.height - player.height).toFloat()
+    private fun resetSurvivalGameState() {
+        applyEquippedSkin()
 
-            playerX = centerX
-            playerY = bottomY
-            player.x = playerX
-            player.y = playerY
+        playerX = (gameArea.width - player.width) / 2f
+        playerY = (gameArea.height - player.height).toFloat()
+        player.x = playerX
+        player.y = playerY
 
-            applyEquippedSkin()
+        enemies.clear()
+        spawnWave()
+        projectiles.clear()
 
-            // Reset enemies to spawn positions
-            enemies.forEach { enemy ->
-                enemy.view.x = enemy.spawnX
-                enemy.view.y = enemy.spawnY
+        isPlayerDead = false
+        isPaused = false
+    }
+
+    // ================= Collision Helper =================
+    private fun playerHitBy(view: ImageView): Boolean {
+        if (isPaused || isPlayerDead) return false
+
+        val vw = if (view.width > 0) view.width else (view.layoutParams?.width ?: 0)
+        val vh = if (view.height > 0) view.height else (view.layoutParams?.height ?: 0)
+        val pw = if (player.width > 0) player.width else (player.layoutParams?.width ?: 0)
+        val ph = if (player.height > 0) player.height else (player.layoutParams?.height ?: 0)
+
+        if (vw <= 0 || vh <= 0 || pw <= 0 || ph <= 0) return false
+
+        val vx1 = view.x
+        val vy1 = view.y
+        val vx2 = vx1 + vw
+        val vy2 = vy1 + vh
+
+        val px1 = player.x
+        val py1 = player.y
+        val px2 = px1 + pw
+        val py2 = py1 + ph
+
+        return vx1 < px2 && vx2 > px1 && vy1 < py2 && vy2 > py1
+    }
+
+    // Enemy Spawn Waves Code
+    private fun spawnWave() {
+        val ctx = context ?: return
+        val setSize = 20
+
+        // Clear any leftovers
+        enemies.forEach { gameArea.removeView(it.view) }
+        enemies.clear()
+
+        // Decide a random index for spider_purple if level 10
+        val purpleIndex = if (currentLevel == 10) (0 until setSize).random() else -1
+
+        // Spawn for this wave
+        repeat(setSize) { i ->
+            val enemyView = ImageView(ctx).apply {
+                layoutParams = FrameLayout.LayoutParams(100, 100)
             }
 
-            // Resume game
-            isPlayerDead = false
-            isPaused = false
-        }, 2000)
+            // Decide type
+            val enemyType = when {
+                i == purpleIndex -> "spider_purple" // only one in the set
+                currentLevel in 5..10 && i < setSize / 4 -> "spider_maroon"
+                else -> "spider_blue"
+            }
+
+            // Position
+            val spawnX = (50..(gameArea.width - 150)).random().toFloat()
+            val spawnY = (-500..-100).random().toFloat()
+
+            // Drawable
+            val drawableRes = when (enemyType) {
+                "spider_maroon" -> R.drawable.spider_maroon
+                "spider_purple" -> R.drawable.spider_purple
+                else -> R.drawable.spider_blue
+            }
+            enemyView.setImageResource(drawableRes)
+
+            // Add to screen
+            gameArea.addView(enemyView)
+
+            // Create enemy
+            val enemy = SurvivalEnemy(
+                view = enemyView,
+                type = enemyType,
+                spawnX = spawnX,
+                spawnY = spawnY,
+                speed = currentEnemySpeed,
+                pattern = listOf("straight", "zigzag", "swoop").random()
+            )
+
+            enemyView.x = spawnX
+            enemyView.y = spawnY
+            enemies.add(enemy)
+
+            // Special behavior
+            if (enemyType == "spider_maroon") {
+                startMaroonShooting(enemy)
+            }
+        }
     }
 
     // Skins Code

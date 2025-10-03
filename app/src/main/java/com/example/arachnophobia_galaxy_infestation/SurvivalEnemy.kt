@@ -7,7 +7,8 @@ data class SurvivalEnemy(
     val type: String,
     val spawnX: Float,
     val spawnY: Float,
-    val speed: Float,
+    var speed: Float,
     val pattern: String,
-    var directionX: Int = 1 // +1 = right, -1 = left
+    var directionX: Int = 1,
+    var isAlive: Boolean = true   // 🔥 new
 )
