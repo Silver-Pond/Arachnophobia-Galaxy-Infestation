@@ -126,8 +126,6 @@ class SurvivalGameFragment : Fragment() {
         livesText = view.findViewById(R.id.livesText)
         timerText = view.findViewById(R.id.timer)
         timerText.text = "Time: 00:00"
-        currentLevel = 1
-        currentWave = 1
 
         // Initialize SoundPool once
         val soundPool = SoundPool.Builder().setMaxStreams(5).build()
@@ -150,39 +148,46 @@ class SurvivalGameFragment : Fragment() {
         // Apply equipped skin
         applyEquippedSkin()
 
+        // Reset level and wave
+        currentLevel = 1
+        currentWave = 1
+        currentEnemySpeed = baseEnemySpeed
+
+        // Load first level from API
         ApiClient.instance.getLevel(1).enqueue(object : Callback<Level> {
             override fun onResponse(call: Call<Level>, response: Response<Level>) {
                 if (response.isSuccessful) {
                     level = response.body()
                     apiConnected = true
 
-                    // Reset game state so it always starts fresh
-                    currentLevel = 1
-                    currentWave = 1
-                    isGameFinished = false
-                    isPlayerDead = false
-                    isPaused = false
-                    score = 0
-                    playerLives = 3
-                    updateLivesUI()
-                    updateScoreUI()
-
-                    // Clear enemies safely
-                    enemies.forEach { gameArea.removeView(it.view) }
                     enemies.clear()
+                    for (enemy in enemies) {
+                        gameArea.removeView(enemy.view)
+                    }
 
-                    // Delay a bit to ensure layout is ready, then start the timer and spawn wave
-                    gameArea.postDelayed({
-                        if (!timerRunning) startTimer()
+                    // Delay 500ms for initial setup
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        if (isAdded && view != null) {
+                            // Show initial pause text
+                            pauseText.text = "LEVEL $currentLevel"
+                            pauseText.visibility = View.VISIBLE
 
-                        // Start the first wave properly
-                        spawnWave()
+                            // Hide text after 1 second and start first wave
+                            Handler(Looper.getMainLooper()).postDelayed({
+                                pauseText.visibility = View.GONE
+                                spawnWave()
+                                if (!timerRunning) startTimer()
+                                handler.post(gameRunnable)
+                            }, 1000)
+                        }
                     }, 500)
+                } else {
+                    Toast.makeText(requireContext(), "Error loading level", Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<Level>, t: Throwable) {
-                Log.e("SurvivalGame", "Failed to load level: ${t.message}")
+                Toast.makeText(requireContext(), "Cannot reach server", Toast.LENGTH_SHORT).show()
             }
         })
 
@@ -267,9 +272,6 @@ class SurvivalGameFragment : Fragment() {
 
         // Reapply equipped skin
         applyEquippedSkin()
-
-        // Start game loop fresh
-        handler.post(gameRunnable)
     }
 
     override fun onPause() {
