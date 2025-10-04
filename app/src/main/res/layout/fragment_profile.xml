@@ -93,7 +93,7 @@
                 android:textStyle="italic" />
         </LinearLayout>
 
-        <Button
+        <!-- Button
             android:id="@+id/btnprofilechange"
             android:layout_width="287dp"
             android:layout_height="wrap_content"
@@ -102,7 +102,7 @@
             android:background="@drawable/ripple_effect"
             android:fontFamily="@font/black_ops_one"
             android:text="@string/btnprofilechange"
-            android:textColor="#FFFFFF" />
+            android:textColor="#FFFFFF" /-->
 
         <Button
             android:id="@+id/btnskin"

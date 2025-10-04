@@ -1,6 +1,8 @@
 package com.example.arachnophobia_galaxy_infestation
 
 import android.content.Context
+import android.content.Context.MODE_PRIVATE
+import android.media.SoundPool
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -20,6 +22,7 @@ class SkinsFragment : Fragment() {
     private lateinit var skinAdapter: SkinAdapter
     private lateinit var player: Player
     private lateinit var loggedInUser: String
+    private var clickbuttonSoundId: Int = 0
     private val skins = mutableListOf<Skin>()
 
     override fun onCreateView(
@@ -36,6 +39,28 @@ class SkinsFragment : Fragment() {
         // Load skins
         loadSkinsFromJson()
 
+        // Initialize SoundPool once
+        val soundPool = SoundPool.Builder().setMaxStreams(5).build()
+        SoundEffectsManager.soundPool = soundPool
+
+        // Initialize or reinitialize the SoundPool if needed
+        if (SoundEffectsManager.soundPool == null) {
+            SoundEffectsManager.soundPool = SoundPool.Builder().setMaxStreams(5).build()
+
+            // Button click sound
+            clickbuttonSoundId = SoundEffectsManager.soundPool!!.load(requireContext(), R.raw.button_click, 1)
+        } else {
+            // If already initialized but sound not loaded
+            if (clickbuttonSoundId == 0) {
+                clickbuttonSoundId = SoundEffectsManager.soundPool!!.load(requireContext(), R.raw.button_click, 1)
+            }
+        }
+
+        // Restore effects volume from prefs
+        val prefs = requireActivity().getSharedPreferences("AppSettings", MODE_PRIVATE)
+        val savedEffectsVolume = prefs.getFloat("effects_volume", 1.0f)
+        SoundEffectsManager.updateVolume(savedEffectsVolume)
+
         // Get username from arguments
         loggedInUser = arguments?.getString("username") ?: "Guest"
 
@@ -48,6 +73,9 @@ class SkinsFragment : Fragment() {
 
         // Back button
         view.findViewById<Button>(R.id.btnBack).setOnClickListener {
+            // Play button click sound
+            if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
+
             replaceFragment(ProfileFragment().apply {
                 arguments = Bundle().apply { putString("username", loggedInUser) }
             })

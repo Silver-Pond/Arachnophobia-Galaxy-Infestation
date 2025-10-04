@@ -48,19 +48,24 @@ class SurvivalGameFragment : Fragment() {
     private lateinit var gameArea: FrameLayout
     private lateinit var pauseText: TextView
     private lateinit var livesText: TextView
+    private lateinit var timerText: TextView
 
+    private var elapsedSeconds = 0
+    private var timerRunning = false
     private var isFragmentActive = false
     private var apiConnected = false // Add this at class level
     private var playerX = 0f
     private var playerY = 0f
     private val moveStep = 40f
     private var isPaused = false
-    private var playerLives = 3
+    private var playerLives = 5
     private var isPlayerDead = false
     private var score = 0
+    private var levelLoaded = false
     private var isGameFinished = false
 
     private val handler = Handler(Looper.getMainLooper())
+    private val timerHandler = Handler(Looper.getMainLooper())
     private val bullets = mutableListOf<ImageView>()
     private val enemies = mutableListOf<SurvivalEnemy>()
     private val projectiles = mutableListOf<EnemyProjectile>()
@@ -132,6 +137,8 @@ class SurvivalGameFragment : Fragment() {
         gameArea = view.findViewById(R.id.mainGameFrame)
         pauseText = view.findViewById(R.id.pauseText)
         livesText = view.findViewById(R.id.livesText)
+        timerText = view.findViewById(R.id.timer)
+        timerText.text = "Time: 00:00"
 
         // Initialize SoundPool once
         val soundPool = SoundPool.Builder().setMaxStreams(5).build()
@@ -151,35 +158,15 @@ class SurvivalGameFragment : Fragment() {
         val savedEffectsVolume = prefs.getFloat("effects_volume", 1.0f)
         SoundEffectsManager.updateVolume(savedEffectsVolume)
 
-        // Apply skin once here
+        // Apply equipped skin
         applyEquippedSkin()
 
-        // Example: load level 1 from API
-        ApiClient.instance.getLevel(1).enqueue(object : Callback<Level> {
-            override fun onResponse(call: Call<Level>, response: Response<Level>) {
-                if (response.isSuccessful) {
-                    level = response.body()
-                    apiConnected = true // API is connected
+        // Load the first level (only once)
+        if (!levelLoaded) {
+            loadLevel(currentLevel)
+        }
 
-                    // Clear old enemies
-                    for (enemy in enemies) {
-                        gameArea.removeView(enemy.view)
-                    }
-                    enemies.clear()
-
-                    // Spawn new wave only if connected
-                    spawnWave()
-                } else {
-                    handleApiFailure("Server error: ${response.code()}")
-                }
-            }
-
-            override fun onFailure(call: Call<Level>, t: Throwable) {
-                handleApiFailure("API connection failed: ${t.message}")
-            }
-        })
-
-        // Initialize game (player positioning)
+        // Initialize player position after layout is ready
         gameArea.post {
             playerX = (gameArea.width - player.width) / 2f
             playerY = (gameArea.height - player.height).toFloat()
@@ -193,18 +180,72 @@ class SurvivalGameFragment : Fragment() {
         updateHighScoreUI()
     }
 
-    private fun handleApiFailure(message: String) {
-        apiConnected = false
-        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+    private fun loadLevel(levelNumber: Int) {
+        ApiClient.instance.getLevel(levelNumber).enqueue(object : Callback<Level> {
+            override fun onResponse(call: Call<Level>, response: Response<Level>) {
+                if (response.isSuccessful) {
+                    level = response.body()
+                    apiConnected = true
+                    levelLoaded = true
 
-        // Create a new instance of GameMenuFragment with the username
-        val gameMenuFragment = GameMenuFragment().apply {
-            arguments = Bundle().apply {
-                putString("username", username)
+                    // Show pause text and then start the wave
+                    showLevelIntro(levelNumber)
+                } else {
+                    apiConnected = false
+                    Toast.makeText(requireContext(), "Failed to load level.", Toast.LENGTH_SHORT).show()
+                }
             }
+
+            override fun onFailure(call: Call<Level>, t: Throwable) {
+                apiConnected = false
+                Toast.makeText(requireContext(), "Cannot connect to API.", Toast.LENGTH_LONG).show()
+            }
+        })
+    }
+
+    private fun showLevelIntro(levelNumber: Int) {
+        pauseText.text = "LEVEL $levelNumber"
+        pauseText.visibility = View.VISIBLE
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            pauseText.visibility = View.GONE
+            spawnWave()
+        }, 1000)
+    }
+
+    private val timerRunnable = object : Runnable {
+        override fun run() {
+            if (isGameFinished) {
+                timerRunning = false
+                return
+            }
+
+            if (!isPaused && isFragmentActive) {
+                elapsedSeconds++
+
+                // Format the time as MM:SS
+                val minutes = elapsedSeconds / 60
+                val seconds = elapsedSeconds % 60
+                val formattedTime = String.format("Time: %02d:%02d", minutes, seconds)
+                timerText.text = formattedTime
+
+                // Add 10 points every 15 seconds
+                if (elapsedSeconds % 15 == 0) {
+                    score += 10
+                    updateScoreUI()
+                }
+            }
+
+            // Keep the timer running every second
+            timerHandler.postDelayed(this, 1000)
         }
-        // Navigate to profile fragment
-        replaceFragment(gameMenuFragment)
+    }
+
+    private fun startTimer() {
+        if (!timerRunning) {
+            timerRunning = true
+            timerHandler.postDelayed(timerRunnable, 1000)
+        }
     }
 
     override fun onResume() {
@@ -241,6 +282,10 @@ class SurvivalGameFragment : Fragment() {
         // Release sound resources
         SoundEffectsManager.soundPool?.release()
         SoundEffectsManager.soundPool = null
+
+        // Stopping timer
+        timerRunning = false
+        timerHandler.removeCallbacks(timerRunnable)
     }
 
     // Player movement
@@ -403,18 +448,11 @@ class SurvivalGameFragment : Fragment() {
                     else -> currentEnemySpeed + 1f
                 }
 
-                // Show pause text when level changes
-                pauseText.text = "LEVEL $currentLevel"
-                pauseText.visibility = View.VISIBLE
-
-                Handler(Looper.getMainLooper()).postDelayed({
-                    pauseText.visibility = View.GONE
-
-                    // Only spawn if no enemies exist yet (prevents reloading first wave twice)
-                    if (enemies.isEmpty()) {
-                        spawnWave()
-                    }
-                }, 1000)
+                // If all enemies are defeated and connected, load next level
+                if (enemies.isEmpty() && apiConnected && isFragmentActive) {
+                    currentLevel++
+                    loadLevel(currentLevel)
+                }
             }
         }
     }
@@ -871,6 +909,10 @@ class SurvivalGameFragment : Fragment() {
     // Game Over Code
     private fun gameOver() {
         isPaused = true
+
+        // Stopping timer
+        timerRunning = false
+        timerHandler.removeCallbacks(timerRunnable)
 
         // Stop the game loop
         handler.removeCallbacks(gameRunnable)

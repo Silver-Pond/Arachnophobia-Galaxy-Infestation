@@ -82,6 +82,8 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
         val savedEffectsVolume = prefs.getFloat("effects_volume", 1.0f)
         SoundEffectsManager.updateVolume(savedEffectsVolume)
 
+        // Restart music from beginning every time
+        mediaPlayer?.seekTo(0)
         mediaPlayer?.start()
     }
 

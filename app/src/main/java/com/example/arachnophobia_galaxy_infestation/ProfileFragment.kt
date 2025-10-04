@@ -3,7 +3,9 @@ package com.example.arachnophobia_galaxy_infestation
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
+import android.content.Context.MODE_PRIVATE
 import android.content.Intent
+import android.media.SoundPool
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -32,6 +34,7 @@ class ProfileFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    private var clickbuttonSoundId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,10 +59,32 @@ class ProfileFragment : Fragment() {
         // Initialize views
         val username = arguments?.getString("username") ?: "Guest"
         val profileusernameview = view.findViewById<TextView>(R.id.profileusernameview)
-        val btnprofilechange = view.findViewById<Button>(R.id.btnprofilechange)
+        // val btnprofilechange = view.findViewById<Button>(R.id.btnprofilechange)
         val btnskin = view.findViewById<Button>(R.id.btnskin)
         val btnback = view.findViewById<Button>(R.id.btnback)
         val btnlogout = view.findViewById<Button>(R.id.btnlogout)
+
+        // Initialize SoundPool once
+        val soundPool = SoundPool.Builder().setMaxStreams(5).build()
+        SoundEffectsManager.soundPool = soundPool
+
+        // Initialize or reinitialize the SoundPool if needed
+        if (SoundEffectsManager.soundPool == null) {
+            SoundEffectsManager.soundPool = SoundPool.Builder().setMaxStreams(5).build()
+
+            // Button click sound
+            clickbuttonSoundId = SoundEffectsManager.soundPool!!.load(requireContext(), R.raw.button_click, 1)
+        } else {
+            // If already initialized but sound not loaded
+            if (clickbuttonSoundId == 0) {
+                clickbuttonSoundId = SoundEffectsManager.soundPool!!.load(requireContext(), R.raw.button_click, 1)
+            }
+        }
+
+        // Restore effects volume from prefs
+        val prefs = requireActivity().getSharedPreferences("AppSettings", MODE_PRIVATE)
+        val savedEffectsVolume = prefs.getFloat("effects_volume", 1.0f)
+        SoundEffectsManager.updateVolume(savedEffectsVolume)
 
         // Set username
         profileusernameview.text = if (!username.isNullOrEmpty()) {
@@ -71,9 +96,12 @@ class ProfileFragment : Fragment() {
         loadSpiderSilk()
 
         // Set up click listeners
-        btnprofilechange.setOnClickListener {}
+        // btnprofilechange.setOnClickListener {}
 
         btnskin.setOnClickListener {
+            // Play button click sound
+            if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
+
             // Navigate to SkinsFragment
             val skinsFragment = SkinsFragment().apply {
                 arguments = Bundle().apply {
@@ -84,6 +112,9 @@ class ProfileFragment : Fragment() {
         }
 
         btnback.setOnClickListener {
+            // Play button click sound
+            if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
+
             // Navigate to GameMenuFragment
             val gameMenuFragment = GameMenuFragment().apply {
                 arguments = Bundle().apply {
@@ -94,6 +125,9 @@ class ProfileFragment : Fragment() {
         }
 
         btnlogout.setOnClickListener {
+            // Play button click sound
+            if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
+
             // Logout from Firebase
             val auth = FirebaseAuth.getInstance()
             auth.signOut() // Firebase logout

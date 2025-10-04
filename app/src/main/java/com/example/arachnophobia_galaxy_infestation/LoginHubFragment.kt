@@ -3,7 +3,9 @@ package com.example.arachnophobia_galaxy_infestation
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
+import android.content.Context.MODE_PRIVATE
 import android.content.Intent
+import android.media.SoundPool
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -44,7 +46,7 @@ class LoginHubFragment : Fragment() {
 
     private var param1: String? = null
     private var param2: String? = null
-
+    private var clickbuttonSoundId: Int = 0
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
     private val RC_SIGN_IN = 9001
@@ -84,25 +86,58 @@ class LoginHubFragment : Fragment() {
         val btnbiologin = view.findViewById<Button>(R.id.btnbiologin)
         val btnguest = view.findViewById<Button>(R.id.btnguest)
 
+        // Initialize SoundPool once
+        val soundPool = SoundPool.Builder().setMaxStreams(5).build()
+        SoundEffectsManager.soundPool = soundPool
+
+        // Initialize or reinitialize the SoundPool if needed
+        if (SoundEffectsManager.soundPool == null) {
+            SoundEffectsManager.soundPool = SoundPool.Builder().setMaxStreams(5).build()
+
+            // Button click sound
+            clickbuttonSoundId = SoundEffectsManager.soundPool!!.load(requireContext(), R.raw.button_click, 1)
+        } else {
+            // If already initialized but sound not loaded
+            if (clickbuttonSoundId == 0) {
+                clickbuttonSoundId = SoundEffectsManager.soundPool!!.load(requireContext(), R.raw.button_click, 1)
+            }
+        }
+
+        // Restore effects volume from prefs
+        val prefs = requireActivity().getSharedPreferences("AppSettings", MODE_PRIVATE)
+        val savedEffectsVolume = prefs.getFloat("effects_volume", 1.0f)
+        SoundEffectsManager.updateVolume(savedEffectsVolume)
+
         // Check if user is already signed in
-        val prefs = requireActivity().getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
         val useBiometrics = prefs.getBoolean("use_biometrics", false)
 
         btngooglelogin.setOnClickListener {
+            // Play button click sound
+            if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
+
             signInWithGoogle()
         }
 
         btnlogin.setOnClickListener {
+            // Play button click sound
+            if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
+
             replaceFragment(LoginFragment())
         }
         // Hide or show the button based on preference
         btnbiologin.visibility = if (useBiometrics) View.VISIBLE else View.GONE
 
         btnbiologin.setOnClickListener {
+            // Play button click sound
+            if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
+
             replaceFragment(BiometricLoginFragment())
         }
 
         btnguest.setOnClickListener {
+            // Play button click sound
+            if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
+
             replaceFragment(GameMenuFragment())
         }
     }

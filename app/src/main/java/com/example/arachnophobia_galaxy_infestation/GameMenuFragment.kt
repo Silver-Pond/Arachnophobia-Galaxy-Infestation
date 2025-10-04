@@ -68,8 +68,18 @@ class GameMenuFragment : Fragment() {
         val soundPool = SoundPool.Builder().setMaxStreams(5).build()
         SoundEffectsManager.soundPool = soundPool
 
-        // Button click sound
-        clickbuttonSoundId = soundPool.load(requireContext(), R.raw.button_click, 1)
+        // Initialize or reinitialize the SoundPool if needed
+        if (SoundEffectsManager.soundPool == null) {
+            SoundEffectsManager.soundPool = SoundPool.Builder().setMaxStreams(5).build()
+
+            // Button click sound
+            clickbuttonSoundId = SoundEffectsManager.soundPool!!.load(requireContext(), R.raw.button_click, 1)
+        } else {
+            // If already initialized but sound not loaded
+            if (clickbuttonSoundId == 0) {
+                clickbuttonSoundId = SoundEffectsManager.soundPool!!.load(requireContext(), R.raw.button_click, 1)
+            }
+        }
 
         // Restore effects volume from prefs
         val prefs = requireActivity().getSharedPreferences("AppSettings", MODE_PRIVATE)
@@ -120,10 +130,38 @@ class GameMenuFragment : Fragment() {
             // Play button click sound
             if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
 
-            // Navigate to game activity
-            val intent = Intent(requireContext(), SurvivalGameActivity::class.java)
-            intent.putExtra("username", username)
-            startActivity(intent)
+            val username = arguments?.getString("username") ?: "Guest"
+
+            // Disable button temporarily to prevent multiple clicks
+            btnsurvivalmode.isEnabled = false
+
+            // Try to connect to API first
+            ApiClient.instance.getLevel(1).enqueue(object : Callback<Level> {
+                override fun onResponse(call: Call<Level>, response: Response<Level>) {
+                    btnsurvivalmode.isEnabled = true
+                    if (response.isSuccessful) {
+                        // Connected successfully → start the game
+                        val intent = Intent(requireContext(), GameActivity::class.java)
+                        intent.putExtra("username", username)
+                        startActivity(intent)
+                    } else {
+                        Toast.makeText(
+                            requireContext(),
+                            "Unable to start Survival Mode: Server error.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<Level>, t: Throwable) {
+                    btnsurvivalmode.isEnabled = true
+                    Toast.makeText(
+                        requireContext(),
+                        "Cannot connect to server. Please check your connection.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            })
         }
 
         btnhighscores.setOnClickListener {

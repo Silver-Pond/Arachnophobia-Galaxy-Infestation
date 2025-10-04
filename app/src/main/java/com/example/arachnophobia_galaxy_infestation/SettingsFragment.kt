@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.Spinner
 import android.content.res.Configuration
+import android.media.SoundPool
 import android.widget.Switch
 import java.util.*
 
@@ -28,6 +29,7 @@ class SettingsFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
     private var selectedLanguage: String = "en" // default
+    private var clickbuttonSoundId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,6 +61,23 @@ class SettingsFragment : Fragment() {
         val adapter = ArrayAdapter(requireContext(), R.layout.item_spinner, options)
         adapter.setDropDownViewResource(R.layout.item_spinner)
         languagespinner.adapter = adapter
+
+        // Initialize SoundPool once
+        val soundPool = SoundPool.Builder().setMaxStreams(5).build()
+        SoundEffectsManager.soundPool = soundPool
+
+        // Initialize or reinitialize the SoundPool if needed
+        if (SoundEffectsManager.soundPool == null) {
+            SoundEffectsManager.soundPool = SoundPool.Builder().setMaxStreams(5).build()
+
+            // Button click sound
+            clickbuttonSoundId = SoundEffectsManager.soundPool!!.load(requireContext(), R.raw.button_click, 1)
+        } else {
+            // If already initialized but sound not loaded
+            if (clickbuttonSoundId == 0) {
+                clickbuttonSoundId = SoundEffectsManager.soundPool!!.load(requireContext(), R.raw.button_click, 1)
+            }
+        }
 
         // Load saved preferences
         val prefs = requireActivity().getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
@@ -121,6 +140,9 @@ class SettingsFragment : Fragment() {
         val username = arguments?.getString("username") ?: "Guest"
 
         btnsavesettings.setOnClickListener {
+            // Play button click sound
+            if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
+
             // Save language preference
             prefs.edit().putString("language", selectedLanguage).apply()
 

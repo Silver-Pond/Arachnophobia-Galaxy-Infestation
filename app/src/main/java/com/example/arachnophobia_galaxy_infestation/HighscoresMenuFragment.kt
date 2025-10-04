@@ -1,5 +1,7 @@
 package com.example.arachnophobia_galaxy_infestation
 
+import android.content.Context.MODE_PRIVATE
+import android.media.SoundPool
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -21,6 +23,7 @@ class HighscoresMenuFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    private var clickbuttonSoundId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,11 +50,36 @@ class HighscoresMenuFragment : Fragment() {
         val btnsurvivalhighscore = view.findViewById<Button>(R.id.btnsurvivalhighscore)
         val btnback = view.findViewById<Button>(R.id.btnback)
 
+        // Initialize SoundPool once
+        val soundPool = SoundPool.Builder().setMaxStreams(5).build()
+        SoundEffectsManager.soundPool = soundPool
+
+        // Initialize or reinitialize the SoundPool if needed
+        if (SoundEffectsManager.soundPool == null) {
+            SoundEffectsManager.soundPool = SoundPool.Builder().setMaxStreams(5).build()
+
+            // Button click sound
+            clickbuttonSoundId = SoundEffectsManager.soundPool!!.load(requireContext(), R.raw.button_click, 1)
+        } else {
+            // If already initialized but sound not loaded
+            if (clickbuttonSoundId == 0) {
+                clickbuttonSoundId = SoundEffectsManager.soundPool!!.load(requireContext(), R.raw.button_click, 1)
+            }
+        }
+
+        // Restore effects volume from prefs
+        val prefs = requireActivity().getSharedPreferences("AppSettings", MODE_PRIVATE)
+        val savedEffectsVolume = prefs.getFloat("effects_volume", 1.0f)
+        SoundEffectsManager.updateVolume(savedEffectsVolume)
+
         // Retrieve username from arguments
         val username = arguments?.getString("username") ?: "Guest"
 
         // Set up click listeners for buttons
         btnarcadehighscore.setOnClickListener {
+            // Play button click sound
+            if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
+
             // Create a new instance of LeaderboardFragment with the username
             val leaderboardFragment = LeaderboardFragment().apply {
                 arguments = Bundle().apply {
@@ -63,6 +91,9 @@ class HighscoresMenuFragment : Fragment() {
         }
 
         btnsurvivalhighscore.setOnClickListener {
+            // Play button click sound
+            if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
+
             // Create a new instance of SurvivalLeaderboardFragment with the username
             val survivalLeaderboardFragment = SurvivalLeaderboardFragment().apply {
                 arguments = Bundle().apply {
@@ -74,6 +105,9 @@ class HighscoresMenuFragment : Fragment() {
         }
 
         btnback.setOnClickListener {
+            // Play button click sound
+            if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
+
             // Create a new instance of GameMenuFragment with the username
             val gameMenuFragment = GameMenuFragment().apply {
                 arguments = Bundle().apply {
