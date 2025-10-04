@@ -29,11 +29,12 @@ class TrophyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         }
 
         // Highlight background if trophy is earned
-        if (isEarned) {
+        /*if (isEarned) {
             container.background = ContextCompat.getDrawable(context, R.drawable.custom_button)
         } else {
             itemView.setBackgroundColor(Color.TRANSPARENT)
-        }
+        }*/
+        itemView.setBackgroundColor(Color.TRANSPARENT)
 
         itemView.setOnClickListener {
             onItemClick(trophy)
