@@ -73,7 +73,7 @@ class SurvivalGameFragment : Fragment() {
     private var level: Level? = null
     private var currentLevel = 1
     private var currentWave = 1
-    private val maxWaves = 4
+    private val maxWaves = 3
     private var baseEnemySpeed = 3f
     private var currentEnemySpeed = baseEnemySpeed
     private var projectileSpeed = 10f
