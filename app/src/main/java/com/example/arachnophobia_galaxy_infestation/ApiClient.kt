@@ -6,7 +6,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiClient {
-    private const val BASE_URL = "http://192.168.18.57:5055/" // Must end with "/"
+    private const val BASE_URL = "https://arachnophobia-api.onrender.com"
 
     val instance: LevelApi by lazy {
         val logging = HttpLoggingInterceptor().apply {

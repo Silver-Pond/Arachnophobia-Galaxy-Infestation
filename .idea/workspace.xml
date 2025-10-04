@@ -160,7 +160,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=PhysicalDevice, isTemplate=false, identifier=serial=R9PR80GS35H)]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -370,22 +370,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1755129484054</updated>
-    </task>
-    <task id="LOCAL-00025" summary="Merged remote history with local changes">
-      <option name="closed" value="true" />
-      <created>1756850000406</created>
-      <option name="number" value="00025" />
-      <option name="presentableId" value="LOCAL-00025" />
-      <option name="project" value="LOCAL" />
-      <updated>1756850000406</updated>
-    </task>
-    <task id="LOCAL-00026" summary="Merged remote history with local changes">
-      <option name="closed" value="true" />
-      <created>1756855037802</created>
-      <option name="number" value="00026" />
-      <option name="presentableId" value="LOCAL-00026" />
-      <option name="project" value="LOCAL" />
-      <updated>1756855037802</updated>
     </task>
     <task id="LOCAL-00027" summary="Merged remote history with local changes">
       <option name="closed" value="true" />
@@ -763,7 +747,23 @@
       <option name="project" value="LOCAL" />
       <updated>1759595530146</updated>
     </task>
-    <option name="localTasksCounter" value="74" />
+    <task id="LOCAL-00074" summary="Merged remote history with local changes">
+      <option name="closed" value="true" />
+      <created>1759597694588</created>
+      <option name="number" value="00074" />
+      <option name="presentableId" value="LOCAL-00074" />
+      <option name="project" value="LOCAL" />
+      <updated>1759597694588</updated>
+    </task>
+    <task id="LOCAL-00075" summary="Merged remote history with local changes">
+      <option name="closed" value="true" />
+      <created>1759598494082</created>
+      <option name="number" value="00075" />
+      <option name="presentableId" value="LOCAL-00075" />
+      <option name="project" value="LOCAL" />
+      <updated>1759598494083</updated>
+    </task>
+    <option name="localTasksCounter" value="76" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">

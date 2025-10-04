@@ -77,9 +77,9 @@ class SurvivalGameFragment : Fragment() {
     private var baseEnemySpeed = 3f
     private var currentEnemySpeed = baseEnemySpeed
     private var projectileSpeed = 10f
-
-    private var currentBulletDrawable: String = "moth_blast"
     private var bulletSpeed = 15f
+    private var currentBulletDrawable: String = "moth_blast"
+
     private var shootSoundId: Int = 0
     private var enemyfireId: Int = 0
     private var enemykilledId: Int = 0
@@ -92,18 +92,6 @@ class SurvivalGameFragment : Fragment() {
         get() = requireActivity().findViewById(R.id.scoreText)
     private val highScoreText: TextView
         get() = requireActivity().findViewById(R.id.highscoreText)
-
-    private val gameRunnable = object : Runnable {
-        override fun run() {
-            if (isAdded && view != null && !isPaused) {
-                updateGame()
-            }
-            // Re-post ONLY if still added and the view exists
-            if (isAdded && view != null) {
-                handler.postDelayed(this, 16)
-            }
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -138,6 +126,8 @@ class SurvivalGameFragment : Fragment() {
         livesText = view.findViewById(R.id.livesText)
         timerText = view.findViewById(R.id.timer)
         timerText.text = "Time: 00:00"
+        currentLevel = 1
+        currentWave = 1
 
         // Initialize SoundPool once
         val soundPool = SoundPool.Builder().setMaxStreams(5).build()
@@ -166,19 +156,34 @@ class SurvivalGameFragment : Fragment() {
                     level = response.body()
                     apiConnected = true
 
-                    enemies.clear()
-                    for (enemy in enemies) {
-                        gameArea.removeView(enemy.view)
-                    }
+                    // Reset game state so it always starts fresh
+                    currentLevel = 1
+                    currentWave = 1
+                    isGameFinished = false
+                    isPlayerDead = false
+                    isPaused = false
+                    score = 0
+                    playerLives = 3
+                    updateLivesUI()
+                    updateScoreUI()
 
-                    // Delay initial wave spawn to avoid early level-up
+                    // Clear enemies safely
+                    enemies.forEach { gameArea.removeView(it.view) }
+                    enemies.clear()
+
+                    // Delay a bit to ensure layout is ready, then start the timer and spawn wave
                     gameArea.postDelayed({
                         if (!timerRunning) startTimer()
+
+                        // Start the first wave properly
+                        spawnWave()
                     }, 500)
                 }
             }
 
-            override fun onFailure(call: Call<Level>, t: Throwable) { }
+            override fun onFailure(call: Call<Level>, t: Throwable) {
+                Log.e("SurvivalGame", "Failed to load level: ${t.message}")
+            }
         })
 
         // Initialize player position after layout is ready
@@ -193,6 +198,18 @@ class SurvivalGameFragment : Fragment() {
         updateLivesUI()
         updateScoreUI()
         updateHighScoreUI()
+    }
+
+    private val gameRunnable = object : Runnable {
+        override fun run() {
+            if (isAdded && view != null && !isPaused) {
+                updateGame()
+            }
+            // Re-post ONLY if still added and the view exists
+            if (isAdded && view != null) {
+                handler.postDelayed(this, 16)
+            }
+        }
     }
 
     private val timerRunnable = object : Runnable {
@@ -232,42 +249,61 @@ class SurvivalGameFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+
+        // Mark fragment as active early
         isFragmentActive = true
 
-        // Apply skin once here
+        // Stop any pending tasks before resetting
+        handler.removeCallbacks(gameRunnable)
+
+        // Full safe reset if restarting from beginning
+        currentLevel = 1
+        currentWave = 1
+        score = 0
+        updateScoreUI()
+
+        // Ensure pauseText matches the correct level
+        pauseText.text = "LEVEL $currentLevel"
+
+        // Reapply equipped skin
         applyEquippedSkin()
 
-        // Make sure we don’t double-post the game loop
-        handler.removeCallbacks(gameRunnable)
+        // Start game loop fresh
         handler.post(gameRunnable)
     }
 
     override fun onPause() {
         super.onPause()
+
+        // Mark fragment as inactive so game loop & spawns stop
         isFragmentActive = false
+
+        // Stop timer but preserve its value (don’t reset)
+        timerRunning = false
+        timerHandler.removeCallbacks(timerRunnable)
+
+        // Pause game loop cleanly
+        handler.removeCallbacks(gameRunnable)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
 
-        // Mark fragment as inactive so no new waves can spawn
+        // Full deactivation to prevent any background updates
         isFragmentActive = false
-        apiConnected = false // optional safeguard
+        apiConnected = false
 
-        // Stop ALL pending tasks (game loop, delayed spawns, etc.)
+        // Stop ALL delayed tasks or loop callbacks
         handler.removeCallbacksAndMessages(null)
+        timerHandler.removeCallbacksAndMessages(null)
 
-        // Clear any active enemies from the game area
+        // Clean up all enemies from view hierarchy
         enemies.forEach { gameArea.removeView(it.view) }
         enemies.clear()
 
-        // Release sound resources
+        // Release all sound resources to avoid memory leaks
         SoundEffectsManager.soundPool?.release()
         SoundEffectsManager.soundPool = null
-
-        // Stopping timer
-        timerRunning = false
-        timerHandler.removeCallbacks(timerRunnable)
     }
 
     // Player movement
@@ -897,42 +933,42 @@ class SurvivalGameFragment : Fragment() {
 
     // Game Over Code
     private fun gameOver() {
+        if (!isFragmentActive) return // Prevent running after fragment is destroyed
         isPaused = true
 
-        // Stopping timer
+        // Stop timer
         timerRunning = false
         timerHandler.removeCallbacks(timerRunnable)
 
-        // Stop the game loop
+        // Stop game loop
         handler.removeCallbacks(gameRunnable)
 
+        // Stop enemy spawns (safety)
+        enemies.forEach { gameArea.removeView(it.view) }
+        enemies.clear()
+
+        // Display GAME OVER text
         pauseText.text = "GAME OVER"
         pauseText.visibility = View.VISIBLE
         pauseText.bringToFront()
 
-        // Save Highscore & Currency
+        // Play sound (only once)
+        if (gameOverSoundId != 0) {
+            SoundEffectsManager.playSound(gameOverSoundId)
+        }
+
+        // Save progress safely
         saveHighScore()
         saveInGameCurrency()
-
-        // Sync new highscore in case internet was lost during play
         onNewSurvivalHighScoreAchieved(score)
-
-        // Award trophies
         checkAndAwardTrophies()
 
+        // Delay return to Game Menu
         Handler(Looper.getMainLooper()).postDelayed({
-            requireActivity().finish()
+            if (isFragmentActive && isAdded) {
+                requireActivity().finish()
+            }
         }, 2000)
-
-        // Play sound
-        if (gameOverSoundId != 0) SoundEffectsManager.playSound(gameOverSoundId)
-    }
-
-    // Helper method to replace fragment
-    private fun replaceFragment(fragment: Fragment) {
-        parentFragmentManager.beginTransaction()
-            .replace(R.id.main, fragment)
-            .commit()
     }
 
     companion object {

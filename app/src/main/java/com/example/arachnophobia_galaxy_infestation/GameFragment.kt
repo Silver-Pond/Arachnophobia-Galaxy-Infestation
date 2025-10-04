@@ -866,22 +866,21 @@ class GameFragment : Fragment() {
         pauseText.visibility = View.VISIBLE
         pauseText.bringToFront()
 
-        // Save Highscore & Currency
+        // Play sound (only once)
+        if (gameOverSoundId != 0) {
+            SoundEffectsManager.playSound(gameOverSoundId)
+        }
+
+        // Save progress safely
         saveHighScore()
         saveInGameCurrency()
-
-        // Sync new highscore in case internet was lost during play
         onNewHighScoreAchieved(score)
-
-        // Award trophies
         checkAndAwardTrophies()
 
+        // Delay return to Game Menu
         Handler(Looper.getMainLooper()).postDelayed({
             requireActivity().finish()
         }, 2000)
-
-        // Play sound
-        if (gameOverSoundId != 0) SoundEffectsManager.playSound(gameOverSoundId)
     }
 
     private fun gameWin() {
@@ -896,16 +895,18 @@ class GameFragment : Fragment() {
         pauseText.visibility = View.VISIBLE
         pauseText.bringToFront()
 
-        // Save Highscore & Currency
+        // Play sound (only once)
+        if (gameOverSoundId != 0) {
+            SoundEffectsManager.playSound(gameOverSoundId)
+        }
+
+        // Save progress safely
         saveHighScore()
         saveInGameCurrency()
-
-        // Sync new highscore in case internet was lost during play
         onNewHighScoreAchieved(score)
-
-        // Award trophies
         checkAndAwardTrophies()
 
+        // Delay return to Game Menu
         Handler(Looper.getMainLooper()).postDelayed({
             requireActivity().finish()
         }, 2000)
