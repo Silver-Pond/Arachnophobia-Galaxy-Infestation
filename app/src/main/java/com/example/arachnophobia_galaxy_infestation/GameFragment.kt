@@ -752,7 +752,7 @@ class GameFragment : Fragment() {
                                 if (showToasts) {
                                     Toast.makeText(
                                         requireContext(),
-                                        "You have earned $spider_silk silk! (Total: $updatedSilk)",
+                                        "You have earned $spider_silk silk!",
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 }

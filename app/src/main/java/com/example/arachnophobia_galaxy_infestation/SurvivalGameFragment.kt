@@ -58,10 +58,9 @@ class SurvivalGameFragment : Fragment() {
     private var playerY = 0f
     private val moveStep = 40f
     private var isPaused = false
-    private var playerLives = 5
+    private var playerLives = 3
     private var isPlayerDead = false
     private var score = 0
-    private var levelLoaded = false
     private var isGameFinished = false
 
     private val handler = Handler(Looper.getMainLooper())
@@ -74,7 +73,7 @@ class SurvivalGameFragment : Fragment() {
     private var level: Level? = null
     private var currentLevel = 1
     private var currentWave = 1
-    private val maxWaves = 3
+    private val maxWaves = 4
     private var baseEnemySpeed = 3f
     private var currentEnemySpeed = baseEnemySpeed
     private var projectileSpeed = 10f
@@ -161,10 +160,26 @@ class SurvivalGameFragment : Fragment() {
         // Apply equipped skin
         applyEquippedSkin()
 
-        // Load the first level (only once)
-        if (!levelLoaded) {
-            loadLevel(currentLevel)
-        }
+        ApiClient.instance.getLevel(1).enqueue(object : Callback<Level> {
+            override fun onResponse(call: Call<Level>, response: Response<Level>) {
+                if (response.isSuccessful) {
+                    level = response.body()
+                    apiConnected = true
+
+                    enemies.clear()
+                    for (enemy in enemies) {
+                        gameArea.removeView(enemy.view)
+                    }
+
+                    // Delay initial wave spawn to avoid early level-up
+                    gameArea.postDelayed({
+                        if (!timerRunning) startTimer()
+                    }, 500)
+                }
+            }
+
+            override fun onFailure(call: Call<Level>, t: Throwable) { }
+        })
 
         // Initialize player position after layout is ready
         gameArea.post {
@@ -178,39 +193,6 @@ class SurvivalGameFragment : Fragment() {
         updateLivesUI()
         updateScoreUI()
         updateHighScoreUI()
-    }
-
-    private fun loadLevel(levelNumber: Int) {
-        ApiClient.instance.getLevel(levelNumber).enqueue(object : Callback<Level> {
-            override fun onResponse(call: Call<Level>, response: Response<Level>) {
-                if (response.isSuccessful) {
-                    level = response.body()
-                    apiConnected = true
-                    levelLoaded = true
-
-                    // Show pause text and then start the wave
-                    showLevelIntro(levelNumber)
-                } else {
-                    apiConnected = false
-                    Toast.makeText(requireContext(), "Failed to load level.", Toast.LENGTH_SHORT).show()
-                }
-            }
-
-            override fun onFailure(call: Call<Level>, t: Throwable) {
-                apiConnected = false
-                Toast.makeText(requireContext(), "Cannot connect to API.", Toast.LENGTH_LONG).show()
-            }
-        })
-    }
-
-    private fun showLevelIntro(levelNumber: Int) {
-        pauseText.text = "LEVEL $levelNumber"
-        pauseText.visibility = View.VISIBLE
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            pauseText.visibility = View.GONE
-            spawnWave()
-        }, 1000)
     }
 
     private val timerRunnable = object : Runnable {
@@ -448,11 +430,18 @@ class SurvivalGameFragment : Fragment() {
                     else -> currentEnemySpeed + 1f
                 }
 
-                // If all enemies are defeated and connected, load next level
-                if (enemies.isEmpty() && apiConnected && isFragmentActive) {
-                    currentLevel++
-                    loadLevel(currentLevel)
-                }
+                // Show pause text when level changes
+                pauseText.text = "LEVEL $currentLevel"
+                pauseText.visibility = View.VISIBLE
+
+                Handler(Looper.getMainLooper()).postDelayed({
+                    pauseText.visibility = View.GONE
+
+                    // Only spawn if no enemies exist yet (prevents reloading first wave twice)
+                    if (enemies.isEmpty()) {
+                        spawnWave()
+                    }
+                }, 1000)
             }
         }
     }
@@ -806,7 +795,7 @@ class SurvivalGameFragment : Fragment() {
                                 if (showToasts) {
                                     Toast.makeText(
                                         requireContext(),
-                                        "You earned ${"%.1f".format(spiderSilkEarned)} silk! (Total: ${"%.1f".format(updatedSilk)})",
+                                        "You earned ${"%.1f".format(spiderSilkEarned)} silk!",
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 }

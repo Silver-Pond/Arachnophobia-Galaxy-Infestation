@@ -141,7 +141,7 @@ class GameMenuFragment : Fragment() {
                     btnsurvivalmode.isEnabled = true
                     if (response.isSuccessful) {
                         // Connected successfully → start the game
-                        val intent = Intent(requireContext(), SurvivalGameFragment::class.java)
+                        val intent = Intent(requireContext(), SurvivalGameActivity::class.java)
                         intent.putExtra("username", username)
                         startActivity(intent)
                     } else {
