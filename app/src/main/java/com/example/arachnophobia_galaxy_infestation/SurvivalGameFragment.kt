@@ -350,7 +350,6 @@ class SurvivalGameFragment : Fragment() {
     }
 
     // ================= Survival Game Loop =================
-
     private fun updateGame() {
         if (isPaused || isGameFinished) return
 
@@ -359,7 +358,6 @@ class SurvivalGameFragment : Fragment() {
         while (enemyIterator.hasNext()) {
             val enemy = enemyIterator.next()
             if (!enemy.isAlive) continue
-
             val view = enemy.view
 
             // Movement patterns
@@ -367,10 +365,8 @@ class SurvivalGameFragment : Fragment() {
                 "straight" -> view.y += enemy.speed
                 "zigzag" -> {
                     view.y += enemy.speed
-                    view.x += (enemy.directionX * enemy.speed)
-                    if (view.x <= 0f || view.x + view.width >= gameArea.width) {
-                        enemy.directionX *= -1
-                    }
+                    view.x += enemy.directionX * enemy.speed
+                    if (view.x <= 0f || view.x + view.width >= gameArea.width) enemy.directionX *= -1
                 }
                 "swoop" -> {
                     view.y += enemy.speed * 1.5f
@@ -378,7 +374,7 @@ class SurvivalGameFragment : Fragment() {
                 }
             }
 
-            // Enemy collides with player
+            // Player collision
             if (!isPlayerDead && playerHitBy(view)) {
                 handlePlayerDeath()
                 return
@@ -413,32 +409,23 @@ class SurvivalGameFragment : Fragment() {
                 hitEnemy.isAlive = false
                 hitEnemy.view.setImageResource(R.drawable.spider_death)
 
-                // Play enemy death sound
-                if (hitEnemy.type == "spider_purple") {
-                    if (purpkilledId != 0) {
-                        SoundEffectsManager.playSound(purpkilledId)
-                    }
-                } else {
-                    if (enemykilledId != 0) {
-                        SoundEffectsManager.playSound(enemykilledId)
-                    }
-                }
+                // Play correct death sound
+                val soundId = if (hitEnemy.type == "spider_purple") purpkilledId else enemykilledId
+                if (soundId != 0) SoundEffectsManager.playSound(soundId)
 
                 handler.postDelayed({
-                    if (isAdded && gameArea.isAttachedToWindow) {
-                        gameArea.removeView(hitEnemy.view)
-                    }
+                    if (isAdded && gameArea.isAttachedToWindow) gameArea.removeView(hitEnemy.view)
                 }, 300)
 
                 enemies.remove(hitEnemy)
                 gameArea.removeView(bullet)
                 bulletIterator.remove()
 
-                // === Score system ===
+                // === Score & Lives ===
                 score += when (hitEnemy.type) {
                     "spider_maroon" -> 15
                     "spider_purple" -> {
-                        playerLives += 1
+                        playerLives++
                         updateLivesUI()
                         50
                     }
@@ -446,6 +433,7 @@ class SurvivalGameFragment : Fragment() {
                 }
 
                 updateScoreUI()
+                checkAndAwardTrophies()
             }
         }
 
@@ -462,23 +450,18 @@ class SurvivalGameFragment : Fragment() {
                 currentWave = 1
 
                 // Adjust enemy speed scaling
-                currentEnemySpeed = when {
-                    currentLevel % 5 == 0 -> baseEnemySpeed
-                    currentLevel in 10..15 -> baseEnemySpeed + 1f
-                    else -> currentEnemySpeed + 1f
+                currentEnemySpeed = baseEnemySpeed + when {
+                    currentLevel <= 20 -> (currentLevel - 1) * 1f
+                    else -> (19 * 1f) + ((currentLevel - 20) * 2f)
                 }
 
-                // Show pause text when level changes
+                // Update UI
                 pauseText.text = "LEVEL $currentLevel"
                 pauseText.visibility = View.VISIBLE
 
                 Handler(Looper.getMainLooper()).postDelayed({
                     pauseText.visibility = View.GONE
-
-                    // Only spawn if no enemies exist yet (prevents reloading first wave twice)
-                    if (enemies.isEmpty()) {
-                        spawnWave()
-                    }
+                    if (enemies.isEmpty()) spawnWave()
                 }, 1000)
             }
         }
@@ -634,20 +617,21 @@ class SurvivalGameFragment : Fragment() {
 
         val ctx = context ?: return
         val setSize = 20
-
-        // Clear leftovers safely
-        enemies.forEach { enemy ->
-            gameArea.removeView(enemy.view)
-        }
+        enemies.forEach { gameArea.removeView(it.view) }
         enemies.clear()
 
-        // Purple spider logic
-        val purpleIndex = if (currentLevel == 10) (0 until setSize).random() else -1
+        // Update speed scaling
+        currentEnemySpeed = if (currentLevel <= 20)
+            baseEnemySpeed + (currentLevel - 1)
+        else
+            baseEnemySpeed + 19 + (currentLevel - 20) * 2
+
+        val purpleIndex = if (currentLevel % 10 == 0) (0 until setSize).random() else -1
 
         repeat(setSize) { i ->
             val enemyType = when {
                 i == purpleIndex -> "spider_purple"
-                currentLevel in 5..10 && i < setSize / 4 -> "spider_maroon"
+                currentLevel in 5..15 && i < setSize / 4 -> "spider_maroon"
                 else -> "spider_blue"
             }
 
@@ -662,21 +646,15 @@ class SurvivalGameFragment : Fragment() {
                 )
             }
 
-            // Position before adding
             val spawnX = (50..(gameArea.width - 150)).random().toFloat()
             val spawnY = (-500..-100).random().toFloat()
             enemyView.x = spawnX
             enemyView.y = spawnY
 
-            // Add to screen
             gameArea.addView(enemyView)
-
-            // Spider purple: appearance sound + glow effect
-            if (enemyType == "spider_purple" && purpleAppearId != 0) {
+            if (enemyType == "spider_purple" && purpleAppearId != 0)
                 SoundEffectsManager.playSound(purpleAppearId)
-            }
 
-            // Create enemy object
             val enemy = SurvivalEnemy(
                 view = enemyView,
                 type = enemyType,
@@ -685,12 +663,9 @@ class SurvivalGameFragment : Fragment() {
                 speed = currentEnemySpeed,
                 pattern = listOf("straight", "zigzag", "swoop").random()
             )
-
             enemies.add(enemy)
 
-            if (enemyType == "spider_maroon") {
-                startMaroonShooting(enemy)
-            }
+            if (enemyType == "spider_maroon") startMaroonShooting(enemy)
         }
     }
 

@@ -100,7 +100,6 @@ class SkinsFragment : Fragment() {
             if (snapshot.exists()) {
                 val map = snapshot.value as? Map<*, *>
 
-                // Parse spider_silk safely
                 val silk = when (val v = map?.get("spider_silk")) {
                     is Long -> v.toDouble()
                     is Double -> v
@@ -108,11 +107,9 @@ class SkinsFragment : Fragment() {
                     else -> 0.0
                 }
 
-                // Parse ownedSkins safely
                 val owned = (map?.get("ownedSkins") as? List<*>)?.map { it.toString() }
                     ?: listOf("Moth", "Super Mario", "Space Invader")
 
-                // Parse equippedSkin safely
                 val equipped = map?.get("equippedSkin")?.toString() ?: "Moth"
 
                 player = Player(
@@ -123,6 +120,15 @@ class SkinsFragment : Fragment() {
                     ownedSkins = owned,
                     equippedSkin = equipped
                 )
+
+                // ✅ Save local prefs so other methods can use them
+                val prefs = requireContext().getSharedPreferences("GamePrefs", Context.MODE_PRIVATE)
+                prefs.edit()
+                    .putString("username", player.username)
+                    .putStringSet("ownedSkins", owned.toSet())
+                    .putString("equippedSkin", equipped)
+                    .apply()
+
             } else {
                 player = Player(
                     id = uid,
@@ -200,7 +206,19 @@ class SkinsFragment : Fragment() {
 
     private fun saveEquippedSkinLocally(skinName: String) {
         val prefs = requireContext().getSharedPreferences("GamePrefs", Context.MODE_PRIVATE)
-        prefs.edit().putString("equippedSkin", skinName).apply()
+        val username = prefs.getString("username", "Guest") ?: "Guest"
+        val ownedSkins = prefs.getStringSet("ownedSkins", setOf("Moth")) ?: setOf("Moth")
+
+        val finalSkin = if (!username.equals("Guest", ignoreCase = true) &&
+            username.isNotBlank() &&
+            ownedSkins.contains(skinName)
+        ) {
+            skinName
+        } else {
+            "Moth"
+        }
+
+        prefs.edit().putString("equippedSkin", finalSkin).apply()
     }
 
     private fun replaceFragment(fragment: Fragment) {
