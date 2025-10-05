@@ -371,22 +371,6 @@
       <option name="presentableId" value="Default" />
       <updated>1755129484054</updated>
     </task>
-    <task id="LOCAL-00027" summary="Merged remote history with local changes">
-      <option name="closed" value="true" />
-      <created>1756855088341</created>
-      <option name="number" value="00027" />
-      <option name="presentableId" value="LOCAL-00027" />
-      <option name="project" value="LOCAL" />
-      <updated>1756855088341</updated>
-    </task>
-    <task id="LOCAL-00028" summary="Merged remote history with local changes">
-      <option name="closed" value="true" />
-      <created>1756856100401</created>
-      <option name="number" value="00028" />
-      <option name="presentableId" value="LOCAL-00028" />
-      <option name="project" value="LOCAL" />
-      <updated>1756856100402</updated>
-    </task>
     <task id="LOCAL-00029" summary="Merged remote history with local changes">
       <option name="closed" value="true" />
       <created>1756896054218</created>
@@ -763,7 +747,23 @@
       <option name="project" value="LOCAL" />
       <updated>1759598494083</updated>
     </task>
-    <option name="localTasksCounter" value="76" />
+    <task id="LOCAL-00076" summary="Merged remote history with local changes">
+      <option name="closed" value="true" />
+      <created>1759618322345</created>
+      <option name="number" value="00076" />
+      <option name="presentableId" value="LOCAL-00076" />
+      <option name="project" value="LOCAL" />
+      <updated>1759618322345</updated>
+    </task>
+    <task id="LOCAL-00077" summary="Merged remote history with local changes">
+      <option name="closed" value="true" />
+      <created>1759621421916</created>
+      <option name="number" value="00077" />
+      <option name="presentableId" value="LOCAL-00077" />
+      <option name="project" value="LOCAL" />
+      <updated>1759621421916</updated>
+    </task>
+    <option name="localTasksCounter" value="78" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">

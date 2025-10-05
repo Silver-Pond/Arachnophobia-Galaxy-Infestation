@@ -74,14 +74,26 @@ class SurvivalGameActivity : AppCompatActivity() {
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     isLeftPressed = true
-                    if (!isRightPressed) startMoving { fragment?.movePlayerLeft() } else stopMoving()
+
+                    // Reverse controls between levels 10–15
+                    if (fragment?.currentLevel in 10..15) {
+                        if (!isRightPressed) startMoving { fragment?.movePlayerRight() } else stopMoving()
+                    } else {
+                        if (!isRightPressed) startMoving { fragment?.movePlayerLeft() } else stopMoving()
+                    }
                     true
                 }
+
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                     isLeftPressed = false
-                    if (isRightPressed) startMoving { fragment?.movePlayerRight() } else stopMoving()
+                    if (fragment?.currentLevel in 10..15) {
+                        if (isRightPressed) startMoving { fragment?.movePlayerLeft() } else stopMoving()
+                    } else {
+                        if (isRightPressed) startMoving { fragment?.movePlayerRight() } else stopMoving()
+                    }
                     true
                 }
+
                 else -> false
             }
         }
@@ -91,14 +103,26 @@ class SurvivalGameActivity : AppCompatActivity() {
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     isRightPressed = true
-                    if (!isLeftPressed) startMoving { fragment?.movePlayerRight() } else stopMoving()
+
+                    // Reverse controls between levels 10–15
+                    if (fragment?.currentLevel in 10..15) {
+                        if (!isLeftPressed) startMoving { fragment?.movePlayerLeft() } else stopMoving()
+                    } else {
+                        if (!isLeftPressed) startMoving { fragment?.movePlayerRight() } else stopMoving()
+                    }
                     true
                 }
+
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                     isRightPressed = false
-                    if (isLeftPressed) startMoving { fragment?.movePlayerLeft() } else stopMoving()
+                    if (fragment?.currentLevel in 10..15) {
+                        if (isLeftPressed) startMoving { fragment?.movePlayerRight() } else stopMoving()
+                    } else {
+                        if (isLeftPressed) startMoving { fragment?.movePlayerLeft() } else stopMoving()
+                    }
                     true
                 }
+
                 else -> false
             }
         }

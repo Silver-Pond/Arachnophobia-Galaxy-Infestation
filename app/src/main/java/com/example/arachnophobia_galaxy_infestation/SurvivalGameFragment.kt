@@ -71,7 +71,7 @@ class SurvivalGameFragment : Fragment() {
 
     private var username: String? = null
     private var level: Level? = null
-    private var currentLevel = 1
+    var currentLevel = 1
     private var currentWave = 1
     private val maxWaves = 3
     private var baseEnemySpeed = 3f
