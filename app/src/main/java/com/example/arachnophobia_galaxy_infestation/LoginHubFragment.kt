@@ -143,8 +143,12 @@ class LoginHubFragment : Fragment() {
     }
 
     private fun signInWithGoogle() {
-        val signInIntent = googleSignInClient.signInIntent
-        startActivityForResult(signInIntent, RC_SIGN_IN)
+        // First, sign out any existing Google account to force the chooser to appear again
+        googleSignInClient.signOut().addOnCompleteListener {
+            // After sign-out completes, show the Google Account picker again
+            val signInIntent = googleSignInClient.signInIntent
+            startActivityForResult(signInIntent, RC_SIGN_IN)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -170,15 +174,12 @@ class LoginHubFragment : Fragment() {
                         val database = FirebaseDatabase.getInstance().getReference("players")
                         val playerId = it.uid
 
-                        // Check if user already exists in DB
-                        database.child(playerId).addListenerForSingleValueEvent(object :
-                            ValueEventListener {
+                        database.child(playerId).addListenerForSingleValueEvent(object : ValueEventListener {
                             override fun onDataChange(snapshot: DataSnapshot) {
                                 if (snapshot.exists()) {
-                                    // User exists → don’t overwrite
-                                    val existingUsername = snapshot.child("username").getValue(String::class.java) ?: it.displayName ?: "Guest"
+                                    val existingUsername = snapshot.child("username").getValue(String::class.java)
+                                        ?: it.displayName ?: "Guest"
 
-                                    // Go to GameMenuFragment with existing username
                                     val gameMenuFragment = GameMenuFragment().apply {
                                         arguments = Bundle().apply {
                                             putString("username", existingUsername)
@@ -186,17 +187,16 @@ class LoginHubFragment : Fragment() {
                                     }
                                     replaceFragment(gameMenuFragment)
                                 } else {
-                                    // User doesn't exist → create new one
                                     val player = Player(
                                         username = it.displayName ?: "Guest",
                                         email = it.email ?: "No Email",
-                                        password = "N/A", // Google Sign-In does not provide password
+                                        password = "N/A",
                                         highscore = 0,
                                         survivalhighscore = 0,
                                         spider_silk = 0.00,
                                         trophies = emptyList(),
-                                        ownedSkins = listOf("Moth", "Mario", "Invader"), // initial owned skins
-                                        equippedSkin = "Moth" // default equipped skin
+                                        ownedSkins = listOf("Moth", "Mario", "Invader"),
+                                        equippedSkin = "Moth"
                                     )
                                     database.child(playerId).setValue(player)
                                         .addOnSuccessListener {

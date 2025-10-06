@@ -69,6 +69,7 @@ class LoginFragment : Fragment() {
         val passwordInput = view.findViewById<EditText>(R.id.passwordLoginInput)
         val signUpText = view.findViewById<TextView>(R.id.loginText)
         val btnlogin = view.findViewById<Button>(R.id.btnLogin)
+        val btnback = view.findViewById<Button>(R.id.btnBack)
 
         // Initialize SoundPool once
         val soundPool = SoundPool.Builder().setMaxStreams(5).build()
@@ -159,6 +160,14 @@ class LoginFragment : Fragment() {
                         Toast.makeText(requireContext(), "Login failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                     }
                 }
+        }
+
+        btnback.setOnClickListener{
+            // Play button click sound
+            if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
+
+            // Navigate to LoginHubFragment
+            replaceFragment(LoginHubFragment())
         }
     }
 

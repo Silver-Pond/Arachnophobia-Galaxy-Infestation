@@ -113,6 +113,18 @@
             android:text="@string/btnlogin"
             android:textColor="#FFFFFF" />
 
+        <Button
+            android:id="@+id/btnBack"
+            android:layout_width="145dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="15dp"
+            android:background="@drawable/ripple_effect"
+            android:backgroundTint="#673AB7"
+            android:fontFamily="@font/black_ops_one"
+            android:text="@string/btnback"
+            android:textColor="#FFFFFF" />
+
         <TextView
             android:id="@+id/loginText"
             android:layout_width="wrap_content"

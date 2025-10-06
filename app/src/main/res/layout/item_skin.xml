@@ -55,7 +55,7 @@
             android:background="@drawable/ripple_effect"
             android:backgroundTint="#9C27B0"
             android:fontFamily="@font/black_ops_one"
-            android:text="Buy"
+            android:text="@string/buyText"
             android:textColor="#FFFFFF" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -121,25 +121,4 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
         config.setLocale(locale)
         context.resources.updateConfiguration(config, context.resources.displayMetrics)
     }
-
-    fun syncHighScoreToDatabase(score: Int) {
-        val user = FirebaseAuth.getInstance().currentUser
-        if (user == null) {
-            Toast.makeText(this, "Not logged in. Cannot sync high score.", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        // Use HighScoreManager to handle syncing
-        if (NetworkUtils.isOnline) {
-            HighScoreManager.saveHighScore(this, score)
-        } else {
-            // Offline → store locally
-            val prefs = getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
-            val pendingScore = prefs.getInt("pending_highscore", -1)
-            if (score > pendingScore) {
-                prefs.edit().putInt("pending_highscore", score).apply()
-            }
-            Toast.makeText(this, "No internet. High score saved locally.", Toast.LENGTH_SHORT).show()
-        }
-    }
 }

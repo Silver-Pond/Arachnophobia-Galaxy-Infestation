@@ -14,7 +14,6 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -27,20 +26,39 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
         jvmTarget = "11"
+    }
+
+    packaging {
+        resources {
+            excludes += listOf(
+                "META-INF/LICENSE.md",
+                "META-INF/LICENSE.txt",
+                "META-INF/NOTICE.md",
+                "META-INF/LICENSE-notice.md"
+            )
+        }
+    }
+}
+
+// Force Material version globally to avoid conflicts
+configurations.all {
+    resolutionStrategy {
+        force("com.google.android.material:material:1.13.0")
     }
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    implementation(libs.material)
+    implementation(libs.material) // Optional, overridden by force
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.firebase.database)
@@ -58,7 +76,22 @@ dependencies {
     implementation("androidx.work:work-runtime-ktx:2.9.0")
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation(libs.androidx.recyclerview)
+    implementation(libs.core.ktx)
+    implementation(libs.androidx.junit.ktx)
+
     testImplementation(libs.junit)
+    testImplementation("org.robolectric:robolectric:4.16")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:6.1.0")
+    testImplementation(kotlin("test"))
+
     androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    // androidTestImplementation("org.mockito:mockito-core:5.20.0")
+    androidTestImplementation("org.mockito:mockito-android:5.20.0")
+    androidTestImplementation("androidx.test.ext:junit:1.3.0")
+    androidTestImplementation("androidx.test:core:1.5.0")
+    androidTestImplementation("androidx.fragment:fragment-testing:1.8.9")
+    androidTestImplementation("com.google.android.material:material:1.13.0") // Matches forced version
+    androidTestImplementation("io.mockk:mockk-android:1.14.6")
+    androidTestImplementation("androidx.test:runner:1.7.0")
+    androidTestImplementation("androidx.test:rules:1.7.0")
 }

@@ -54,7 +54,7 @@ class NotificationReceiver : BroadcastReceiver() {
         val id = (System.currentTimeMillis() % Int.MAX_VALUE).toInt()
         notificationManager.notify(id, notification)
 
-        // Play sound from res/raw/notification_sound.mp3
+        // Play sound from res/raw/notification_sound.mp3 (Android Developers, 2025)
         try {
             val mediaPlayer = MediaPlayer.create(context, R.raw.notification)
             mediaPlayer?.apply {
@@ -65,7 +65,7 @@ class NotificationReceiver : BroadcastReceiver() {
             Log.e(TAG, "Failed to play notification sound", e)
         }
 
-        // Schedule the next exact alarm
+        // Schedule the next exact alarm (Android Developers, 2025)
         scheduleNextAlarm(context)
 
         Log.d(TAG, "Notification shown and next alarm scheduled")
@@ -74,8 +74,8 @@ class NotificationReceiver : BroadcastReceiver() {
     companion object {
         private const val TAG = "NotificationReceiver"
         // 30 minutes:
-        private const val INTERVAL_MS = 360 * 60 * 1000L
-        // For quick testing you can temporarily set INTERVAL_MS = 60_000L
+        private const val INTERVAL_MS = 120 * 60 * 1000L
+        // For quick testing you can temporarily set INTERVAL_MS = 60_000L (Android Developers, 2025)
 
         fun scheduleNextAlarm(context: Context) {
             val alarm = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -91,11 +91,11 @@ class NotificationReceiver : BroadcastReceiver() {
 
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    // On Android 12+ check if app can schedule exact alarms
+                    // On Android 12+ check if app can schedule exact alarms (Android Developers, 2025)
                     if (alarm.canScheduleExactAlarms()) {
                         alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pending)
                     } else {
-                        // Fallback: use inexact repeating alarm
+                        // Fallback: use inexact repeating alarm (Android Developers, 2025)
                         alarm.set(AlarmManager.RTC_WAKEUP, triggerAt, pending)
                     }
                 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -106,7 +106,7 @@ class NotificationReceiver : BroadcastReceiver() {
                     alarm.set(AlarmManager.RTC_WAKEUP, triggerAt, pending)
                 }
             } catch (se: SecurityException) {
-                // App doesn’t have permission → fallback gracefully
+                // App doesn’t have permission → fallback gracefully (Android Developers, 2025)
                 alarm.set(AlarmManager.RTC_WAKEUP, triggerAt, pending)
             }
 
@@ -132,3 +132,34 @@ class NotificationReceiver : BroadcastReceiver() {
         }
     }
 }
+/*
+* Reference List
+*
+* Android Developers, 2025. AlarmManager. [online]. Available at:
+* https://developer.android.com/reference/android/app/AlarmManager
+* [Accessed: 6 October 2025].
+*
+* Android Developers, 2025. NotificationChannel. [online]. Available at:
+* https://developer.android.com/reference/android/app/NotificationChannel
+* [Accessed: 6 October 2025].
+*
+* Android Developers, 2025. BroadcastReceiver. [online]. Available at:
+* https://developer.android.com/reference/android/content/BroadcastReceiver
+* [Accessed: 6 October 2025].
+*
+* Android Developers, 2025. PendingIntent. [online]. Available at:
+* https://developer.android.com/reference/android/app/PendingIntent
+* [Accessed: 6 October 2025].
+*
+* Android Developers, 2025. Manifest.permission.SCHEDULE_EXACT_ALARM. [online]. Available at:
+* https://developer.android.com/reference/android/Manifest.permission#SCHEDULE_EXACT_ALARM
+* [Accessed: 6 October 2025].
+*
+* Android Developers, 2025. Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM. [online]. Available at:
+* https://developer.android.com/reference/android/provider/Settings#ACTION_REQUEST_SCHEDULE_EXACT_ALARM
+* [Accessed: 6 October 2025].
+*
+* Android Developers, 2025. Application lifecycle overview. [online]. Available at:
+* https://developer.android.com/guide/components/activities/activity-lifecycle
+* [Accessed: 6 October 2025].
+*/

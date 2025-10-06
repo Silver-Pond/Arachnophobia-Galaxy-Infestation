@@ -14,6 +14,7 @@
     <string name="profiletext">PROFILE</string>
     <string name="highscorestext">HIGHSCORES</string>
     <string name="skinstext">CUSTOMIZATION</string>
+    <string name="buyText">BUY</string>
 
     <string name="btnsignup">SIGN UP</string>
     <string name="btnlogin">LOGIN</string>
