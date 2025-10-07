@@ -50,6 +50,8 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
                 replaceFragment(GameMenuFragment())
             }
         }
+        // Sync player data when app starts
+        PlayerDataSync.syncPlayerData(this)
     }
 
     private fun replaceFragment(fragment: Fragment) {
@@ -120,5 +122,40 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
         val config = Configuration()
         config.setLocale(locale)
         context.resources.updateConfiguration(config, context.resources.displayMetrics)
+    }
+
+    object PlayerDataSync {
+
+        fun syncPlayerData(context: Context, onComplete: (() -> Unit)? = null) {
+            val currentUser = FirebaseAuth.getInstance().currentUser ?: return
+
+            val uid = currentUser.uid
+            val playerRef = FirebaseDatabase.getInstance()
+                .getReference("players")
+                .child(uid)
+
+            playerRef.get().addOnSuccessListener { snapshot ->
+                if (snapshot.exists()) {
+                    val map = snapshot.value as? Map<*, *>
+
+                    val owned = (map?.get("ownedSkins") as? List<*>)?.map { it.toString() }
+                        ?: listOf("Moth", "Super Mario", "Space Invader")
+
+                    val equipped = map?.get("equippedSkin")?.toString() ?: "Moth"
+
+                    val username = currentUser.displayName ?: "Player"
+
+                    val prefs = context.getSharedPreferences("GamePrefs", Context.MODE_PRIVATE)
+                    prefs.edit()
+                        .putString("username", username)
+                        .putStringSet("ownedSkins", owned.toSet())
+                        .putString("equippedSkin", equipped)
+                        .apply()
+                }
+                onComplete?.invoke()
+            }.addOnFailureListener {
+                onComplete?.invoke()
+            }
+        }
     }
 }

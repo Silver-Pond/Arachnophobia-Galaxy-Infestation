@@ -210,21 +210,27 @@ class GameMenuFragment : Fragment() {
             // Play button click sound
             if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
 
-            // Logout from Firebase
-            val auth = FirebaseAuth.getInstance()
-            auth.signOut() // Firebase logout
+            if(username.isNullOrBlank() || username.equals("Guest", ignoreCase = true)){
+                // Navigate to LoginHubFragment
+                replaceFragment(LoginHubFragment())
+            } else {
+                // Logout from Firebase
+                val auth = FirebaseAuth.getInstance()
+                auth.signOut() // Firebase logout
 
-            // Clear saved user data
-            val prefs = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-            with(prefs.edit()) {
-                putBoolean("is_logged_in", false) // mark as logged out
-                remove("email")
-                remove("password")
-                remove("username")
-                apply()
+                // Clear saved user data
+                val prefs =
+                    requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+                with(prefs.edit()) {
+                    putBoolean("is_logged_in", false) // mark as logged out
+                    remove("email")
+                    remove("password")
+                    remove("username")
+                    apply()
+                }
+                // Exit the app
+                requireActivity().finishAffinity()
             }
-            // Exit the app
-            requireActivity().finishAffinity()
         }
     }
 

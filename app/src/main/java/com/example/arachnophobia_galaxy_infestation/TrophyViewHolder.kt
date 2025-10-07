@@ -5,8 +5,6 @@ import android.view.View
 import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat
-import com.bumptech.glide.Glide
 import androidx.recyclerview.widget.RecyclerView
 
 class TrophyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

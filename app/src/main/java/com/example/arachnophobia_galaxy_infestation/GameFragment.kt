@@ -120,6 +120,20 @@ class GameFragment : Fragment() {
         pauseText = view.findViewById(R.id.pauseText)
         livesText = view.findViewById(R.id.livesText)
 
+        // Get username from arguments
+        val username = arguments?.getString("username") ?: "Guest"
+
+        // Sync player data if user is not Guest
+        if (!username.equals("Guest", ignoreCase = true) && username.isNotBlank()) {
+            MainActivity.PlayerDataSync.syncPlayerData(requireContext()) {
+                // Apply skin once here
+                applyEquippedSkin()
+            }
+        } else {
+            // Default skin
+            player.setImageResource(R.drawable.moth)
+        }
+
         // Initialize SoundPool once
         val soundPool = SoundPool.Builder().setMaxStreams(5).build()
         SoundEffectsManager.soundPool = soundPool
@@ -152,9 +166,6 @@ class GameFragment : Fragment() {
         val prefs = requireActivity().getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
         val savedEffectsVolume = prefs.getFloat("effects_volume", 1.0f)
         SoundEffectsManager.updateVolume(savedEffectsVolume)
-
-        // Apply skin once here
-        applyEquippedSkin()
 
         // Initialize game
         gameArea.post {
@@ -205,8 +216,19 @@ class GameFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
-        // Apply skin once here
-        applyEquippedSkin()
+        // Get username from arguments
+        val username = arguments?.getString("username") ?: "Guest"
+
+        // Sync player data if user is not Guest
+        if (!username.equals("Guest", ignoreCase = true) && username.isNotBlank()) {
+            MainActivity.PlayerDataSync.syncPlayerData(requireContext()) {
+                // Apply skin once here
+                applyEquippedSkin()
+            }
+        } else {
+            // Default skin
+            player.setImageResource(R.drawable.moth)
+        }
 
         handler.post(gameRunnable)
     }
@@ -610,7 +632,19 @@ class GameFragment : Fragment() {
     }
 
     private fun resetGameState() {
-        applyEquippedSkin() // Always load from prefs here
+        // Get username from arguments
+        val username = arguments?.getString("username") ?: "Guest"
+
+        // Sync player data if user is not Guest
+        if (!username.equals("Guest", ignoreCase = true) && username.isNotBlank()) {
+            MainActivity.PlayerDataSync.syncPlayerData(requireContext()) {
+                // Apply skin once here
+                applyEquippedSkin()
+            }
+        } else {
+            // Default skin
+            player.setImageResource(R.drawable.moth)
+        }
 
         playerX = (gameArea.width - player.width) / 2f
         playerY = (gameArea.height - player.height).toFloat()

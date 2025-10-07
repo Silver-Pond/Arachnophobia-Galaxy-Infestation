@@ -81,11 +81,12 @@ dependencies {
 
     testImplementation(libs.junit)
     testImplementation("org.robolectric:robolectric:4.16")
+    testImplementation("org.mockito:mockito-core:5.12.0")
+    testImplementation("org.mockito:mockito-inline:5.2.0")
     testImplementation("org.mockito.kotlin:mockito-kotlin:6.1.0")
     testImplementation(kotlin("test"))
 
     androidTestImplementation(libs.androidx.junit)
-    // androidTestImplementation("org.mockito:mockito-core:5.20.0")
     androidTestImplementation("org.mockito:mockito-android:5.20.0")
     androidTestImplementation("androidx.test.ext:junit:1.3.0")
     androidTestImplementation("androidx.test:core:1.5.0")

@@ -127,6 +127,20 @@ class SurvivalGameFragment : Fragment() {
         timerText = view.findViewById(R.id.timer)
         timerText.text = "Time: 00:00"
 
+        // Get username from arguments
+        val username = arguments?.getString("username") ?: "Guest"
+
+        // Sync player data if user is not Guest
+        if (!username.equals("Guest", ignoreCase = true) && username.isNotBlank()) {
+            MainActivity.PlayerDataSync.syncPlayerData(requireContext()) {
+                // Apply skin once here
+                applyEquippedSkin()
+            }
+        } else {
+            // Default skin
+            player.setImageResource(R.drawable.moth)
+        }
+
         // Initialize SoundPool once
         val soundPool = SoundPool.Builder().setMaxStreams(5).build()
         SoundEffectsManager.soundPool = soundPool
@@ -144,9 +158,6 @@ class SurvivalGameFragment : Fragment() {
         val prefs = requireActivity().getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
         val savedEffectsVolume = prefs.getFloat("effects_volume", 1.0f)
         SoundEffectsManager.updateVolume(savedEffectsVolume)
-
-        // Apply equipped skin
-        applyEquippedSkin()
 
         // Reset level and wave
         currentLevel = 1
@@ -270,8 +281,19 @@ class SurvivalGameFragment : Fragment() {
         // Ensure pauseText matches the correct level
         pauseText.text = "LEVEL $currentLevel"
 
-        // Reapply equipped skin
-        applyEquippedSkin()
+        // Get username from arguments
+        val username = arguments?.getString("username") ?: "Guest"
+
+        // Sync player data if user is not Guest
+        if (!username.equals("Guest", ignoreCase = true) && username.isNotBlank()) {
+            MainActivity.PlayerDataSync.syncPlayerData(requireContext()) {
+                // Apply skin once here
+                applyEquippedSkin()
+            }
+        } else {
+            // Default skin
+            player.setImageResource(R.drawable.moth)
+        }
     }
 
     override fun onPause() {
@@ -569,7 +591,19 @@ class SurvivalGameFragment : Fragment() {
     }
 
     private fun resetSurvivalGameState() {
-        applyEquippedSkin()
+        // Get username from arguments
+        val username = arguments?.getString("username") ?: "Guest"
+
+        // Sync player data if user is not Guest
+        if (!username.equals("Guest", ignoreCase = true) && username.isNotBlank()) {
+            MainActivity.PlayerDataSync.syncPlayerData(requireContext()) {
+                // Apply skin once here
+                applyEquippedSkin()
+            }
+        } else {
+            // Default skin
+            player.setImageResource(R.drawable.moth)
+        }
 
         playerX = (gameArea.width - player.width) / 2f
         playerY = (gameArea.height - player.height).toFloat()
