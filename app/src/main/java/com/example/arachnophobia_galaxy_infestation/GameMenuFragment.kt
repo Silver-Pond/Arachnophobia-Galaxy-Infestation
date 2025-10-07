@@ -75,13 +75,13 @@ class GameMenuFragment : Fragment() {
             // Button click sound
             clickbuttonSoundId = SoundEffectsManager.soundPool!!.load(requireContext(), R.raw.button_click, 1)
         } else {
-            // If already initialized but sound not loaded
+            // If already initialized but sound not loaded (Android Developers, 2025; ChatGPT-4, 2025)
             if (clickbuttonSoundId == 0) {
                 clickbuttonSoundId = SoundEffectsManager.soundPool!!.load(requireContext(), R.raw.button_click, 1)
             }
         }
 
-        // Restore effects volume from prefs
+        // Restore effects volume from prefs (Android Developers, 2025; ChatGPT-4, 2025)
         val prefs = requireActivity().getSharedPreferences("AppSettings", MODE_PRIVATE)
         val savedEffectsVolume = prefs.getFloat("effects_volume", 1.0f)
         SoundEffectsManager.updateVolume(savedEffectsVolume)
@@ -111,7 +111,7 @@ class GameMenuFragment : Fragment() {
                         putString("username", username)
                     }
                 }
-                // Navigate to profile fragment
+                // Navigate to profile fragment (Android Developers, 2025; ChatGPT-4, 2025)
                 replaceFragment(profileFragment)
             }
         }
@@ -120,7 +120,7 @@ class GameMenuFragment : Fragment() {
             // Play button click sound
             if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
 
-            // Navigate to game activity
+            // Navigate to game activity (Android Developers, 2025; ChatGPT-4, 2025)
             val intent = Intent(requireContext(), GameActivity::class.java)
             intent.putExtra("username", username)
             startActivity(intent)
@@ -174,7 +174,7 @@ class GameMenuFragment : Fragment() {
                     putString("username", username)
                 }
             }
-            // Navigate to high scores fragment
+            // Navigate to high scores fragment (Android Developers, 2025; ChatGPT-4, 2025)
             replaceFragment(highscoresMenuFragment)
         }
 
@@ -188,7 +188,7 @@ class GameMenuFragment : Fragment() {
                     putString("username", username)
                 }
             }
-            // Navigate to trophies fragment
+            // Navigate to trophies fragment (Android Developers, 2025; ChatGPT-4, 2025)
             replaceFragment(trophiesFragment)
         }
 
@@ -202,23 +202,23 @@ class GameMenuFragment : Fragment() {
                     putString("username", username)
                 }
             }
-            // Navigate to settings fragment
+            // Navigate to settings fragment (Android Developers, 2025; ChatGPT-4, 2025)
             replaceFragment(settingsFragment)
         }
 
         btnexit.setOnClickListener {
-            // Play button click sound
+            // Play button click sound (Android Developers, 2025; ChatGPT-4, 2025)
             if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
 
             if(username.isNullOrBlank() || username.equals("Guest", ignoreCase = true)){
-                // Navigate to LoginHubFragment
+                // Navigate to LoginHubFragment (Android Developers, 2025; ChatGPT-4, 2025)
                 replaceFragment(LoginHubFragment())
             } else {
-                // Logout from Firebase
+                // Logout from Firebase (Android Developers, 2025; ChatGPT-4, 2025)
                 val auth = FirebaseAuth.getInstance()
                 auth.signOut() // Firebase logout
 
-                // Clear saved user data
+                // Clear saved user data (Android Developers, 2025; ChatGPT-4, 2025)
                 val prefs =
                     requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
                 with(prefs.edit()) {
@@ -228,7 +228,7 @@ class GameMenuFragment : Fragment() {
                     remove("username")
                     apply()
                 }
-                // Exit the app
+                // Exit the app (Android Developers, 2025)
                 requireActivity().finishAffinity()
             }
         }
@@ -240,7 +240,7 @@ class GameMenuFragment : Fragment() {
         SoundEffectsManager.soundPool = null
     }
 
-    // Helper method to replace fragment
+    // Helper method to replace fragment (Android Developers, 2025; ChatGPT-4, 2025)
     private fun replaceFragment(fragment: Fragment) {
         parentFragmentManager.beginTransaction()
             .replace(R.id.main, fragment)
@@ -258,3 +258,18 @@ class GameMenuFragment : Fragment() {
             }
     }
 }
+/*
+* Reference List
+*
+* Android Developers, 2025. Developer centers. [online]. Available at:
+* https://developer.android.com/
+* [Accessed: 6 October 2025].
+*
+* Android Developers, 2025. Fragment transactions. [online]. Available at:
+* https://developer.android.com/guide/fragments/transactions
+* [Accessed: 6 October 2025].
+*
+* ChatGPT-4, 2025. OpenAI. [online]. Available at:
+* https://chatgpt.com/?model=auto
+* [Accessed: 6 October 2025].
+*/

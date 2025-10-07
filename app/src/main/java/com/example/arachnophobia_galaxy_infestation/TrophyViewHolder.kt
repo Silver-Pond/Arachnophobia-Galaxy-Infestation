@@ -16,13 +16,14 @@ class TrophyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         trophyName.text = trophy.name
         trophyCheckBox.isChecked = isEarned
 
+        // Set image (Android Developers, 2025; ChatGPT-4, 2025)
         val context = itemView.context
         val resId = context.resources.getIdentifier(trophy.image_url, "drawable", context.packageName)
 
         if (resId != 0) {
             trophyImage.setImageResource(resId)
         } else {
-            trophyImage.setImageResource(R.drawable.ic_launcher_foreground) // fallback
+            trophyImage.setImageResource(R.drawable.ic_launcher_foreground) // fallback (Android Developers, 2025; ChatGPT-4, 2025)
         }
 
         itemView.setBackgroundColor(Color.TRANSPARENT)
@@ -32,3 +33,18 @@ class TrophyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         }
     }
 }
+/*
+ * Reference List
+ *
+ * Android Developers, 2025. Developer centers. [online]. Available at:
+ * https://developer.android.com/
+ * [Accessed: 6 October 2025].
+ *
+ * Android Developers, 2025. Fragment transactions. [online]. Available at:
+ * https://developer.android.com/guide/fragments/transactions
+ * [Accessed: 6 October 2025].
+ *
+ * ChatGPT-4, 2025. OpenAI. [online]. Available at:
+ * https://chatgpt.com/?model=auto
+ * [Accessed: 6 October 2025].
+ */

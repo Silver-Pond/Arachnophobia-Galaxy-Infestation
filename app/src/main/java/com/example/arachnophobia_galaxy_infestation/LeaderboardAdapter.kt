@@ -12,6 +12,7 @@ class LeaderboardAdapter(
     private val loggedInUser: String
 ) : RecyclerView.Adapter<LeaderboardAdapter.ViewHolder>() {
 
+    // ViewHolder class (Android Developers, 2025; ChatGPT-4, 2025)
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val rankText: TextView = itemView.findViewById(R.id.rankText)
         val usernameText: TextView = itemView.findViewById(R.id.usernameText)
@@ -32,7 +33,7 @@ class LeaderboardAdapter(
         holder.usernameText.text = player.username
         holder.scoreText.text = player.score.toString()
 
-        // Highlight logged-in user
+        // Highlight logged-in user (Android Developers, 2025; ChatGPT-4, 2025)
         if (player.username == loggedInUser) {
             holder.itemView.setBackgroundColor(Color.rgb(85,48,101))
         } else {
@@ -40,3 +41,14 @@ class LeaderboardAdapter(
         }
     }
 }
+/*
+ * Reference List
+ *
+ * Android Developers, 2025. Developer centers. [online]. Available at:
+ * https://developer.android.com/
+ * [Accessed: 6 October 2025].
+ *
+ * ChatGPT-4, 2025. OpenAI. [online]. Available at:
+ * https://chatgpt.com/?model=auto
+ * [Accessed: 6 October 2025].
+ */

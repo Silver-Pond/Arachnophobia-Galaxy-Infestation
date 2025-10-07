@@ -36,7 +36,7 @@ class SkinsFragment : Fragment() {
         recyclerView = view.findViewById(R.id.skinsRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        // Load skins
+        // Load skins (Android Developers, 2025; Firebsae, 2025)
         loadSkinsFromJson()
 
         // Initialize SoundPool once
@@ -56,12 +56,12 @@ class SkinsFragment : Fragment() {
             }
         }
 
-        // Restore effects volume from prefs
+        // Restore effects volume from prefs (Android Developers, 2025; Firebsae, 2025)
         val prefs = requireActivity().getSharedPreferences("AppSettings", MODE_PRIVATE)
         val savedEffectsVolume = prefs.getFloat("effects_volume", 1.0f)
         SoundEffectsManager.updateVolume(savedEffectsVolume)
 
-        // Get username from arguments
+        // Get username from arguments (Android Developers, 2025; Firebsae, 2025)
         loggedInUser = arguments?.getString("username") ?: "Guest"
 
         // Load player from Firebase
@@ -121,7 +121,7 @@ class SkinsFragment : Fragment() {
                     equippedSkin = equipped
                 )
 
-                // ✅ Save local prefs so other methods can use them
+                // Save local prefs so other methods can use them (Android Developers, 2025; Firebsae, 2025)
                 val prefs = requireContext().getSharedPreferences("GamePrefs", Context.MODE_PRIVATE)
                 prefs.edit()
                     .putString("username", player.username)
@@ -186,7 +186,7 @@ class SkinsFragment : Fragment() {
                 val newSilk = playerSilk - skinPrice
                 val newOwned = ownedSkins + skin.name
 
-                // Set spider_silk explicitly as Double
+                // Set spider_silk explicitly as Double (Android Developers, 2025; Firebsae, 2025)
                 playerRef.child("spider_silk").setValue(newSilk).addOnSuccessListener {
                     playerRef.child("ownedSkins").setValue(newOwned).addOnSuccessListener {
                         player = player.copy(spider_silk = newSilk, ownedSkins = newOwned)
@@ -227,3 +227,46 @@ class SkinsFragment : Fragment() {
             .commit()
     }
 }
+/*
+* Reference List
+*
+* Android Developers, 2025. AppCompatActivity. [online]. Available at:
+* https://developer.android.com/reference/androidx/appcompat/app/AppCompatActivity
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Fragment. [online]. Available at:
+* https://developer.android.com/reference/androidx/fragment/app/Fragment
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. MediaPlayer. [online]. Available at:
+* https://developer.android.com/reference/android/media/MediaPlayer
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. TextView. [online]. Available at:
+* https://developer.android.com/reference/android/widget/TextView
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Toast. [online]. Available at:
+* https://developer.android.com/reference/android/widget/Toast
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. SharedPreferences. [online]. Available at:
+* https://developer.android.com/reference/android/content/SharedPreferences
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Configuration. [online]. Available at:
+* https://developer.android.com/reference/android/content/res/Configuration
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Locale. [online]. Available at:
+* https://developer.android.com/reference/java/util/Locale
+* [Accessed: 7 October 2025].
+*
+* Firebase, 2025. FirebaseAuth. [online]. Available at:
+* https://firebase.google.com/docs/reference/android/com/google/firebase/auth/FirebaseAuth
+* [Accessed: 7 October 2025].
+*
+* Firebase, 2025. FirebaseDatabase. [online]. Available at:
+* https://firebase.google.com/docs/reference/android/com/google/firebase/database/FirebaseDatabase
+* [Accessed: 7 October 2025].
+*/

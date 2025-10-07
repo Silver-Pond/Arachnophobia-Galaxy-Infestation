@@ -130,7 +130,7 @@ class SurvivalGameFragment : Fragment() {
         // Get username from arguments
         val username = arguments?.getString("username") ?: "Guest"
 
-        // Sync player data if user is not Guest
+        // Sync player data if user is not Guest (Android Developers, 2025; Firebsae, 2025)
         if (!username.equals("Guest", ignoreCase = true) && username.isNotBlank()) {
             MainActivity.PlayerDataSync.syncPlayerData(requireContext()) {
                 // Apply skin once here
@@ -154,7 +154,7 @@ class SurvivalGameFragment : Fragment() {
         explosionId = soundPool.load(requireContext(), R.raw.explosion, 1)
         gameOverSoundId = soundPool.load(requireContext(), R.raw.game_over, 1)
 
-        // Restore effects volume from prefs
+        // Restore effects volume from prefs (Android Developers, 2025; Firebsae, 2025)
         val prefs = requireActivity().getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
         val savedEffectsVolume = prefs.getFloat("effects_volume", 1.0f)
         SoundEffectsManager.updateVolume(savedEffectsVolume)
@@ -164,7 +164,7 @@ class SurvivalGameFragment : Fragment() {
         currentWave = 1
         currentEnemySpeed = baseEnemySpeed
 
-        // Load first level from API
+        // Load first level from API (Android Developers, 2025; Firebsae, 2025)
         ApiClient.instance.getLevel(1).enqueue(object : Callback<Level> {
             override fun onResponse(call: Call<Level>, response: Response<Level>) {
                 if (response.isSuccessful) {
@@ -176,7 +176,7 @@ class SurvivalGameFragment : Fragment() {
                         gameArea.removeView(enemy.view)
                     }
 
-                    // Delay 500ms for initial setup
+                    // Delay 500ms for initial setup (Android Developers, 2025; Firebsae, 2025)
                     Handler(Looper.getMainLooper()).postDelayed({
                         if (isAdded && view != null) {
                             // Show initial pause text
@@ -221,7 +221,7 @@ class SurvivalGameFragment : Fragment() {
             if (isAdded && view != null && !isPaused) {
                 updateGame()
             }
-            // Re-post ONLY if still added and the view exists
+            // Re-post ONLY if still added and the view exists (Android Developers, 2025; Firebsae, 2025)
             if (isAdded && view != null) {
                 handler.postDelayed(this, 16)
             }
@@ -317,7 +317,7 @@ class SurvivalGameFragment : Fragment() {
         isFragmentActive = false
         apiConnected = false
 
-        // Stop ALL delayed tasks or loop callbacks
+        // Stop ALL delayed tasks or loop callbacks (Android Developers, 2025; Firebsae, 2025)
         handler.removeCallbacksAndMessages(null)
         timerHandler.removeCallbacksAndMessages(null)
 
@@ -594,7 +594,7 @@ class SurvivalGameFragment : Fragment() {
         // Get username from arguments
         val username = arguments?.getString("username") ?: "Guest"
 
-        // Sync player data if user is not Guest
+        // Sync player data if user is not Guest (Android Developers, 2025; Firebsae, 2025)
         if (!username.equals("Guest", ignoreCase = true) && username.isNotBlank()) {
             MainActivity.PlayerDataSync.syncPlayerData(requireContext()) {
                 // Apply skin once here
@@ -654,7 +654,7 @@ class SurvivalGameFragment : Fragment() {
         enemies.forEach { gameArea.removeView(it.view) }
         enemies.clear()
 
-        // Update speed scaling
+        // Update speed scaling (Android Developers, 2025; Firebsae, 2025)
         currentEnemySpeed = if (currentLevel <= 20)
             baseEnemySpeed + (currentLevel - 1)
         else
@@ -811,14 +811,14 @@ class SurvivalGameFragment : Fragment() {
             return
         }
 
-        // Use HighScoreManager to handle offline/online logic
+        // Use HighScoreManager to handle offline/online logic (Android Developers, 2025; Firebsae, 2025)
         HighScoreManager.saveSurvivalHighScore(requireContext(), newSurvivalScore)
     }
 
     private fun saveInGameCurrency() {
         val username = arguments?.getString("username") ?: "Guest"
 
-        // Guest users do not earn spider silk
+        // Guest users do not earn spider silk (Android Developers, 2025; Firebsae, 2025)
         if (username.equals("Guest", ignoreCase = true) || username.isEmpty()) return
 
         val spiderSilkEarned = (score * 0.5) / 100.0
@@ -828,7 +828,7 @@ class SurvivalGameFragment : Fragment() {
 
         dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                if (!isAdded || view == null) return // Fragment is not active
+                if (!isAdded || view == null) return // Fragment is not active (Android Developers, 2025; Firebsae, 2025)
 
                 val showToasts = username.isNotBlank() && !username.equals("Guest", ignoreCase = true)
 
@@ -858,7 +858,7 @@ class SurvivalGameFragment : Fragment() {
                         }
                     }
                 } else {
-                    // If the player record doesn't exist, create it
+                    // If the player record doesn't exist, create it (Android Developers, 2025; Firebsae, 2025)
                     val userMap = mapOf(
                         "id" to uid,
                         "username" to username.ifBlank { "Guest" },
@@ -993,3 +993,46 @@ class SurvivalGameFragment : Fragment() {
             }
     }
 }
+/*
+* Reference List
+*
+* Android Developers, 2025. AppCompatActivity. [online]. Available at:
+* https://developer.android.com/reference/androidx/appcompat/app/AppCompatActivity
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Fragment. [online]. Available at:
+* https://developer.android.com/reference/androidx/fragment/app/Fragment
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. MediaPlayer. [online]. Available at:
+* https://developer.android.com/reference/android/media/MediaPlayer
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. TextView. [online]. Available at:
+* https://developer.android.com/reference/android/widget/TextView
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Toast. [online]. Available at:
+* https://developer.android.com/reference/android/widget/Toast
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. SharedPreferences. [online]. Available at:
+* https://developer.android.com/reference/android/content/SharedPreferences
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Configuration. [online]. Available at:
+* https://developer.android.com/reference/android/content/res/Configuration
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Locale. [online]. Available at:
+* https://developer.android.com/reference/java/util/Locale
+* [Accessed: 7 October 2025].
+*
+* Firebase, 2025. FirebaseAuth. [online]. Available at:
+* https://firebase.google.com/docs/reference/android/com/google/firebase/auth/FirebaseAuth
+* [Accessed: 7 October 2025].
+*
+* Firebase, 2025. FirebaseDatabase. [online]. Available at:
+* https://firebase.google.com/docs/reference/android/com/google/firebase/database/FirebaseDatabase
+* [Accessed: 7 October 2025].
+*/

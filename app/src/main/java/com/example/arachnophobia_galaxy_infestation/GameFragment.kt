@@ -190,7 +190,7 @@ class GameFragment : Fragment() {
             return
         }
 
-        // Use HighScoreManager to handle offline/online logic
+        // Use HighScoreManager to handle offline/online logic (Android Developers, 2025; Firebsae, 2025)
         HighScoreManager.saveHighScore(requireContext(), newScore)
     }
 
@@ -198,10 +198,10 @@ class GameFragment : Fragment() {
         val prefs = requireActivity().getSharedPreferences("GamePrefs", Context.MODE_PRIVATE)
         val equippedSkinName = prefs.getString("equippedSkin", "Moth") ?: "Moth"
 
-        // Map name -> drawable key
+        // Map name -> drawable key (Android Developers, 2025; Firebsae, 2025)
         val drawableKey = equippedSkinName.lowercase().replace(" ", "_")
 
-        // Player sprite
+        // Player sprite (Android Developers, 2025; Firebsae, 2025)
         val drawableId = requireContext().resources.getIdentifier(
             drawableKey,
             "drawable",
@@ -235,7 +235,7 @@ class GameFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        // Stop ALL pending tasks (not just the game loop)
+        // Stop ALL pending tasks (not just the game loop) (Android Developers, 2025; Firebsae, 2025)
         handler.removeCallbacksAndMessages(null)
 
         SoundEffectsManager.soundPool?.release()
@@ -490,14 +490,14 @@ class GameFragment : Fragment() {
                 if (enemy.isShooter && (0..1000).random() < enemy.fireChance) {
                     shootEnemyBullet(enemy)
 
-                    // Play enemy shooting sound (already loaded at startup)
+                    // Play enemy shooting sound (already loaded at startup) (Android Developers, 2025; Firebsae, 2025)
                     if (enemyfireId != 0) {
                         SoundEffectsManager.playSound(enemyfireId)
                     }
                 }
 
                 if (enemy.isZigZagger) {
-                    // Moves independently in zig-zag
+                    // Moves independently in zig-zag (Android Developers, 2025; Firebsae, 2025)
                     enemy.imageView.x += enemyDirection * (enemySpeed * 2f)
                     enemy.imageView.y += enemyFallSpeed * 0f
 
@@ -635,14 +635,12 @@ class GameFragment : Fragment() {
         // Get username from arguments
         val username = arguments?.getString("username") ?: "Guest"
 
-        // Sync player data if user is not Guest
+        // Sync player data if user is not Guest (Android Developers, 2025; Firebsae, 2025)
         if (!username.equals("Guest", ignoreCase = true) && username.isNotBlank()) {
-            MainActivity.PlayerDataSync.syncPlayerData(requireContext()) {
-                // Apply skin once here
-                applyEquippedSkin()
-            }
+            // Apply skin once here
+            applyEquippedSkin()
         } else {
-            // Default skin
+            // Default skin (Android Developers, 2025; Firebsae, 2025)
             player.setImageResource(R.drawable.moth)
         }
 
@@ -681,7 +679,7 @@ class GameFragment : Fragment() {
             highScoreText.text = "HIGHSCORE: 0"
         }else{
             val auth = FirebaseAuth.getInstance()
-            val uid = auth.currentUser?.uid ?: "Guest"  // fallback for guest users
+            val uid = auth.currentUser?.uid ?: "Guest"  // fallback for guest users (Android Developers, 2025; Firebsae, 2025)
             val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
 
             dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -717,42 +715,49 @@ class GameFragment : Fragment() {
 
     private fun saveHighScore() {
         val auth = FirebaseAuth.getInstance()
-        val uid = auth.currentUser?.uid
-        if (uid == null) {
-            // Not logged in → just skip
-            return
-        }
+        val uid = auth.currentUser?.uid ?: return  // Exit if not logged in
 
         val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
 
-        // Use NetworkUtils for global online check
+        // Use safe context/activity references
+        val safeContext = context ?: return
+        val safeActivity = activity ?: return
+
+        // Use NetworkUtils for global online check (Android Developers, 2025; Firebsae, 2025)
         if (!NetworkUtils.isOnline) {
-            // Offline → store locally
-            val prefs = requireActivity().getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
+            // Offline → store locally (Android Developers, 2025; Firebsae, 2025)
+            val prefs = safeActivity.getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
             prefs.edit().putInt("pending_highscore", score).apply()
 
-            Toast.makeText(requireContext(), "No internet. High score saved locally.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(safeContext, "No internet. High score saved locally.", Toast.LENGTH_SHORT).show()
             return
         }
 
+        // Only run Firebase logic if online (Android Developers, 2025; Firebsae, 2025)
         dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val existingHighscore = snapshot.child("highscore").getValue(Int::class.java) ?: 0
 
-                // Only update if higher
+                // Only update if higher (Android Developers, 2025; Firebsae, 2025)
                 if (score > existingHighscore) {
                     dbRef.child("highscore").setValue(score)
                         .addOnSuccessListener {
-                            Toast.makeText(requireContext(), "New Highscore!", Toast.LENGTH_SHORT).show()
+                            context?.let {
+                                Toast.makeText(it, "New Highscore!", Toast.LENGTH_SHORT).show()
+                            }
                         }
                         .addOnFailureListener {
-                            Toast.makeText(requireContext(), "Failed to update highscore", Toast.LENGTH_SHORT).show()
+                            context?.let {
+                                Toast.makeText(it, "Failed to update highscore", Toast.LENGTH_SHORT).show()
+                            }
                         }
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(requireContext(), "Database error: ${error.message}", Toast.LENGTH_SHORT).show()
+                context?.let {
+                    Toast.makeText(it, "Database error: ${error.message}", Toast.LENGTH_SHORT).show()
+                }
             }
         })
     }
@@ -761,7 +766,7 @@ class GameFragment : Fragment() {
         val username = arguments?.getString("username") ?: "Guest"
 
         if (username.equals("Guest", ignoreCase = true) || username.isEmpty()) {
-            // Guest users don't earn silk
+            // Guest users don't earn silk (Android Developers, 2025; Firebsae, 2025)
             return
         }
 
@@ -869,16 +874,16 @@ class GameFragment : Fragment() {
                         Snackbar.LENGTH_LONG
                     )
 
-                    // Access the Snackbar's view
+                    // Access the Snackbar's view (Android Developers, 2025; Firebsae, 2025)
                     val snackbarView = snackbar.view
 
-                    // Change the layout params to show at the top center
+                    // Change the layout params to show at the top center (Android Developers, 2025; Firebsae, 2025)
                     val params = snackbarView.layoutParams as FrameLayout.LayoutParams
                     params.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
                     params.topMargin = 100 // same offset you had for Toast
                     snackbarView.layoutParams = params
 
-                    // Optionally style it (background, text color, etc.)
+                    // Optionally style it (background, text color, etc.) (Android Developers, 2025; Firebsae, 2025)
                     snackbarView.setBackgroundColor(
                         ContextCompat.getColor(requireContext(), com.google.android.material.R.color.design_default_color_primary_variant) // example color
                     )
@@ -905,7 +910,7 @@ class GameFragment : Fragment() {
             SoundEffectsManager.playSound(gameOverSoundId)
         }
 
-        // Save progress safely
+        // Save progress safely (Android Developers, 2025; Firebsae, 2025)
         saveHighScore()
         saveInGameCurrency()
         onNewHighScoreAchieved(score)
@@ -934,7 +939,7 @@ class GameFragment : Fragment() {
             SoundEffectsManager.playSound(gameOverSoundId)
         }
 
-        // Save progress safely
+        // Save progress safely (Android Developers, 2025; Firebsae, 2025)
         saveHighScore()
         saveInGameCurrency()
         onNewHighScoreAchieved(score)
@@ -957,3 +962,46 @@ class GameFragment : Fragment() {
             }
     }
 }
+/*
+* Reference List
+*
+* Android Developers, 2025. AppCompatActivity. [online]. Available at:
+* https://developer.android.com/reference/androidx/appcompat/app/AppCompatActivity
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Fragment. [online]. Available at:
+* https://developer.android.com/reference/androidx/fragment/app/Fragment
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. MediaPlayer. [online]. Available at:
+* https://developer.android.com/reference/android/media/MediaPlayer
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. TextView. [online]. Available at:
+* https://developer.android.com/reference/android/widget/TextView
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Toast. [online]. Available at:
+* https://developer.android.com/reference/android/widget/Toast
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. SharedPreferences. [online]. Available at:
+* https://developer.android.com/reference/android/content/SharedPreferences
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Configuration. [online]. Available at:
+* https://developer.android.com/reference/android/content/res/Configuration
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Locale. [online]. Available at:
+* https://developer.android.com/reference/java/util/Locale
+* [Accessed: 7 October 2025].
+*
+* Firebase, 2025. FirebaseAuth. [online]. Available at:
+* https://firebase.google.com/docs/reference/android/com/google/firebase/auth/FirebaseAuth
+* [Accessed: 7 October 2025].
+*
+* Firebase, 2025. FirebaseDatabase. [online]. Available at:
+* https://firebase.google.com/docs/reference/android/com/google/firebase/database/FirebaseDatabase
+* [Accessed: 7 October 2025].
+*/

@@ -88,7 +88,7 @@ class LoginFragment : Fragment() {
             }
         }
 
-        // Restore effects volume from prefs
+        // Restore effects volume from prefs (Android Developers, 2025; Firebsae, 2025)
         val prefs = requireActivity().getSharedPreferences("AppSettings", MODE_PRIVATE)
         val savedEffectsVolume = prefs.getFloat("effects_volume", 1.0f)
         SoundEffectsManager.updateVolume(savedEffectsVolume)
@@ -96,7 +96,7 @@ class LoginFragment : Fragment() {
         // Underline the sign-up text
         signUpText.paintFlags = signUpText.paintFlags or Paint.UNDERLINE_TEXT_FLAG
 
-        // Navigate to SignUpFragment
+        // Navigate to SignUpFragment (Android Developers, 2025; Firebsae, 2025)
         signUpText.setOnClickListener {
             replaceFragment(SignUpFragment())
         }
@@ -128,7 +128,7 @@ class LoginFragment : Fragment() {
                                     if (snapshot.exists()) {
                                         val username = snapshot.child("username").getValue(String::class.java) ?: "Player"
 
-                                        // Save login details for biometric login
+                                        // Save login details for biometric login (Android Developers, 2025; Firebsae, 2025)
                                         val sharedPref = requireActivity()
                                             .getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
                                         with(sharedPref.edit()) {
@@ -166,12 +166,12 @@ class LoginFragment : Fragment() {
             // Play button click sound
             if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
 
-            // Navigate to LoginHubFragment
+            // Navigate to LoginHubFragment (Android Developers, 2025; Firebsae, 2025)
             replaceFragment(LoginHubFragment())
         }
     }
 
-    // Helper method to replace fragment
+    // Helper method to replace fragment (Android Developers, 2025; Firebsae, 2025)
     private fun replaceFragment(fragment: Fragment) {
         parentFragmentManager.beginTransaction()
             .replace(R.id.main, fragment)
@@ -189,3 +189,46 @@ class LoginFragment : Fragment() {
             }
     }
 }
+/*
+* Reference List
+*
+* Android Developers, 2025. AppCompatActivity. [online]. Available at:
+* https://developer.android.com/reference/androidx/appcompat/app/AppCompatActivity
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Fragment. [online]. Available at:
+* https://developer.android.com/reference/androidx/fragment/app/Fragment
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. MediaPlayer. [online]. Available at:
+* https://developer.android.com/reference/android/media/MediaPlayer
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. TextView. [online]. Available at:
+* https://developer.android.com/reference/android/widget/TextView
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Toast. [online]. Available at:
+* https://developer.android.com/reference/android/widget/Toast
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. SharedPreferences. [online]. Available at:
+* https://developer.android.com/reference/android/content/SharedPreferences
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Configuration. [online]. Available at:
+* https://developer.android.com/reference/android/content/res/Configuration
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Locale. [online]. Available at:
+* https://developer.android.com/reference/java/util/Locale
+* [Accessed: 7 October 2025].
+*
+* Firebase, 2025. FirebaseAuth. [online]. Available at:
+* https://firebase.google.com/docs/reference/android/com/google/firebase/auth/FirebaseAuth
+* [Accessed: 7 October 2025].
+*
+* Firebase, 2025. FirebaseDatabase. [online]. Available at:
+* https://firebase.google.com/docs/reference/android/com/google/firebase/database/FirebaseDatabase
+* [Accessed: 7 October 2025].
+*/

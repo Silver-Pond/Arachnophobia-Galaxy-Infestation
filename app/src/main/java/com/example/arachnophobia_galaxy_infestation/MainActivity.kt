@@ -27,14 +27,14 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
-        // Initialize the NetworkMonitor
+        // Initialize the NetworkMonitor (Android Developers, 2025; Firebsae, 2025)
         networkMonitor = NetworkMonitor(this, this)
 
-        // Initialize background music
+        // Initialize background music (Android Developers, 2025; Firebsae, 2025)
         mediaPlayer = MediaPlayer.create(this, R.raw.nebula)
         MusicPlayerManager.mediaPlayer = mediaPlayer
 
-        // Load saved music volume from preferences
+        // Load saved music volume from preferences (Android Developers, 2025; Firebsae, 2025)
         val prefs = getSharedPreferences("AppSettings", MODE_PRIVATE)
         val savedMusicVolume = prefs.getFloat("music_volume", 0.5f)
         MusicPlayerManager.updateVolume(savedMusicVolume)
@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
         val savedEffectsVolume = prefs.getFloat("effects_volume", 1.0f)
         SoundEffectsManager.updateVolume(savedEffectsVolume)
 
-        // Restart music from beginning every time
+        // Restart music from beginning every time (Android Developers, 2025; Firebsae, 2025)
         mediaPlayer?.seekTo(0)
         mediaPlayer?.start()
     }
@@ -104,7 +104,7 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
     override fun onNetworkAvailable() {
         NetworkUtils.isOnline = true
 
-        // Sync any pending highscores when internet is back
+        // Sync any pending highscores when internet is back (Android Developers, 2025; Firebsae, 2025)
         HighScoreManager.syncPendingHighScores(this)
     }
 
@@ -112,7 +112,7 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
         NetworkUtils.isOnline = false
     }
 
-    // Helper function to apply saved language
+    // Helper function to apply saved language (Android Developers, 2025; Firebsae, 2025)
     private fun applySavedLocale(context: Context) {
         val prefs = context.getSharedPreferences("AppSettings", MODE_PRIVATE)
         val languageCode = prefs.getString("language", "en") ?: "en"
@@ -134,6 +134,7 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
                 .getReference("players")
                 .child(uid)
 
+            // Fetch player data (Android Developers, 2025; Firebsae, 2025)
             playerRef.get().addOnSuccessListener { snapshot ->
                 if (snapshot.exists()) {
                     val map = snapshot.value as? Map<*, *>
@@ -159,3 +160,46 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
         }
     }
 }
+/*
+* Reference List
+*
+* Android Developers, 2025. AppCompatActivity. [online]. Available at:
+* https://developer.android.com/reference/androidx/appcompat/app/AppCompatActivity
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Fragment. [online]. Available at:
+* https://developer.android.com/reference/androidx/fragment/app/Fragment
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. MediaPlayer. [online]. Available at:
+* https://developer.android.com/reference/android/media/MediaPlayer
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. TextView. [online]. Available at:
+* https://developer.android.com/reference/android/widget/TextView
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Toast. [online]. Available at:
+* https://developer.android.com/reference/android/widget/Toast
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. SharedPreferences. [online]. Available at:
+* https://developer.android.com/reference/android/content/SharedPreferences
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Configuration. [online]. Available at:
+* https://developer.android.com/reference/android/content/res/Configuration
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Locale. [online]. Available at:
+* https://developer.android.com/reference/java/util/Locale
+* [Accessed: 7 October 2025].
+*
+* Firebase, 2025. FirebaseAuth. [online]. Available at:
+* https://firebase.google.com/docs/reference/android/com/google/firebase/auth/FirebaseAuth
+* [Accessed: 7 October 2025].
+*
+* Firebase, 2025. FirebaseDatabase. [online]. Available at:
+* https://firebase.google.com/docs/reference/android/com/google/firebase/database/FirebaseDatabase
+* [Accessed: 7 October 2025].
+*/

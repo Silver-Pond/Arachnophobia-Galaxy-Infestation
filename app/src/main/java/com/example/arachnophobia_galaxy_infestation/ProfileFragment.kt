@@ -81,7 +81,7 @@ class ProfileFragment : Fragment() {
             }
         }
 
-        // Restore effects volume from prefs
+        // Restore effects volume from prefs (Android Developers, 2025; Firebsae, 2025)
         val prefs = requireActivity().getSharedPreferences("AppSettings", MODE_PRIVATE)
         val savedEffectsVolume = prefs.getFloat("effects_volume", 1.0f)
         SoundEffectsManager.updateVolume(savedEffectsVolume)
@@ -92,7 +92,7 @@ class ProfileFragment : Fragment() {
         } else {
             "Guest"
         }
-        // Load spider silk
+        // Load spider silk (Android Developers, 2025; Firebsae, 2025)
         loadSpiderSilk()
 
         // Set up click listeners
@@ -128,7 +128,7 @@ class ProfileFragment : Fragment() {
             // Play button click sound
             if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
 
-            // Logout from Firebase
+            // Logout from Firebase (Android Developers, 2025; Firebsae, 2025)
             val auth = FirebaseAuth.getInstance()
             auth.signOut() // Firebase logout
 
@@ -142,7 +142,7 @@ class ProfileFragment : Fragment() {
                 apply()
             }
 
-            // Navigate back to login screen
+            // Navigate back to login screen (Android Developers, 2025; Firebsae, 2025)
             replaceFragment(LoginHubFragment())
         }
     }
@@ -165,7 +165,7 @@ class ProfileFragment : Fragment() {
         })
     }
 
-    // Helper method to replace fragment
+    // Helper method to replace fragment (Android Developers, 2025; Firebsae, 2025)
     private fun replaceFragment(fragment: Fragment) {
         parentFragmentManager.beginTransaction()
             .replace(R.id.main, fragment)
@@ -183,3 +183,46 @@ class ProfileFragment : Fragment() {
             }
     }
 }
+/*
+* Reference List
+*
+* Android Developers, 2025. AppCompatActivity. [online]. Available at:
+* https://developer.android.com/reference/androidx/appcompat/app/AppCompatActivity
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Fragment. [online]. Available at:
+* https://developer.android.com/reference/androidx/fragment/app/Fragment
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. MediaPlayer. [online]. Available at:
+* https://developer.android.com/reference/android/media/MediaPlayer
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. TextView. [online]. Available at:
+* https://developer.android.com/reference/android/widget/TextView
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Toast. [online]. Available at:
+* https://developer.android.com/reference/android/widget/Toast
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. SharedPreferences. [online]. Available at:
+* https://developer.android.com/reference/android/content/SharedPreferences
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Configuration. [online]. Available at:
+* https://developer.android.com/reference/android/content/res/Configuration
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Locale. [online]. Available at:
+* https://developer.android.com/reference/java/util/Locale
+* [Accessed: 7 October 2025].
+*
+* Firebase, 2025. FirebaseAuth. [online]. Available at:
+* https://firebase.google.com/docs/reference/android/com/google/firebase/auth/FirebaseAuth
+* [Accessed: 7 October 2025].
+*
+* Firebase, 2025. FirebaseDatabase. [online]. Available at:
+* https://firebase.google.com/docs/reference/android/com/google/firebase/database/FirebaseDatabase
+* [Accessed: 7 October 2025].
+*/

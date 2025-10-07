@@ -5,18 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 
-interface NotificationScheduler {
-    fun scheduleNextAlarm(context: Context)
-}
-
 class BootReceiver : BroadcastReceiver() {
-
-    // Default scheduler for production
-    var scheduler: NotificationScheduler = object : NotificationScheduler {
-        override fun scheduleNextAlarm(context: Context) {
-            NotificationReceiver.scheduleNextAlarm(context)
-        }
-    }
 
     override fun onReceive(context: Context, intent: Intent?) {
         if (intent?.action == Intent.ACTION_BOOT_COMPLETED) {

@@ -15,6 +15,7 @@ class SkinAdapter(
     private val onSkinAction: (Skin) -> Unit
 ) : RecyclerView.Adapter<SkinAdapter.SkinViewHolder>() {
 
+    // ViewHolder class
     inner class SkinViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val skinImage: ImageView = view.findViewById(R.id.skinImage)
         val skinName: TextView = view.findViewById(R.id.skinName)
@@ -32,7 +33,7 @@ class SkinAdapter(
         val skin = skins[position]
         val ownedSkins = player.ownedSkins ?: emptyList()
 
-        // SharedPreferences for equipped skin
+        // SharedPreferences for equipped skin (Android Developers,2025)
         val prefs = holder.itemView.context.getSharedPreferences("GamePrefs", Context.MODE_PRIVATE)
         val equippedSkin = prefs.getString("equippedSkin", "Moth") ?: "Moth"
 
@@ -40,13 +41,13 @@ class SkinAdapter(
         holder.skinPrice.text =
             if (ownedSkins.contains(skin.name)) "Owned" else "${skin.price} silk"
 
-        // Load image
+        // Load image (Android Developers,2025)
         val resId = holder.itemView.context.resources.getIdentifier(
             skin.image_url, "drawable", holder.itemView.context.packageName
         )
         holder.skinImage.setImageResource(if (resId != 0) resId else R.drawable.moth)
 
-        // Set button text and state
+        // Set button text and state (Android Developers,2025)
         holder.actionButton.text = when {
             equippedSkin == skin.name -> "Equipped"
             ownedSkins.contains(skin.name) -> "Equip"
@@ -54,7 +55,7 @@ class SkinAdapter(
         }
         holder.actionButton.isEnabled = holder.actionButton.text != "Equipped"
 
-        // Button click
+        // Button click (Android Developers,2025)
         holder.actionButton.setOnClickListener {
             onSkinAction(skin)
         }
@@ -67,3 +68,38 @@ class SkinAdapter(
         notifyDataSetChanged()
     }
 }
+/*
+* Reference List
+*
+* Android Developers, 2025. RecyclerView.Adapter. [online]. Available at:
+* https://developer.android.com/reference/androidx/recyclerview/widget/RecyclerView.Adapter
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. ViewHolder. [online]. Available at:
+* https://developer.android.com/reference/androidx/recyclerview/widget/RecyclerView.ViewHolder
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. LayoutInflater. [online]. Available at:
+* https://developer.android.com/reference/android/view/LayoutInflater
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. SharedPreferences. [online]. Available at:
+* https://developer.android.com/reference/android/content/SharedPreferences
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Resources.getIdentifier. [online]. Available at:
+* https://developer.android.com/reference/android/content/res/Resources#getIdentifier(java.lang.String,%20java.lang.String,%20java.lang.String)
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. ImageView. [online]. Available at:
+* https://developer.android.com/reference/android/widget/ImageView
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. TextView. [online]. Available at:
+* https://developer.android.com/reference/android/widget/TextView
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Button. [online]. Available at:
+* https://developer.android.com/reference/android/widget/Button
+* [Accessed: 7 October 2025].
+*/

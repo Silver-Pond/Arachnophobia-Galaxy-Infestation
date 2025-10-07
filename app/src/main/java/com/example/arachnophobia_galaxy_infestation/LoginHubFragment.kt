@@ -61,7 +61,7 @@ class LoginHubFragment : Fragment() {
         // Initialize Firebase Auth
         auth = FirebaseAuth.getInstance()
 
-        // Configure Google Sign-In
+        // Configure Google Sign-In (Android Developers, 2025; Firebsae, 2025)
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
@@ -124,7 +124,7 @@ class LoginHubFragment : Fragment() {
 
             replaceFragment(LoginFragment())
         }
-        // Hide or show the button based on preference
+        // Hide or show the button based on preference (Android Developers, 2025; Firebsae, 2025)
         btnbiologin.visibility = if (useBiometrics) View.VISIBLE else View.GONE
 
         btnbiologin.setOnClickListener {
@@ -143,9 +143,9 @@ class LoginHubFragment : Fragment() {
     }
 
     private fun signInWithGoogle() {
-        // First, sign out any existing Google account to force the chooser to appear again
+        // First, sign out any existing Google account to force the chooser to appear again (Android Developers, 2025; Firebsae, 2025)
         googleSignInClient.signOut().addOnCompleteListener {
-            // After sign-out completes, show the Google Account picker again
+            // After sign-out completes, show the Google Account picker again (Android Developers, 2025; Firebsae, 2025)
             val signInIntent = googleSignInClient.signInIntent
             startActivityForResult(signInIntent, RC_SIGN_IN)
         }
@@ -224,7 +224,7 @@ class LoginHubFragment : Fragment() {
             }
     }
 
-    // Helper method to replace fragment
+    // Helper method to replace fragment (Android Developers, 2025; Firebsae, 2025)
     private fun replaceFragment(fragment: Fragment) {
         parentFragmentManager.beginTransaction()
             .replace(R.id.main, fragment)
@@ -242,3 +242,46 @@ class LoginHubFragment : Fragment() {
             }
     }
 }
+/*
+* Reference List
+*
+* Android Developers, 2025. AppCompatActivity. [online]. Available at:
+* https://developer.android.com/reference/androidx/appcompat/app/AppCompatActivity
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Fragment. [online]. Available at:
+* https://developer.android.com/reference/androidx/fragment/app/Fragment
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. MediaPlayer. [online]. Available at:
+* https://developer.android.com/reference/android/media/MediaPlayer
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. TextView. [online]. Available at:
+* https://developer.android.com/reference/android/widget/TextView
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Toast. [online]. Available at:
+* https://developer.android.com/reference/android/widget/Toast
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. SharedPreferences. [online]. Available at:
+* https://developer.android.com/reference/android/content/SharedPreferences
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Configuration. [online]. Available at:
+* https://developer.android.com/reference/android/content/res/Configuration
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Locale. [online]. Available at:
+* https://developer.android.com/reference/java/util/Locale
+* [Accessed: 7 October 2025].
+*
+* Firebase, 2025. FirebaseAuth. [online]. Available at:
+* https://firebase.google.com/docs/reference/android/com/google/firebase/auth/FirebaseAuth
+* [Accessed: 7 October 2025].
+*
+* Firebase, 2025. FirebaseDatabase. [online]. Available at:
+* https://firebase.google.com/docs/reference/android/com/google/firebase/database/FirebaseDatabase
+* [Accessed: 7 October 2025].
+*/

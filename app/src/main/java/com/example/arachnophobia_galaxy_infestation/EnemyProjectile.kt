@@ -4,5 +4,5 @@ import android.widget.ImageView
 
 data class EnemyProjectile(
     val imageView: ImageView,
-    var isAlive: Boolean = true   // 🔥 useful if we want to mark killed
+    var isAlive: Boolean = true   // useful if we want to mark killed
 )

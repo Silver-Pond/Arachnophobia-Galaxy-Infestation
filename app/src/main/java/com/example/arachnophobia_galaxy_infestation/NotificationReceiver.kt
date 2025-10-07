@@ -74,7 +74,7 @@ class NotificationReceiver : BroadcastReceiver() {
     companion object {
         private const val TAG = "NotificationReceiver"
         // 30 minutes:
-        private const val INTERVAL_MS = 120 * 60 * 1000L
+        private const val INTERVAL_MS = 60 * 60 * 1000L
         // For quick testing you can temporarily set INTERVAL_MS = 60_000L (Android Developers, 2025)
 
         fun scheduleNextAlarm(context: Context) {

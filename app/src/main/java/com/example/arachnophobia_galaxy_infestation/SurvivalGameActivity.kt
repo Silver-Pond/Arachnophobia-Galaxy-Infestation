@@ -33,10 +33,10 @@ class SurvivalGameActivity : AppCompatActivity() {
         // Retrieve the username from the Intent
         username = intent.getStringExtra("username") ?: "Guest"
 
-        // Retrieve level JSON safely
+        // Retrieve level JSON safely (Android Developers, 2025; Firebsae, 2025)
         val levelJson = intent.getStringExtra("levelData")
 
-        // Pass data into the fragment
+        // Pass data into the fragment (Android Developers, 2025; Firebsae, 2025)
         val gameFragment = SurvivalGameFragment().apply {
             arguments = Bundle().apply {
                 levelJson?.let { putString("levelData", it) }
@@ -44,23 +44,23 @@ class SurvivalGameActivity : AppCompatActivity() {
             }
         }
 
-        // Load fragment
+        // Load fragment (Android Developers, 2025; Firebsae, 2025)
         supportFragmentManager.beginTransaction()
             .replace(R.id.gameframe, gameFragment)
             .commit()
 
-        // Initialize background music
+        // Initialize background music (Android Developers, 2025; Firebsae, 2025)
         mediaPlayer = MediaPlayer.create(this, R.raw.comos).apply {
             isLooping = true
             start()
         }
 
-        // Load saved music volume
+        // Load saved music volume (Android Developers, 2025; Firebsae, 2025)
         val prefs = getSharedPreferences("AppSettings", MODE_PRIVATE)
         val savedMusicVolume = prefs.getFloat("music_volume", 0.5f)
         MusicPlayerManager.updateVolume(savedMusicVolume)
 
-        // Set up buttons after fragment is attached
+        // Set up buttons after fragment is attached (Android Developers, 2025; Firebsae, 2025)
         supportFragmentManager.executePendingTransactions()
         val fragment = supportFragmentManager.findFragmentById(R.id.gameframe) as? SurvivalGameFragment
 
@@ -69,7 +69,7 @@ class SurvivalGameActivity : AppCompatActivity() {
         blastBtn = findViewById(R.id.blastbtn)
         pauseBtn = findViewById(R.id.pausebtn)
 
-        // Continuous LEFT movement
+        // Continuous LEFT movement (Android Developers, 2025; Firebsae, 2025)
         leftBtn.setOnTouchListener { _, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
@@ -98,7 +98,7 @@ class SurvivalGameActivity : AppCompatActivity() {
             }
         }
 
-        // Continuous RIGHT movement
+        // Continuous RIGHT movement (Android Developers, 2025; Firebsae, 2025)
         rightBtn.setOnTouchListener { _, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
@@ -161,7 +161,7 @@ class SurvivalGameActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        // Reload saved volumes
+        // Reload saved volumes (Android Developers, 2025; Firebsae, 2025)
         val prefs = getSharedPreferences("AppSettings", MODE_PRIVATE)
         val savedMusicVolume = prefs.getFloat("music_volume", 0.5f)
         MusicPlayerManager.updateVolume(savedMusicVolume)
@@ -185,3 +185,46 @@ class SurvivalGameActivity : AppCompatActivity() {
         mediaPlayer = null
     }
 }
+/*
+* Reference List
+*
+* Android Developers, 2025. AppCompatActivity. [online]. Available at:
+* https://developer.android.com/reference/androidx/appcompat/app/AppCompatActivity
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Fragment. [online]. Available at:
+* https://developer.android.com/reference/androidx/fragment/app/Fragment
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. MediaPlayer. [online]. Available at:
+* https://developer.android.com/reference/android/media/MediaPlayer
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. TextView. [online]. Available at:
+* https://developer.android.com/reference/android/widget/TextView
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Toast. [online]. Available at:
+* https://developer.android.com/reference/android/widget/Toast
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. SharedPreferences. [online]. Available at:
+* https://developer.android.com/reference/android/content/SharedPreferences
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Configuration. [online]. Available at:
+* https://developer.android.com/reference/android/content/res/Configuration
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Locale. [online]. Available at:
+* https://developer.android.com/reference/java/util/Locale
+* [Accessed: 7 October 2025].
+*
+* Firebase, 2025. FirebaseAuth. [online]. Available at:
+* https://firebase.google.com/docs/reference/android/com/google/firebase/auth/FirebaseAuth
+* [Accessed: 7 October 2025].
+*
+* Firebase, 2025. FirebaseDatabase. [online]. Available at:
+* https://firebase.google.com/docs/reference/android/com/google/firebase/database/FirebaseDatabase
+* [Accessed: 7 October 2025].
+*/

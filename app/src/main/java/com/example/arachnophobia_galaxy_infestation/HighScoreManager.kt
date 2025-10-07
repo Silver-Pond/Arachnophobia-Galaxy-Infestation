@@ -29,7 +29,7 @@ object HighScoreManager {
             return
         }
 
-        // Online → update if higher
+        // Online → update if higher (Android Developers, 2025; Firebase, 2025)
         dbRef.child("highscore").get().addOnSuccessListener { snapshot ->
             val existingHighscore = snapshot.getValue(Int::class.java) ?: 0
             if (score > existingHighscore) {
@@ -86,7 +86,7 @@ object HighScoreManager {
         val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
-        // Normal highscore
+        // Normal highscore (Android Developers, 2025; Firebase, 2025)
         val pendingScore = prefs.getInt(KEY_PENDING_HIGHSCORE, -1)
         if (pendingScore > -1) {
             dbRef.child("highscore").get().addOnSuccessListener { snapshot ->
@@ -101,7 +101,7 @@ object HighScoreManager {
             }
         }
 
-        // Survival highscore
+        // Survival highscore (Android Developers, 2025; Firebase, 2025)
         val pendingSurvivalScore = prefs.getInt(KEY_PENDING_SURVIVAL_HIGHSCORE, -1)
         if (pendingSurvivalScore > -1) {
             dbRef.child("survivalHighscore").get().addOnSuccessListener { snapshot ->
@@ -117,3 +117,30 @@ object HighScoreManager {
         }
     }
 }
+/*
+* Reference List
+*
+* Android Developers, 2025. SharedPreferences. [online]. Available at:
+* https://developer.android.com/reference/android/content/SharedPreferences
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Toast. [online]. Available at:
+* https://developer.android.com/reference/android/widget/Toast
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Context. [online]. Available at:
+* https://developer.android.com/reference/android/content/Context
+* [Accessed: 7 October 2025].
+*
+* Firebase, 2025. FirebaseAuth. [online]. Available at:
+* https://firebase.google.com/docs/reference/android/com/google/firebase/auth/FirebaseAuth
+* [Accessed: 7 October 2025].
+*
+* Firebase, 2025. FirebaseDatabase. [online]. Available at:
+* https://firebase.google.com/docs/reference/android/com/google/firebase/database/FirebaseDatabase
+* [Accessed: 7 October 2025].
+*
+* Firebase, 2025. DatabaseReference. [online]. Available at:
+* https://firebase.google.com/docs/reference/android/com/google/firebase/database/DatabaseReference
+* [Accessed: 7 October 2025].
+*/

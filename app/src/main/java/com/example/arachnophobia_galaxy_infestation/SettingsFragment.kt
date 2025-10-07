@@ -79,14 +79,14 @@ class SettingsFragment : Fragment() {
             }
         }
 
-        // Load saved preferences
+        // Load saved preferences (Android Developers, 2025; Firebsae, 2025)
         val prefs = requireActivity().getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
         val savedLang = prefs.getString("language", "en") ?: "en"
         selectedLanguage = savedLang
         val savedVolume = prefs.getFloat("music_volume", 0.5f)
         val savedEffectsVolume = prefs.getFloat("effects_volume", 1.0f)
 
-        // Set spinner selection based on saved language
+        // Set spinner selection based on saved language (Android Developers, 2025; Firebsae, 2025)
         languagespinner.setSelection(
             when (savedLang) {
                 "af" -> 1
@@ -146,10 +146,10 @@ class SettingsFragment : Fragment() {
             // Save language preference
             prefs.edit().putString("language", selectedLanguage).apply()
 
-            // Change app language
+            // Change app language (Android Developers, 2025; Firebsae, 2025)
             setLocale(selectedLanguage)
 
-            // Navigate to GameMenuFragment
+            // Navigate to GameMenuFragment (Android Developers, 2025; Firebsae, 2025)
             val gameMenuFragment = GameMenuFragment().apply {
                 arguments = Bundle().apply {
                     putString("username", username)
@@ -159,7 +159,7 @@ class SettingsFragment : Fragment() {
         }
     }
 
-    // Helper method to replace fragment
+    // Helper method to replace fragment (Android Developers, 2025; Firebsae, 2025)
     private fun replaceFragment(fragment: Fragment) {
         parentFragmentManager.beginTransaction()
             .replace(R.id.main, fragment)
@@ -190,3 +190,46 @@ class SettingsFragment : Fragment() {
             }
     }
 }
+/*
+* Reference List
+*
+* Android Developers, 2025. AppCompatActivity. [online]. Available at:
+* https://developer.android.com/reference/androidx/appcompat/app/AppCompatActivity
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Fragment. [online]. Available at:
+* https://developer.android.com/reference/androidx/fragment/app/Fragment
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. MediaPlayer. [online]. Available at:
+* https://developer.android.com/reference/android/media/MediaPlayer
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. TextView. [online]. Available at:
+* https://developer.android.com/reference/android/widget/TextView
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Toast. [online]. Available at:
+* https://developer.android.com/reference/android/widget/Toast
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. SharedPreferences. [online]. Available at:
+* https://developer.android.com/reference/android/content/SharedPreferences
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Configuration. [online]. Available at:
+* https://developer.android.com/reference/android/content/res/Configuration
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Locale. [online]. Available at:
+* https://developer.android.com/reference/java/util/Locale
+* [Accessed: 7 October 2025].
+*
+* Firebase, 2025. FirebaseAuth. [online]. Available at:
+* https://firebase.google.com/docs/reference/android/com/google/firebase/auth/FirebaseAuth
+* [Accessed: 7 October 2025].
+*
+* Firebase, 2025. FirebaseDatabase. [online]. Available at:
+* https://firebase.google.com/docs/reference/android/com/google/firebase/database/FirebaseDatabase
+* [Accessed: 7 October 2025].
+*/
