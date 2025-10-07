@@ -596,10 +596,8 @@ class SurvivalGameFragment : Fragment() {
 
         // Sync player data if user is not Guest (Android Developers, 2025; Firebsae, 2025)
         if (!username.equals("Guest", ignoreCase = true) && username.isNotBlank()) {
-            MainActivity.PlayerDataSync.syncPlayerData(requireContext()) {
-                // Apply skin once here
-                applyEquippedSkin()
-            }
+            // Apply skin once here
+            applyEquippedSkin()
         } else {
             // Default skin
             player.setImageResource(R.drawable.moth)
