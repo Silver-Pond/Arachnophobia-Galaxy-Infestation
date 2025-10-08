@@ -43,7 +43,10 @@ jobs:
           rm android-tools.zip
           echo "export ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
           echo "export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH" >> $GITHUB_ENV
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+
+          # Accept licenses and install required SDK components
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --update
+          echo y | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
           $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-30" "build-tools;30.0.3"
 
       # Step 4: Install dependencies
