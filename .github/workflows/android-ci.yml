@@ -35,16 +35,21 @@ jobs:
       # Step 3: Set up Android SDK (Manual Setup)
       - name: Set up Android SDK
         run: |
+          # Install dependencies
           sudo apt-get update -y
-          sudo apt-get install -y wget unzip
+          sudo apt-get install -y wget unzip openjdk-11-jdk
+
+          # Download the Android SDK command line tools
           mkdir -p $HOME/android-sdk
           wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O android-tools.zip
           unzip android-tools.zip -d $HOME/android-sdk
           rm android-tools.zip
+
+          # Set up environment variables
           echo "export ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
           echo "export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH" >> $GITHUB_ENV
 
-          # Accept licenses and install required SDK components
+          # Install SDK packages and accept licenses
           $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --update
           echo y | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
           $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-30" "build-tools;30.0.3"
@@ -68,10 +73,16 @@ jobs:
       # Step 8: Set up Android Emulator
       - name: Set up Android Emulator
         run: |
-          echo "y" | sdkmanager "system-images;android-30;google_apis;x86_64"
-          sdkmanager "emulator"
-          echo "no" | avdmanager create avd -n test -k "system-images;android-30;google_apis;x86_64" --force
-          nohup emulator -avd test -no-window -noaudio -gpu swiftshader_indirect &
+          # Install system images for the emulator
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "system-images;android-30;google_apis;x86_64"
+          # Install the emulator tool
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "emulator"
+          
+          # Create an AVD (Android Virtual Device)
+          echo "no" | $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager create avd -n test -k "system-images;android-30;google_apis;x86_64" --force
+          
+          # Start the emulator in the background
+          nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -noaudio -gpu swiftshader_indirect &
 
       # Step 9: Wait for Emulator to boot
       - name: Wait for Emulator to boot
