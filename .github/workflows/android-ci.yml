@@ -2,51 +2,47 @@ name: Android CI
 
 on:
   push:
-    branches:
-      - main
-      - develop
+    branches: [ main, develop ]
   pull_request:
-    branches:
-      - main
-      - develop
+    branches: [ main, develop ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      ANDROID_SDK_ROOT: ${{ github.workspace }}/android-sdk
+      ANDROID_HOME: ${{ github.workspace }}/android-sdk
+      GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-Xmx3g -XX:+HeapDumpOnOutOfMemoryError"
+
     steps:
-      - name: Checkout code
+      # Step 1: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Step 2: Set up JDK 17 (Temurin)
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      # ✅ Corrected Android SDK installation
+      # Step 3: Install Android SDK (fixed & unified)
       - name: Install Android SDK
         run: |
           sudo apt-get update -y
           sudo apt-get install -y wget unzip
 
-          # Prepare directories
-          ANDROID_SDK_ROOT=$HOME/android-sdk
           mkdir -p $ANDROID_SDK_ROOT/cmdline-tools
-
-          # Download and extract commandline tools
           wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
           unzip cmdline-tools.zip -d $ANDROID_SDK_ROOT/cmdline-tools
           rm cmdline-tools.zip
-
-          # ✅ Move into correct structure: cmdline-tools/latest/
           mv $ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools $ANDROID_SDK_ROOT/cmdline-tools/latest
 
-          # Export environment variables
           echo "ANDROID_HOME=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
           echo "PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/emulator:$PATH" >> $GITHUB_ENV
 
-          # Install SDK components
           yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
           yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager \
             "platform-tools" \
@@ -55,36 +51,46 @@ jobs:
             "system-images;android-30;google_apis;x86_64" \
             "emulator"
 
-      - name: Make gradlew executable
-        run: chmod +x ./gradlew
-
-      - name: Cache Gradle dependencies
+      # Step 4: Cache Gradle dependencies
+      - name: Cache Gradle
         uses: actions/cache@v3
         with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      # Step 5: Make Gradlew executable
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      # Step 6: Run Lint check
+      - name: Run Lint
+        run: ./gradlew lint
+
+      # Step 7: Run Unit Tests
       - name: Run Unit Tests
         run: ./gradlew testDebugUnitTest
 
-      - name: Start emulator
+      # Step 8: Start Android Emulator (headless)
+      - name: Start Emulator
         run: |
           echo "no" | avdmanager create avd -n test -k "system-images;android-30;google_apis;x86_64" --force
           nohup emulator -avd test -no-window -no-audio -gpu swiftshader_indirect &
-
-      - name: Wait for emulator
-        run: |
           adb wait-for-device
           adb shell input keyevent 82 &
 
+      # Step 9: Run Instrumented UI Tests
       - name: Run UI Tests
         run: ./gradlew connectedDebugAndroidTest
 
+      # Step 10: Build Release APK
       - name: Build APK
         run: ./gradlew assembleRelease
 
+      # Step 11: Upload Built APK
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
