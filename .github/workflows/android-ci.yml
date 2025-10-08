@@ -49,23 +49,27 @@ jobs:
           echo y | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
           $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-30" "build-tools;30.0.3"
 
-      # Step 4: Install dependencies
+      # Step 4: Make gradlew executable
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      # Step 5: Install dependencies
       - name: Install dependencies
         run: ./gradlew dependencies
 
-      # Step 5: Run lint checks
+      # Step 6: Run lint checks
       - name: Run Lint
         run: ./gradlew lint
 
-      # Step 6: Run Unit tests
+      # Step 7: Run Unit tests
       - name: Run Unit Tests
         run: ./gradlew testDebugUnitTest
 
-      # Step 7: Run UI tests
+      # Step 8: Run UI tests
       - name: Run UI Tests (optional)
         run: ./gradlew connectedDebugAndroidTest
 
-      # Step 8: Build APK
+      # Step 9: Build APK
       - name: Build APK
         run: ./gradlew assembleRelease
 
