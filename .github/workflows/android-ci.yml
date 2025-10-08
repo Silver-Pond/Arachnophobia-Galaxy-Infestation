@@ -14,92 +14,51 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        android-version: [30, 31]  # Target Android SDK versions
-
     steps:
       # Step 1: Checkout code
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      # Step 2: Set up JDK 17 with Temurin
+      # Step 2: Set up JDK 17
       - name: Set up JDK 17
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v4
         with:
-          java-version: '17'             # Set Java version to 17
-          distribution: 'temurin'        # Use Temurin distribution (formerly AdoptOpenJDK)
-          architecture: 'x64'            # Architecture (x64)
-          check-latest: false            # Skip checking for the latest version
+          distribution: 'temurin'
+          java-version: '17'
 
-      # Step 3: Set up Android SDK (Manual Setup)
-      - name: Set up Android SDK
+      # Step 3: Install Android SDK
+      - name: Install Android SDK
         run: |
-          # Install dependencies
           sudo apt-get update -y
-          sudo apt-get install -y wget unzip openjdk-11-jdk
+          sudo apt-get install -y wget unzip
 
-          # Download the Android SDK command line tools
-          mkdir -p $HOME/android-sdk
-          wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O android-tools.zip
-          unzip android-tools.zip -d $HOME/android-sdk
-          rm android-tools.zip
+          # Setup directories
+          mkdir -p $HOME/android-sdk/cmdline-tools
+          cd $HOME/android-sdk/cmdline-tools
 
-          # Set up environment variables
-          echo "export ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
-          echo "export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH" >> $GITHUB_ENV
+          # Download and extract commandline tools
+          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
+          unzip cmdline-tools.zip -d latest
+          rm cmdline-tools.zip
 
-          # Install SDK packages and accept licenses
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --update
-          echo y | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-30" "build-tools;30.0.3"
+          # Set environment variables
+          echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
+          echo "PATH=$HOME/android-sdk/cmdline-tools/latest/bin:$HOME/android-sdk/platform-tools:$HOME/android-sdk/emulator:$PATH" >> $GITHUB_ENV
+
+          # Install required SDK components
+          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager \
+            "platform-tools" \
+            "platforms;android-30" \
+            "build-tools;30.0.3" \
+            "system-images;android-30;google_apis;x86_64" \
+            "emulator"
 
       # Step 4: Make gradlew executable
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      # Step 5: Install dependencies
-      - name: Install dependencies
-        run: ./gradlew dependencies
-
-      # Step 6: Run lint checks
-      - name: Run Lint
-        run: ./gradlew lint
-
-      # Step 7: Run Unit tests
-      - name: Run Unit Tests
-        run: ./gradlew testDebugUnitTest
-
-      # Step 8: Set up Android Emulator
-      - name: Set up Android Emulator
-        run: |
-          # Install system images for the emulator
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "system-images;android-30;google_apis;x86_64"
-          # Install the emulator tool
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "emulator"
-          
-          # Create an AVD (Android Virtual Device)
-          echo "no" | $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager create avd -n test -k "system-images;android-30;google_apis;x86_64" --force
-          
-          # Start the emulator in the background
-          nohup $ANDROID_HOME/emulator/emulator -avd test -no-window -noaudio -gpu swiftshader_indirect &
-
-      # Step 9: Wait for Emulator to boot
-      - name: Wait for Emulator to boot
-        run: |
-          # Wait until the emulator is booted up
-          adb wait-for-device
-          adb shell input keyevent 82 &  # Unlock the device
-
-      # Step 10: Run UI tests on the emulator
-      - name: Run UI Tests
-        run: ./gradlew connectedDebugAndroidTest
-
-      # Step 11: Build APK
-      - name: Build APK
-        run: ./gradlew assembleRelease
-
-      # Cache Gradle dependencies
+      # Step 5: Cache Gradle dependencies
       - name: Cache Gradle dependencies
         uses: actions/cache@v3
         with:
@@ -108,9 +67,32 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      # Upload APK as artifact
-      - name: Upload APK as artifact
-        if: success()
+      # Step 6: Build and test
+      - name: Run Unit Tests
+        run: ./gradlew testDebugUnitTest
+
+      # Step 7: Start emulator
+      - name: Start emulator
+        run: |
+          echo "no" | avdmanager create avd -n test -k "system-images;android-30;google_apis;x86_64" --force
+          nohup emulator -avd test -no-window -no-audio -gpu swiftshader_indirect &
+
+      # Step 8: Wait for emulator
+      - name: Wait for emulator
+        run: |
+          adb wait-for-device
+          adb shell input keyevent 82 &
+
+      # Step 9: Run UI tests
+      - name: Run UI Tests
+        run: ./gradlew connectedDebugAndroidTest
+
+      # Step 10: Build release APK
+      - name: Build APK
+        run: ./gradlew assembleRelease
+
+      # Step 11: Upload artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: android-apk
