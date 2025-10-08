@@ -16,28 +16,44 @@ jobs:
       GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-Xmx3g -XX:+HeapDumpOnOutOfMemoryError"
 
     steps:
-      # Step 1: Checkout code
+      # Step 1: Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Step 2: Set up JDK 17 (Temurin)
+      # Step 2: Set up JDK 17
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      # Step 3: Install Android SDK (fixed & unified)
+      # Step 3: Cache Android SDK and AVD system image
+      - name: Cache Android SDK and AVD
+        uses: actions/cache@v3
+        with:
+          path: |
+            ${{ env.ANDROID_SDK_ROOT }}
+            ~/.android/avd
+          key: ${{ runner.os }}-android-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-android-
+
+      # Step 4: Install Android SDK (only if missing)
       - name: Install Android SDK
         run: |
           sudo apt-get update -y
           sudo apt-get install -y wget unzip
 
           mkdir -p $ANDROID_SDK_ROOT/cmdline-tools
-          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
-          unzip cmdline-tools.zip -d $ANDROID_SDK_ROOT/cmdline-tools
-          rm cmdline-tools.zip
-          mv $ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools $ANDROID_SDK_ROOT/cmdline-tools/latest
+          if [ ! -d "$ANDROID_SDK_ROOT/cmdline-tools/latest" ]; then
+            echo "Installing Android commandline tools..."
+            wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
+            unzip cmdline-tools.zip -d $ANDROID_SDK_ROOT/cmdline-tools
+            rm cmdline-tools.zip
+            mv $ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools $ANDROID_SDK_ROOT/cmdline-tools/latest
+          else
+            echo "✅ SDK already cached"
+          fi
 
           echo "ANDROID_HOME=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
           echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
@@ -51,7 +67,7 @@ jobs:
             "system-images;android-30;google_apis;x86_64" \
             "emulator"
 
-      # Step 4: Cache Gradle dependencies
+      # Step 5: Cache Gradle dependencies
       - name: Cache Gradle
         uses: actions/cache@v3
         with:
@@ -62,36 +78,57 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      # Step 5: Make Gradlew executable
+      # Step 6: Make gradlew executable
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      # Step 6: Run Lint check
+      # Step 7: Run Lint
       - name: Run Lint
         run: ./gradlew lint
 
-      # Step 7: Run Unit Tests
+      # Step 8: Run Unit Tests
       - name: Run Unit Tests
         run: ./gradlew testDebugUnitTest
 
-      # Step 8: Start Android Emulator (headless)
-      - name: Start Emulator
+      # Step 9: Start Emulator (with cache support + boot check)
+      - name: Start and wait for Emulator
         run: |
-          echo "no" | avdmanager create avd -n test -k "system-images;android-30;google_apis;x86_64" --force
-          nohup emulator -avd test -no-window -no-audio -gpu swiftshader_indirect &
-          adb wait-for-device
-          adb shell input keyevent 82 &
+          # Create AVD only if not cached
+          if [ ! -d ~/.android/avd/test.avd ]; then
+            echo "Creating new AVD..."
+            echo "no" | avdmanager create avd -n test -k "system-images;android-30;google_apis;x86_64" --force
+          else
+            echo "✅ Reusing cached AVD"
+          fi
 
-      # Step 9: Run Instrumented UI Tests
-      - name: Run UI Tests
+          # Launch emulator
+          $ANDROID_SDK_ROOT/emulator/emulator -avd test -no-window -no-audio -no-snapshot -gpu swiftshader_indirect -netdelay none -netspeed full &
+          adb wait-for-device
+
+          # Wait for boot completion (max 5 min)
+          boot_timeout=300
+          echo "Waiting for emulator to boot..."
+          SECONDS=0
+          until adb shell getprop sys.boot_completed 2>/dev/null | grep -m 1 '1'; do
+            if [ $SECONDS -gt $boot_timeout ]; then
+              echo "❌ Emulator boot timed out!"
+              exit 1
+            fi
+            sleep 5
+          done
+          echo "✅ Emulator booted successfully."
+          adb shell input keyevent 82
+
+      # Step 10: Run UI Tests
+      - name: Run Instrumented UI Tests
         run: ./gradlew connectedDebugAndroidTest
 
-      # Step 10: Build Release APK
-      - name: Build APK
+      # Step 11: Build Release APK
+      - name: Build Release APK
         run: ./gradlew assembleRelease
 
-      # Step 11: Upload Built APK
-      - name: Upload APK
+      # Step 12: Upload APK
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: android-apk
