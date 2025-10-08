@@ -30,12 +30,28 @@ jobs:
         with:
           java-version: '11'  # Kotlin projects typically use Java 11 or newer
 
-      # Step 3: Set up Android SDK
+      # Step 3: Set up Android SDK (Manual Setup)
       - name: Set up Android SDK
-        uses: r0adkll/actions-android-sdk@v2
-        with:
-          sdk-version: '30'  # Change to the target SDK version
-          build-tools-version: '30.0.3'  # Update with the build tools version used by your project
+        run: |
+          # Install required dependencies
+          sudo apt-get update -y
+          sudo apt-get install -y wget unzip
+
+          # Download and install Android SDK command-line tools
+          mkdir -p $HOME/android-sdk
+          wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O android-tools.zip
+          unzip android-tools.zip -d $HOME/android-sdk
+          rm android-tools.zip
+          
+          # Add the SDK to the PATH
+          echo "export ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
+          echo "export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH" >> $GITHUB_ENV
+
+          # Accept licenses
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+
+          # Install SDK components (build tools, platforms)
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-30" "build-tools;30.0.3"
 
       # Step 4: Install dependencies (Gradle wrapper)
       - name: Install dependencies
@@ -57,19 +73,19 @@ jobs:
       - name: Build APK
         run: ./gradlew assembleRelease  # Or use assembleDebug depending on what you need
 
-      # Optional: Cache Gradle dependencies to speed up builds
+      # Cache Gradle dependencies
       - name: Cache Gradle dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      # Optional: Upload build artifacts (if you want to store your APK as an artifact)
+      # Upload APK as artifact
       - name: Upload APK as artifact
         if: success()  # Only upload if the build is successful
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: android-apk
           path: app/build/outputs/apk/release/app-release.apk  # Adjust based on your output directory
