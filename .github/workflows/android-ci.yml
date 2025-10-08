@@ -1,0 +1,75 @@
+name: Android CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        android-version: [30, 31]  # Target Android SDK versions
+        # You can add more matrix configurations, e.g., different Java versions, etc.
+
+    steps:
+      # Step 1: Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Step 2: Set up JDK
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'  # Kotlin projects typically use Java 11 or newer
+
+      # Step 3: Set up Android SDK
+      - name: Set up Android SDK
+        uses: r0adkll/actions-android-sdk@v2
+        with:
+          sdk-version: '30'  # Change to the target SDK version
+          build-tools-version: '30.0.3'  # Update with the build tools version used by your project
+
+      # Step 4: Install dependencies (Gradle wrapper)
+      - name: Install dependencies
+        run: ./gradlew dependencies
+
+      # Step 5: Run lint checks
+      - name: Run Lint
+        run: ./gradlew lint
+
+      # Step 6: Run Unit tests
+      - name: Run Unit Tests
+        run: ./gradlew testDebugUnitTest
+
+      # Step 7: Run UI tests (optional, if you have UI tests set up)
+      - name: Run UI Tests (optional)
+        run: ./gradlew connectedDebugAndroidTest
+
+      # Step 8: Build APK (Release or Debug)
+      - name: Build APK
+        run: ./gradlew assembleRelease  # Or use assembleDebug depending on what you need
+
+      # Optional: Cache Gradle dependencies to speed up builds
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      # Optional: Upload build artifacts (if you want to store your APK as an artifact)
+      - name: Upload APK as artifact
+        if: success()  # Only upload if the build is successful
+        uses: actions/upload-artifact@v2
+        with:
+          name: android-apk
+          path: app/build/outputs/apk/release/app-release.apk  # Adjust based on your output directory
