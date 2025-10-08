@@ -65,11 +65,26 @@ jobs:
       - name: Run Unit Tests
         run: ./gradlew testDebugUnitTest
 
-      # Step 8: Run UI tests
-      - name: Run UI Tests (optional)
+      # Step 8: Set up Android Emulator
+      - name: Set up Android Emulator
+        run: |
+          echo "y" | sdkmanager "system-images;android-30;google_apis;x86_64"
+          sdkmanager "emulator"
+          echo "no" | avdmanager create avd -n test -k "system-images;android-30;google_apis;x86_64" --force
+          nohup emulator -avd test -no-window -noaudio -gpu swiftshader_indirect &
+
+      # Step 9: Wait for Emulator to boot
+      - name: Wait for Emulator to boot
+        run: |
+          # Wait until the emulator is booted up
+          adb wait-for-device
+          adb shell input keyevent 82 &  # Unlock the device
+
+      # Step 10: Run UI tests on the emulator
+      - name: Run UI Tests
         run: ./gradlew connectedDebugAndroidTest
 
-      # Step 9: Build APK
+      # Step 11: Build APK
       - name: Build APK
         run: ./gradlew assembleRelease
 
