@@ -17,7 +17,6 @@ jobs:
     strategy:
       matrix:
         android-version: [30, 31]  # Target Android SDK versions
-        # You can add more matrix configurations, e.g., different Java versions, etc.
 
     steps:
       # Step 1: Checkout code
@@ -28,32 +27,26 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v2
         with:
-          java-version: '11'  # Kotlin projects typically use Java 11 or newer
+          java-version: '11'               # Version of JDK (11)
+          distribution: 'adoptopenjdk'     # JDK distribution (AdoptOpenJDK)
+          architecture: 'x64'              # Architecture (x64)
+          check-latest: false              # Skip checking for the latest version
 
       # Step 3: Set up Android SDK (Manual Setup)
       - name: Set up Android SDK
         run: |
-          # Install required dependencies
           sudo apt-get update -y
           sudo apt-get install -y wget unzip
-
-          # Download and install Android SDK command-line tools
           mkdir -p $HOME/android-sdk
           wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O android-tools.zip
           unzip android-tools.zip -d $HOME/android-sdk
           rm android-tools.zip
-          
-          # Add the SDK to the PATH
           echo "export ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
           echo "export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH" >> $GITHUB_ENV
-
-          # Accept licenses
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
-
-          # Install SDK components (build tools, platforms)
           $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-30" "build-tools;30.0.3"
 
-      # Step 4: Install dependencies (Gradle wrapper)
+      # Step 4: Install dependencies
       - name: Install dependencies
         run: ./gradlew dependencies
 
@@ -65,13 +58,13 @@ jobs:
       - name: Run Unit Tests
         run: ./gradlew testDebugUnitTest
 
-      # Step 7: Run UI tests (optional, if you have UI tests set up)
+      # Step 7: Run UI tests
       - name: Run UI Tests (optional)
         run: ./gradlew connectedDebugAndroidTest
 
-      # Step 8: Build APK (Release or Debug)
+      # Step 8: Build APK
       - name: Build APK
-        run: ./gradlew assembleRelease  # Or use assembleDebug depending on what you need
+        run: ./gradlew assembleRelease
 
       # Cache Gradle dependencies
       - name: Cache Gradle dependencies
@@ -84,8 +77,8 @@ jobs:
 
       # Upload APK as artifact
       - name: Upload APK as artifact
-        if: success()  # Only upload if the build is successful
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: android-apk
-          path: app/build/outputs/apk/release/app-release.apk  # Adjust based on your output directory
+          path: app/build/outputs/apk/release/app-release.apk
