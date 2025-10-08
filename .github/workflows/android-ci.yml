@@ -24,10 +24,10 @@ jobs:
         uses: actions/checkout@v2
 
       # Step 2: Set up JDK with Temurin
-      - name: Set up JDK
+      - name: Set up JDK 17
         uses: actions/setup-java@v2
         with:
-          java-version: '11'              # Version of JDK (11)
+          java-version: '17'              # Version of JDK (17)
           distribution: 'temurin'         # JDK distribution (Temurin)
           architecture: 'x64'             # Architecture (x64)
           check-latest: false             # Skip checking for the latest version
