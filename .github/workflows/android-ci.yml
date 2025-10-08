@@ -23,14 +23,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Step 2: Set up JDK with Temurin
+      # Step 2: Set up JDK 17 with Temurin
       - name: Set up JDK 17
         uses: actions/setup-java@v2
         with:
-          java-version: '17'              # Version of JDK (17)
-          distribution: 'temurin'         # JDK distribution (Temurin)
-          architecture: 'x64'             # Architecture (x64)
-          check-latest: false             # Skip checking for the latest version
+          java-version: '17'             # Set Java version to 17
+          distribution: 'temurin'        # Use Temurin distribution (formerly AdoptOpenJDK)
+          architecture: 'x64'            # Architecture (x64)
+          check-latest: false            # Skip checking for the latest version
 
       # Step 3: Set up Android SDK (Manual Setup)
       - name: Set up Android SDK
