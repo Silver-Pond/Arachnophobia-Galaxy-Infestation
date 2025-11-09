@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Arachnophobia</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Sawubona isiqeshana esingenalutho</string>
+    <string name="default_web_client_id">271668743357-pi1bb00pmr1sc11ptdn2rbj0ckoq3oep.apps.googleusercontent.com</string>
+
+    <string name="logintext">Yiba ne-akhawunti?</string>
+    <string name="signuptext">Awunayo i-akhawunti?</string>
+    <string name="settingstext">IZILUNGISELELO</string>
+    <string name="languagetext">ULIMI</string>
+    <string name="bioswitchtext">SEBENZISA I-BIOMETRICS</string>
+    <string name="musictext">IVOLUMU YOMCULO</string>
+    <string name="effectstext">IMIPHUMELA IVOLUMU</string>
+    <string name="profiletext">IPHROFAYILI</string>
+    <string name="highscorestext">AMAPHUZU APHEZULU</string>
+    <string name="skinstext">UKWENZA NGOKWEZIFISO</string>
+    <string name="buyText">THENGA</string>
+
+    <string name="btnsignup">BHALISELA</string>
+    <string name="btnlogin">NGENA NGEMVUME</string>
+    <string name="btngooglelogin">NGENA KWE-GOOGLE</string>
+    <string name="btnbiologin">I-BIOLOGIN</string>
+    <string name="btnguest">QHUBEKA NJENGESIVAKASHI</string>
+    <string name="btnlogout">PHUMA</string>
+
+    <string name="start">QALA UMDLALO</string>
+    <string name="welcome">UYAKWAMUKELA</string>
+    <string name="usernameinput">FAKA U-USERNAME</string>
+    <string name="emailinput">FAKA I-IMEYILI</string>
+    <string name="passwordinput">FAKA IPHASIWEDI</string>
+
+    <string name="btnarcadehighscore">ARCADE AMAPHUZU APHEZULU</string>
+    <string name="btnsurvivalhighscore">SURVIVAL AMAPHUZU APHEZULU</string>
+    <string name="btnprofilechange">SHINTSHA UMLANDO</string>
+    <string name="btnskin">THENGA FUTHI UHLOMISE IZIKHUMBA</string>
+    <string name="btnback">BUYELA KUMENU</string>
+    <string name="btnsavesettings">GCINA</string>
+    <string name="btnleaderboards">AMABHODI WABAPHAMBILI</string>
+    <string name="btntrophies">IZINDEBELE</string>
+    <string name="btnsettings">IZILUNGISELELO</string>
+    <string name="btnexit">PHUMA</string>
+</resources>

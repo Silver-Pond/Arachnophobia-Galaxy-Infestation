@@ -78,6 +78,7 @@ dependencies {
     implementation(libs.androidx.recyclerview)
     implementation(libs.core.ktx)
     implementation(libs.androidx.junit.ktx)
+    implementation(libs.androidx.runtime)
 
     testImplementation(libs.junit)
     testImplementation("org.robolectric:robolectric:4.16")
@@ -95,4 +96,6 @@ dependencies {
     androidTestImplementation("io.mockk:mockk-android:1.14.6")
     androidTestImplementation("androidx.test:runner:1.7.0")
     androidTestImplementation("androidx.test:rules:1.7.0")
+    androidTestImplementation ("androidx.test.espresso:espresso-core:3.5.1")
+
 }

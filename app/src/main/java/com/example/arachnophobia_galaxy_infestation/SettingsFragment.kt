@@ -57,7 +57,7 @@ class SettingsFragment : Fragment() {
         val bioswitch = view.findViewById<Switch>(R.id.bioswitch)
 
         // Set up spinner
-        val options = arrayOf("English", "Afrikaans")
+        val options = arrayOf("English", "Afrikaans", "Zulu")
         val adapter = ArrayAdapter(requireContext(), R.layout.item_spinner, options)
         adapter.setDropDownViewResource(R.layout.item_spinner)
         languagespinner.adapter = adapter
@@ -89,6 +89,7 @@ class SettingsFragment : Fragment() {
         // Set spinner selection based on saved language (Android Developers, 2025; Firebsae, 2025)
         languagespinner.setSelection(
             when (savedLang) {
+                "zu" -> 2
                 "af" -> 1
                 else -> 0
             }
@@ -105,6 +106,7 @@ class SettingsFragment : Fragment() {
                 selectedLanguage = when (position) {
                     0 -> "en"
                     1 -> "af"
+                    2 -> "zu"
                     else -> "en"
                 }
             }
