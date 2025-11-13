@@ -1,120 +1,86 @@
 package com.example.arachnophobia_galaxy_infestation
 
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkRequest
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 
 object HighScoreManager {
 
-    private const val PREFS_NAME = "AppSettings"
-    private const val KEY_PENDING_HIGHSCORE = "pending_highscore"
-    private const val KEY_PENDING_SURVIVAL_HIGHSCORE = "pending_survival_highscore"
-
-    /** Save normal highscore, offline or online */
-    fun saveHighScore(context: Context, score: Int) {
+    /**
+     * Saves the high score — locally if offline, or to Firebase if online.
+     * Automatically uploads any pending local score when called online.
+     */
+    fun saveHighScore(appContext: Context, score: Int) {
         val auth = FirebaseAuth.getInstance()
         val uid = auth.currentUser?.uid ?: return
 
         val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
+        val prefs = appContext.getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
 
-        if (!NetworkUtils.isOnline) {
-            // Offline → store locally
-            val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-            val pendingScore = prefs.getInt(KEY_PENDING_HIGHSCORE, -1)
-            if (score > pendingScore) {
-                prefs.edit().putInt(KEY_PENDING_HIGHSCORE, score).apply()
-            }
-            Toast.makeText(context, "No internet. High score saved locally.", Toast.LENGTH_SHORT).show()
+        val connectivityManager = appContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        val isOnline = networkInfo != null && networkInfo.isConnected
+
+        // --- Offline case: save pending highscore locally ---
+        if (!isOnline) {
+            prefs.edit().putInt("pending_highscore", score).apply()
+            Toast.makeText(appContext, "No internet. High score saved locally.", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // Online → update if higher (Android Developers, 2025; Firebase, 2025)
-        dbRef.child("highscore").get().addOnSuccessListener { snapshot ->
-            val existingHighscore = snapshot.getValue(Int::class.java) ?: 0
-            if (score > existingHighscore) {
-                dbRef.child("highscore").setValue(score)
-                    .addOnSuccessListener {
-                        Toast.makeText(context, "New Highscore!", Toast.LENGTH_SHORT).show()
-                    }
-                    .addOnFailureListener {
-                        Toast.makeText(context, "Failed to update highscore", Toast.LENGTH_SHORT).show()
-                    }
-            }
-        }.addOnFailureListener {
-            Toast.makeText(context, "Error fetching highscore from server", Toast.LENGTH_SHORT).show()
-        }
-    }
+        // --- Online case: check pending and upload ---
+        val pendingHighScore = prefs.getInt("pending_highscore", 0)
+        val currentScore = maxOf(score, pendingHighScore)
 
-    /** Save survival highscore, offline or online */
-    fun saveSurvivalHighScore(context: Context, survivalScore: Int) {
-        val auth = FirebaseAuth.getInstance()
-        val uid = auth.currentUser?.uid ?: return
+        dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val existingHighscore = snapshot.child("highscore").getValue(Int::class.java) ?: 0
 
-        val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
-
-        if (!NetworkUtils.isOnline) {
-            val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-            val pendingScore = prefs.getInt(KEY_PENDING_SURVIVAL_HIGHSCORE, -1)
-            if (survivalScore > pendingScore) {
-                prefs.edit().putInt(KEY_PENDING_SURVIVAL_HIGHSCORE, survivalScore).apply()
-            }
-            Toast.makeText(context, "No internet. Survival high score saved locally.", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        dbRef.child("survivalHighscore").get().addOnSuccessListener { snapshot ->
-            val existingHighscore = snapshot.getValue(Int::class.java) ?: 0
-            if (survivalScore > existingHighscore) {
-                dbRef.child("survivalHighscore").setValue(survivalScore)
-                    .addOnSuccessListener {
-                        Toast.makeText(context, "New Survival Highscore!", Toast.LENGTH_SHORT).show()
-                    }
-                    .addOnFailureListener {
-                        Toast.makeText(context, "Failed to update survival highscore", Toast.LENGTH_SHORT).show()
-                    }
-            }
-        }.addOnFailureListener {
-            Toast.makeText(context, "Error fetching survival highscore from server", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    /** Sync pending highscores when internet is back */
-    fun syncPendingHighScores(context: Context) {
-        val auth = FirebaseAuth.getInstance()
-        val uid = auth.currentUser?.uid ?: return
-        val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
-        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-
-        // Normal highscore (Android Developers, 2025; Firebase, 2025)
-        val pendingScore = prefs.getInt(KEY_PENDING_HIGHSCORE, -1)
-        if (pendingScore > -1) {
-            dbRef.child("highscore").get().addOnSuccessListener { snapshot ->
-                val existingHighscore = snapshot.getValue(Int::class.java) ?: 0
-                if (pendingScore > existingHighscore) {
-                    dbRef.child("highscore").setValue(pendingScore)
+                if (currentScore > existingHighscore) {
+                    dbRef.child("highscore").setValue(currentScore)
                         .addOnSuccessListener {
-                            Toast.makeText(context, "Pending highscore synced: $pendingScore", Toast.LENGTH_SHORT).show()
+                            prefs.edit().remove("pending_highscore").apply()
+                            Toast.makeText(appContext, "New high score saved online!", Toast.LENGTH_SHORT).show()
+                        }
+                        .addOnFailureListener {
+                            Toast.makeText(appContext, "Failed to update high score", Toast.LENGTH_SHORT).show()
                         }
                 }
-                prefs.edit().remove(KEY_PENDING_HIGHSCORE).apply()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(appContext, "Database error: ${error.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    /**
+     * Registers a system-wide listener to automatically sync high scores
+     * whenever the network connection is restored.
+     */
+    fun registerNetworkCallback(context: Context) {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        val networkCallback = object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                super.onAvailable(network)
+
+                // Try syncing pending highscore when back online
+                val prefs = context.getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
+                val pendingHighScore = prefs.getInt("pending_highscore", 0)
+
+                if (pendingHighScore > 0) {
+                    saveHighScore(context, pendingHighScore)
+                }
             }
         }
 
-        // Survival highscore (Android Developers, 2025; Firebase, 2025)
-        val pendingSurvivalScore = prefs.getInt(KEY_PENDING_SURVIVAL_HIGHSCORE, -1)
-        if (pendingSurvivalScore > -1) {
-            dbRef.child("survivalHighscore").get().addOnSuccessListener { snapshot ->
-                val existingHighscore = snapshot.getValue(Int::class.java) ?: 0
-                if (pendingSurvivalScore > existingHighscore) {
-                    dbRef.child("survivalHighscore").setValue(pendingSurvivalScore)
-                        .addOnSuccessListener {
-                            Toast.makeText(context, "Pending survival highscore synced: $pendingSurvivalScore", Toast.LENGTH_SHORT).show()
-                        }
-                }
-                prefs.edit().remove(KEY_PENDING_SURVIVAL_HIGHSCORE).apply()
-            }
-        }
+        val request = NetworkRequest.Builder().build()
+        connectivityManager.registerNetworkCallback(request, networkCallback)
     }
 }
 /*

@@ -15,6 +15,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -181,17 +182,6 @@ class GameFragment : Fragment() {
         updateLivesUI()
         updateScoreUI()
         updateHighScoreUI()
-    }
-
-    fun onNewHighScoreAchieved(newScore: Int) {
-        val user = FirebaseAuth.getInstance().currentUser
-        if (user == null) {
-            Toast.makeText(requireContext(), "Not logged in. Cannot save high score.", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        // Use HighScoreManager to handle offline/online logic (Android Developers, 2025; Firebsae, 2025)
-        HighScoreManager.saveHighScore(requireContext(), newScore)
     }
 
     private fun applyEquippedSkin() {
@@ -713,126 +703,14 @@ class GameFragment : Fragment() {
         }
     }
 
-    private fun saveHighScore() {
-        val auth = FirebaseAuth.getInstance()
-        val uid = auth.currentUser?.uid ?: return  // Exit if not logged in
-
-        val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
-
-        // Use safe context/activity references
-        val safeContext = context ?: return
-        val safeActivity = activity ?: return
-
-        // Use NetworkUtils for global online check (Android Developers, 2025; Firebsae, 2025)
-        if (!NetworkUtils.isOnline) {
-            // Offline → store locally (Android Developers, 2025; Firebsae, 2025)
-            val prefs = safeActivity.getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
-            prefs.edit().putInt("pending_highscore", score).apply()
-
-            Toast.makeText(safeContext, "No internet. High score saved locally.", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        // Only run Firebase logic if online (Android Developers, 2025; Firebsae, 2025)
-        dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val existingHighscore = snapshot.child("highscore").getValue(Int::class.java) ?: 0
-
-                // Only update if higher (Android Developers, 2025; Firebsae, 2025)
-                if (score > existingHighscore) {
-                    dbRef.child("highscore").setValue(score)
-                        .addOnSuccessListener {
-                            context?.let {
-                                Toast.makeText(it, "New Highscore!", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                        .addOnFailureListener {
-                            context?.let {
-                                Toast.makeText(it, "Failed to update highscore", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                context?.let {
-                    Toast.makeText(it, "Database error: ${error.message}", Toast.LENGTH_SHORT).show()
-                }
-            }
-        })
+    fun saveHighScore() {
+        // Register network callback (Android Developers, 2025; Firebsae, 2025)
+        HighScoreManager.saveHighScore(requireContext().applicationContext, score)
     }
 
     private fun saveInGameCurrency() {
-        val username = arguments?.getString("username") ?: "Guest"
-
-        if (username.equals("Guest", ignoreCase = true) || username.isEmpty()) {
-            // Guest users don't earn silk (Android Developers, 2025; Firebsae, 2025)
-            return
-        }
-
-        val spider_silk = (score * 0.5) / 100
-        val auth = FirebaseAuth.getInstance()
-        val uid = auth.currentUser?.uid ?: return
-        val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
-
-        dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val username = snapshot.child("username").getValue(String::class.java) ?: "Guest"
-                val showToasts = username.isNotBlank() && !username.equals("Guest", ignoreCase = true)
-
-                if (snapshot.exists()) {
-                    val currentSilk = snapshot.child("spider_silk").getValue(Double::class.java) ?: 0.0
-
-                    if (currentSilk < 100_000) {
-                        val updatedSilk = (currentSilk + spider_silk).coerceAtMost(100_000.0)
-
-                        dbRef.child("spider_silk").setValue(updatedSilk)
-                            .addOnSuccessListener {
-                                if (showToasts) {
-                                    Toast.makeText(
-                                        requireContext(),
-                                        "You have earned $spider_silk silk!",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            }
-                    } else {
-                        if (showToasts) {
-                            Toast.makeText(
-                                requireContext(),
-                                "Max silk reached (100000).",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
-                } else {
-                    val user = mapOf(
-                        "id" to uid,
-                        "username" to username.ifBlank { "Guest" },
-                        "email" to (snapshot.child("email").getValue(String::class.java) ?: ""),
-                        "password" to (snapshot.child("password").getValue(String::class.java) ?: ""),
-                        "highscore" to (snapshot.child("highscore").getValue(Int::class.java) ?: 0),
-                        "spider_silk" to spider_silk.coerceAtMost(100_000.0)
-                    )
-
-                    dbRef.setValue(user)
-                        .addOnSuccessListener {
-                            if (showToasts) {
-                                Toast.makeText(requireContext(), "Player created with spider silk!", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                        .addOnFailureListener {
-                            if (showToasts) {
-                                Toast.makeText(requireContext(), "Failed to save spider silk!", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(requireContext(), "Database error: ${error.message}", Toast.LENGTH_SHORT).show()
-            }
-        })
+        // Register network callback (Android Developers, 2025; Firebsae, 2025)
+        CurrencyManager.saveInGameCurrency(requireContext().applicationContext, score)
     }
 
     private fun checkAndAwardTrophies() {
@@ -862,31 +740,46 @@ class GameFragment : Fragment() {
         if (score >= 10000) trophiesToAward.add(Trophy("trophy11", "Space Invader", "Obtained A Score of 10000!", "score_trophy"))
 
         // Save & show toast only for NEW trophies
+        // Save & show toast only for NEW trophies
         trophiesToAward.forEach { trophy ->
             dbRef.child(trophy.id).get().addOnSuccessListener { snapshot ->
+
+                // 🔒 SAFETY CHECKS — prevent crashes if fragment view is gone
+                if (!isAdded || view == null ||
+                    !viewLifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
+                ) {
+                    return@addOnSuccessListener
+                }
+
                 if (!snapshot.exists()) {
                     // Award trophy in Firebase
                     dbRef.child(trophy.id).setValue(true)
 
+                    // SAFE access to view
+                    val rootView = requireView()
+
                     val snackbar = Snackbar.make(
-                        requireView(),
+                        rootView,
                         "🏆 ${trophy.name} unlocked!\n${trophy.description}",
                         Snackbar.LENGTH_LONG
                     )
 
-                    // Access the Snackbar's view (Android Developers, 2025; Firebsae, 2025)
                     val snackbarView = snackbar.view
 
-                    // Change the layout params to show at the top center (Android Developers, 2025; Firebsae, 2025)
+                    // Change layout params to show at the top center
                     val params = snackbarView.layoutParams as FrameLayout.LayoutParams
                     params.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-                    params.topMargin = 100 // same offset you had for Toast
+                    params.topMargin = 100
                     snackbarView.layoutParams = params
 
-                    // Optionally style it (background, text color, etc.) (Android Developers, 2025; Firebsae, 2025)
+                    // Optional styling
                     snackbarView.setBackgroundColor(
-                        ContextCompat.getColor(requireContext(), com.google.android.material.R.color.design_default_color_primary_variant) // example color
+                        ContextCompat.getColor(
+                            requireContext(),
+                            com.google.android.material.R.color.design_default_color_primary_variant
+                        )
                     )
+
                     snackbar.show()
                 }
             }
@@ -913,7 +806,6 @@ class GameFragment : Fragment() {
         // Save progress safely (Android Developers, 2025; Firebsae, 2025)
         saveHighScore()
         saveInGameCurrency()
-        onNewHighScoreAchieved(score)
         checkAndAwardTrophies()
 
         // Delay return to Game Menu
@@ -942,7 +834,6 @@ class GameFragment : Fragment() {
         // Save progress safely (Android Developers, 2025; Firebsae, 2025)
         saveHighScore()
         saveInGameCurrency()
-        onNewHighScoreAchieved(score)
         checkAndAwardTrophies()
 
         // Delay return to Game Menu

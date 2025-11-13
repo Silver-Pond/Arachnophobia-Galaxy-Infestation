@@ -802,17 +802,6 @@ class SurvivalGameFragment : Fragment() {
         })
     }
 
-    fun onNewSurvivalHighScoreAchieved(newSurvivalScore: Int) {
-        val user = FirebaseAuth.getInstance().currentUser
-        if (user == null) {
-            Toast.makeText(requireContext(), "Not logged in. Cannot save survival high score.", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        // Use HighScoreManager to handle offline/online logic (Android Developers, 2025; Firebsae, 2025)
-        HighScoreManager.saveSurvivalHighScore(requireContext(), newSurvivalScore)
-    }
-
     private fun saveInGameCurrency() {
         val username = arguments?.getString("username") ?: "Guest"
 
@@ -969,7 +958,6 @@ class SurvivalGameFragment : Fragment() {
         // Save progress safely
         saveHighScore()
         saveInGameCurrency()
-        onNewSurvivalHighScoreAchieved(score)
         checkAndAwardTrophies()
 
         // Delay return to Game Menu

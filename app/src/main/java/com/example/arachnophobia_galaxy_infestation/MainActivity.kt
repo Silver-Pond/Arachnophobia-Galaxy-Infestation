@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import java.util.Locale
 import android.content.res.Configuration
-import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
@@ -26,6 +25,10 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
+
+        // Register network callback (Android Developers, 2025; Firebsae, 2025)
+        HighScoreManager.registerNetworkCallback(applicationContext)
+        CurrencyManager.registerNetworkCallback(applicationContext)
 
         // Initialize the NetworkMonitor (Android Developers, 2025; Firebsae, 2025)
         networkMonitor = NetworkMonitor(this, this)
@@ -103,9 +106,6 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
 
     override fun onNetworkAvailable() {
         NetworkUtils.isOnline = true
-
-        // Sync any pending highscores when internet is back (Android Developers, 2025; Firebsae, 2025)
-        HighScoreManager.syncPendingHighScores(this)
     }
 
     override fun onNetworkLost() {
