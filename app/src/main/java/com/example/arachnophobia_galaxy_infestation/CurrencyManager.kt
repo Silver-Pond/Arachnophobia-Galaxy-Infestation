@@ -40,9 +40,16 @@ object CurrencyManager {
 
         dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                // Safe conversion: handle Int/Long/Double in Firebase
-                val currentSilk =
-                    snapshot.child("spider_silk").getValue(Number::class.java)?.toDouble() ?: 0.0
+
+                // Safely read spider_silk regardless of type
+                val silkSnapshot = snapshot.child("spider_silk")
+                val currentSilk: Double = when (val value = silkSnapshot.value) {
+                    is Long -> value.toDouble()
+                    is Int -> value.toDouble()
+                    is Double -> value
+                    is Float -> value.toDouble()
+                    else -> 0.0
+                }
 
                 val updatedAmount = (currentSilk + silkToAdd).coerceAtMost(100_000.0)
 
@@ -56,14 +63,12 @@ object CurrencyManager {
                         ).show()
                     }
                     .addOnFailureListener {
-                        Toast.makeText(appContext, "Failed to update silk.", Toast.LENGTH_SHORT)
-                            .show()
+                        Toast.makeText(appContext, "Failed to update silk.", Toast.LENGTH_SHORT).show()
                     }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(appContext, "Database error: ${error.message}", Toast.LENGTH_SHORT)
-                    .show()
+                Toast.makeText(appContext, "Database error: ${error.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
