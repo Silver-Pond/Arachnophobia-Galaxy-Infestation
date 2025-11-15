@@ -26,6 +26,8 @@ import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.concurrent.ThreadLocalRandom
+import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.min
@@ -68,6 +70,8 @@ class SurvivalGameFragment : Fragment() {
     private val bullets = mutableListOf<ImageView>()
     private val enemies = mutableListOf<SurvivalEnemy>()
     private val projectiles = mutableListOf<EnemyProjectile>()
+    private val meteorites = mutableListOf<ImageView>()
+    private var meteorSpawnHandler = Handler(Looper.getMainLooper())
 
     private var username: String? = null
     private var level: Level? = null
@@ -78,6 +82,9 @@ class SurvivalGameFragment : Fragment() {
     private var currentEnemySpeed = baseEnemySpeed
     private var projectileSpeed = 10f
     private var bulletSpeed = 15f
+    private var lastMeteorSpawnTime = 0L
+    private var meteorSpawnDelay = 1500L  // 1.5 seconds between meteors
+    private var lastMeteorX = -1000f  // Track last position
     private var currentBulletDrawable: String = "moth_blast"
 
     private var shootSoundId: Int = 0
@@ -320,6 +327,8 @@ class SurvivalGameFragment : Fragment() {
         // Stop ALL delayed tasks or loop callbacks (Android Developers, 2025; Firebsae, 2025)
         handler.removeCallbacksAndMessages(null)
         timerHandler.removeCallbacksAndMessages(null)
+        meteorSpawnHandler.removeCallbacksAndMessages(null)
+        meteorites.clear()
 
         // Clean up all enemies from view hierarchy
         enemies.forEach { gameArea.removeView(it.view) }
@@ -461,6 +470,34 @@ class SurvivalGameFragment : Fragment() {
 
         // === Enemy Projectiles ===
         updateEnemyProjectiles()
+
+        // === METEORITES ===
+        // === METEORITE SPAWNING ===
+        val now = System.currentTimeMillis()
+        if (now - lastMeteorSpawnTime >= meteorSpawnDelay) {
+            spawnMeteorite()
+            lastMeteorSpawnTime = now
+        }
+
+        val meteorIter = meteorites.iterator()
+        while (meteorIter.hasNext()) {
+            val meteor = meteorIter.next()
+            meteor.y += 14f  // falling speed
+
+            if (meteor.y > gameArea.height) {
+                gameArea.removeView(meteor)
+                meteorIter.remove()
+                continue
+            }
+
+            // Instant player kill
+            if (!isPlayerDead && playerHitBy(meteor)) {
+                gameArea.removeView(meteor)
+                meteorIter.remove()
+                handlePlayerDeath()
+                return
+            }
+        }
 
         // === Level / Wave Progression ===
         if (enemies.isEmpty() && !isPlayerDead) {
@@ -611,6 +648,9 @@ class SurvivalGameFragment : Fragment() {
         enemies.clear()
         spawnWave()
         projectiles.clear()
+        meteorites.forEach { gameArea.removeView(it) }
+        meteorites.clear()
+        stopMeteoriteDrops()
 
         isPlayerDead = false
         isPaused = false
@@ -699,6 +739,57 @@ class SurvivalGameFragment : Fragment() {
 
             if (enemyType == "spider_maroon") startMaroonShooting(enemy)
         }
+        // Spawn meteorites only on levels 2–3, and only every 4th level (4, 8, 12, ...)
+        val mod = currentLevel % 10
+        if (mod in 0..4) {
+            startMeteoriteDrops()
+        } else {
+            stopMeteoriteDrops()
+        }
+    }
+
+    // Meteorite spawn logic
+    private fun spawnMeteorite() {
+        val ctx = context ?: return
+        val ga = gameArea ?: return
+
+        val meteor = ImageView(ctx).apply {
+            layoutParams = FrameLayout.LayoutParams(120, 120)
+            setImageResource(R.drawable.web_bomb)
+        }
+
+        // Better randomness + anti-clustering
+        var spawnX: Float
+        do {
+            spawnX = ThreadLocalRandom.current().nextInt(0, ga.width - 150).toFloat()
+        } while (abs(spawnX - lastMeteorX) < 200f)
+
+        lastMeteorX = spawnX
+
+        meteor.x = spawnX
+        meteor.y = -200f
+
+        ga.addView(meteor)
+        meteorites.add(meteor)
+    }
+
+    private fun startMeteoriteDrops() {
+        meteorSpawnHandler.removeCallbacksAndMessages(null)
+
+        val dropRunnable = object : Runnable {
+            override fun run() {
+                if (!isPaused && !isPlayerDead && isFragmentActive) {
+                    spawnMeteorite()
+                }
+                meteorSpawnHandler.postDelayed(this, 2000L) // Drop every 2 seconds
+            }
+        }
+
+        meteorSpawnHandler.post(dropRunnable)
+    }
+
+    private fun stopMeteoriteDrops() {
+        meteorSpawnHandler.removeCallbacksAndMessages(null)
     }
 
     // Skins Code
