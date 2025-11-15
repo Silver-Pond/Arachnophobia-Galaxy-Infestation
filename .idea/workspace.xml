@@ -151,23 +151,48 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0fa8f017-5757-4b80-8e2d-5853bd444b49" name="Changes" comment="Updated NotificationReceiver and SurvivalGameFragment.">
+    <list default="true" id="0fa8f017-5757-4b80-8e2d-5853bd444b49" name="Changes" comment="Updated Code.">
       <change beforePath="$PROJECT_DIR$/.gradle/8.13/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/executionHistory/executionHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.13/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/executionHistory/executionHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.13/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/fileHashes/resourceHashesCache.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/GameFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/GameFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/GameMenuFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/GameMenuFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/LeaderboardFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/LeaderboardFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/LoginFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/LoginFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/LoginHubFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/LoginHubFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/SettingsFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/SettingsFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/SignUpFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/SignUpFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/SkinsFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/SkinsFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/SurvivalGameFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/SurvivalGameFragment.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/BiometricLoginFragment.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/CurrencyManager.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Enemy.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/EnemyProjectile.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/GameActivity.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/GameFragment.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/GameMenuFragment.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/HighScore.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/HighScoreManager.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/HighscoresMenuFragment.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/LeaderboardAdapter.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/LeaderboardFragment.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Level.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/LoginFragment.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/LoginHubFragment.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/MusicPlayerManager.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Player.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/ProfileFragment.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/SettingsFragment.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/SignUpFragment.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Skin.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/SkinAdapter.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/SkinViewHolder.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/SkinsFragment.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/SoundEffectsManager.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/SurvivalEnemy.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/SurvivalGameActivity.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/SurvivalGameFragment.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/SurvivalLeaderboardFragment.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/TrophiesFragment.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Trophy.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/TrophyAdapter.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/TrophyViewHolder.kt" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -601,14 +626,6 @@
       <option name="presentableId" value="Default" />
       <updated>1755129484054</updated>
     </task>
-    <task id="LOCAL-00043" summary="Merged remote history with local changes">
-      <option name="closed" value="true" />
-      <created>1757554381686</created>
-      <option name="number" value="00043" />
-      <option name="presentableId" value="LOCAL-00043" />
-      <option name="project" value="LOCAL" />
-      <updated>1757554381686</updated>
-    </task>
     <task id="LOCAL-00044" summary="Merged remote history with local changes">
       <option name="closed" value="true" />
       <created>1757555308022</created>
@@ -993,7 +1010,15 @@
       <option name="project" value="LOCAL" />
       <updated>1763228043926</updated>
     </task>
-    <option name="localTasksCounter" value="92" />
+    <task id="LOCAL-00092" summary="Updated Code.">
+      <option name="closed" value="true" />
+      <created>1763233798556</created>
+      <option name="number" value="00092" />
+      <option name="presentableId" value="LOCAL-00092" />
+      <option name="project" value="LOCAL" />
+      <updated>1763233798556</updated>
+    </task>
+    <option name="localTasksCounter" value="93" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -1009,7 +1034,8 @@
     <MESSAGE value="Updated CurrencyManager." />
     <MESSAGE value="Updated NotificationReceiver." />
     <MESSAGE value="Updated NotificationReceiver and SurvivalGameFragment." />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated NotificationReceiver and SurvivalGameFragment." />
+    <MESSAGE value="Updated Code." />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated Code." />
   </component>
   <component name="play_dynamic_filters_status">
     <option name="appIdToCheckInfo">

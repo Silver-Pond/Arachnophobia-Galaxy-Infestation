@@ -1,0 +1,195 @@
+package com.example.arachnophobia_galaxy_infestation
+
+import android.app.AlertDialog
+import android.content.Context.MODE_PRIVATE
+import android.media.SoundPool
+import android.os.Bundle
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+
+class TrophiesFragment : Fragment() {
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: TrophyAdapter
+    private val trophies = mutableListOf<Trophy>()
+    private val userTrophies = mutableSetOf<String>() // store earned trophies
+    private var clickbuttonSoundId: Int = 0
+    private lateinit var loggedInUser: String
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {}
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_trophies, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Initialize views
+        val btnBack = view.findViewById<Button>(R.id.btnBack)
+        recyclerView = view.findViewById(R.id.recyclerViewTrophies)
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        adapter = TrophyAdapter(trophies, userTrophies) { trophy ->
+            showDescriptionDialog(trophy)
+        }
+        recyclerView.adapter = adapter
+
+        fetchUserTrophies()
+
+        // Initialize SoundPool once (Android Developers, 2025; Firebsae, 2025)
+        val soundPool = SoundPool.Builder().setMaxStreams(5).build()
+        SoundEffectsManager.soundPool = soundPool
+
+        // Initialize or reinitialize the SoundPool if needed (Android Developers, 2025; Firebsae, 2025)
+        if (SoundEffectsManager.soundPool == null) {
+            SoundEffectsManager.soundPool = SoundPool.Builder().setMaxStreams(5).build()
+
+            // Button click sound
+            clickbuttonSoundId = SoundEffectsManager.soundPool!!.load(requireContext(), R.raw.button_click, 1)
+        } else {
+            // If already initialized but sound not loaded
+            if (clickbuttonSoundId == 0) {
+                clickbuttonSoundId = SoundEffectsManager.soundPool!!.load(requireContext(), R.raw.button_click, 1)
+            }
+        }
+
+        // Restore effects volume from prefs (Android Developers, 2025; Firebsae, 2025)
+        val prefs = requireActivity().getSharedPreferences("AppSettings", MODE_PRIVATE)
+        val savedEffectsVolume = prefs.getFloat("effects_volume", 1.0f)
+        SoundEffectsManager.updateVolume(savedEffectsVolume)
+
+        // Get username from arguments or fallback (Android Developers, 2025; Firebsae, 2025)
+        loggedInUser = arguments?.getString("username") ?: "Guest"
+
+        // Set up back button
+        btnBack.setOnClickListener {
+            // Play button click sound
+            if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
+
+            // Create a new instance of GameMenuFragment with the username (Android Developers, 2025; Firebsae, 2025)
+            val gameMenuFragment = GameMenuFragment().apply {
+                arguments = Bundle().apply {
+                    putString("username", loggedInUser)
+                }
+            }
+            // Navigate to high scores fragment
+            replaceFragment(gameMenuFragment)
+        }
+    }
+
+    // Fetch user's earned trophies from Firebase (Android Developers, 2025; Firebsae, 2025)
+    private fun fetchUserTrophies() {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid).child("trophies")
+
+        dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                userTrophies.clear()
+                snapshot.children.forEach { child ->
+                    val trophyId = child.key
+                    if (trophyId != null && child.getValue(Boolean::class.java) == true) {
+                        userTrophies.add(trophyId)
+                    }
+                }
+                fetchAllTrophies()
+            }
+
+            override fun onCancelled(error: DatabaseError) {}
+        })
+    }
+
+    // Fetch all trophies from Firebase (Android Developers, 2025; Firebsae, 2025)
+    private fun fetchAllTrophies() {
+        val dbRef = FirebaseDatabase.getInstance().getReference("arachnotrophies")
+
+        dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                trophies.clear()
+                snapshot.children.forEach { child ->
+                    val trophy = child.getValue(Trophy::class.java)
+                    if (trophy != null) {
+                        trophies.add(trophy)
+                    }
+                }
+                adapter.notifyDataSetChanged()
+            }
+
+            override fun onCancelled(error: DatabaseError) {}
+        })
+    }
+
+    // Show trophy description dialog (Android Developers, 2025; Firebsae, 2025)
+    private fun showDescriptionDialog(trophy: Trophy) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(trophy.name)
+            .setMessage(trophy.description)
+            .setPositiveButton("OK", null)
+            .show()
+    }
+
+    // Helper method to replace fragment (Android Developers, 2025; Firebsae, 2025)
+    private fun replaceFragment(fragment: Fragment) {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.main, fragment)
+            .commit()
+    }
+}
+/*
+* Reference List
+*
+* Android Developers, 2025. AppCompatActivity. [online]. Available at:
+* https://developer.android.com/reference/androidx/appcompat/app/AppCompatActivity
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Fragment. [online]. Available at:
+* https://developer.android.com/reference/androidx/fragment/app/Fragment
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. MediaPlayer. [online]. Available at:
+* https://developer.android.com/reference/android/media/MediaPlayer
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. TextView. [online]. Available at:
+* https://developer.android.com/reference/android/widget/TextView
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Toast. [online]. Available at:
+* https://developer.android.com/reference/android/widget/Toast
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. SharedPreferences. [online]. Available at:
+* https://developer.android.com/reference/android/content/SharedPreferences
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Configuration. [online]. Available at:
+* https://developer.android.com/reference/android/content/res/Configuration
+* [Accessed: 7 October 2025].
+*
+* Android Developers, 2025. Locale. [online]. Available at:
+* https://developer.android.com/reference/java/util/Locale
+* [Accessed: 7 October 2025].
+*
+* Firebase, 2025. FirebaseAuth. [online]. Available at:
+* https://firebase.google.com/docs/reference/android/com/google/firebase/auth/FirebaseAuth
+* [Accessed: 7 October 2025].
+*
+* Firebase, 2025. FirebaseDatabase. [online]. Available at:
+* https://firebase.google.com/docs/reference/android/com/google/firebase/database/FirebaseDatabase
+* [Accessed: 7 October 2025].
+*/
