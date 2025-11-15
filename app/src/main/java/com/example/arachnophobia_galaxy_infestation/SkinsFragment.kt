@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
-// TODO: Rename parameter arguments, choose names that match
 class SkinsFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
@@ -76,12 +75,14 @@ class SkinsFragment : Fragment() {
             // Play button click sound
             if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
 
+            // Navigate to ProfileFragment (Android Developers, 2025; Firebsae, 2025)
             replaceFragment(ProfileFragment().apply {
                 arguments = Bundle().apply { putString("username", loggedInUser) }
             })
         }
     }
 
+    // Load player from Firebase (Android Developers, 2025; Firebsae, 2025)
     private fun loadPlayer(onLoaded: () -> Unit) {
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser == null) {
@@ -147,6 +148,7 @@ class SkinsFragment : Fragment() {
         }
     }
 
+    // Load skins from JSON (Android Developers, 2025; Firebsae, 2025)
     private fun loadSkinsFromJson() {
         skins.addAll(
             listOf(

@@ -13,7 +13,6 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import com.google.android.material.snackbar.Snackbar
@@ -25,20 +24,7 @@ import com.google.firebase.database.ValueEventListener
 import kotlin.math.max
 import kotlin.math.min
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [GameFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class GameFragment : Fragment() {
-    private var param1: String? = null
-    private var param2: String? = null
-
     private lateinit var player: ImageView
     private lateinit var gameArea: FrameLayout
     private lateinit var pauseText: TextView
@@ -80,11 +66,13 @@ class GameFragment : Fragment() {
     private var explosionId: Int = 0
     private var gameOverSoundId: Int = 0
 
+    //
     private val scoreText: TextView
         get() = requireActivity().findViewById(R.id.scoreText)
     private val highScoreText: TextView
         get() = requireActivity().findViewById(R.id.highscoreText)
 
+    // Game loop
     private val gameRunnable = object : Runnable {
         override fun run() {
             if (isAdded && view != null && !isPaused) {
@@ -99,10 +87,7 @@ class GameFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+        arguments?.let {}
     }
 
     override fun onCreateView(
@@ -184,6 +169,7 @@ class GameFragment : Fragment() {
         updateHighScoreUI()
     }
 
+    // Apply skin to player based on equipped skin
     private fun applyEquippedSkin() {
         val prefs = requireActivity().getSharedPreferences("GamePrefs", Context.MODE_PRIVATE)
         val equippedSkinName = prefs.getString("equippedSkin", "Moth") ?: "Moth"
@@ -840,17 +826,6 @@ class GameFragment : Fragment() {
         Handler(Looper.getMainLooper()).postDelayed({
             requireActivity().finish()
         }, 2000)
-    }
-
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            GameFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
     }
 }
 /*
