@@ -15,7 +15,6 @@ class SkinAdapter(
     private val onSkinAction: (Skin) -> Unit
 ) : RecyclerView.Adapter<SkinAdapter.SkinViewHolder>() {
 
-    // ViewHolder class
     inner class SkinViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val skinImage: ImageView = view.findViewById(R.id.skinImage)
         val skinName: TextView = view.findViewById(R.id.skinName)
@@ -33,29 +32,44 @@ class SkinAdapter(
         val skin = skins[position]
         val ownedSkins = player.ownedSkins ?: emptyList()
 
-        // SharedPreferences for equipped skin (Android Developers,2025)
+        // Read updated equipped skin every bind
         val prefs = holder.itemView.context.getSharedPreferences("GamePrefs", Context.MODE_PRIVATE)
         val equippedSkin = prefs.getString("equippedSkin", "Moth") ?: "Moth"
 
+        // Set name
         holder.skinName.text = skin.name
+
+        // Price / owned indicator
         holder.skinPrice.text =
             if (ownedSkins.contains(skin.name)) "Owned" else "${skin.price} silk"
 
-        // Load image (Android Developers,2025)
+        // Load image safely
         val resId = holder.itemView.context.resources.getIdentifier(
-            skin.image_url, "drawable", holder.itemView.context.packageName
+            skin.image_url,
+            "drawable",
+            holder.itemView.context.packageName
         )
         holder.skinImage.setImageResource(if (resId != 0) resId else R.drawable.moth)
 
-        // Set button text and state (Android Developers,2025)
-        holder.actionButton.text = when {
-            equippedSkin == skin.name -> "Equipped"
-            ownedSkins.contains(skin.name) -> "Equip"
-            else -> "Buy"
-        }
-        holder.actionButton.isEnabled = holder.actionButton.text != "Equipped"
+        // Button text + enabled state
+        when {
+            equippedSkin == skin.name -> {
+                holder.actionButton.text = "Equipped"
+                holder.actionButton.isEnabled = false
+            }
 
-        // Button click (Android Developers,2025)
+            ownedSkins.contains(skin.name) -> {
+                holder.actionButton.text = "Equip"
+                holder.actionButton.isEnabled = true
+            }
+
+            else -> {
+                holder.actionButton.text = "Buy"
+                holder.actionButton.isEnabled = true
+            }
+        }
+
+        // Button click → handled by fragment
         holder.actionButton.setOnClickListener {
             onSkinAction(skin)
         }
@@ -65,7 +79,7 @@ class SkinAdapter(
 
     fun updatePlayer(newPlayer: Player) {
         player = newPlayer
-        notifyDataSetChanged()
+        notifyDataSetChanged()  // refresh all buttons & UI
     }
 }
 /*

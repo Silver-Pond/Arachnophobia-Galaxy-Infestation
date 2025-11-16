@@ -163,6 +163,7 @@ class SkinsFragment : Fragment() {
         )
     }
 
+    // Handle skin button click (Android Developers, 2025; Firebsae, 2025)
     private fun onSkinAction(skin: Skin) {
         val currentUser = FirebaseAuth.getInstance().currentUser ?: return
         val playerRef = FirebaseDatabase.getInstance()
@@ -171,55 +172,74 @@ class SkinsFragment : Fragment() {
 
         val ownedSkins = player.ownedSkins ?: emptyList()
 
+        // If player already owns this skin → EQUIP
         if (ownedSkins.contains(skin.name)) {
-            // Equip skin
+
+            // Save equipped skin immediately
+            val prefs = requireContext().getSharedPreferences("GamePrefs", MODE_PRIVATE)
+            prefs.edit().putString("equippedSkin", skin.name).apply()
+
+            // Update local player model
             player = player.copy(equippedSkin = skin.name)
+
+            // Update Firebase
             playerRef.child("equippedSkin").setValue(skin.name)
-            saveEquippedSkinLocally(skin.name)
+
             Toast.makeText(requireContext(), "${skin.name} equipped!", Toast.LENGTH_SHORT).show()
+
+            // Notify adapter to refresh button state
             skinAdapter.updatePlayer(player)
-        } else {
-            // Buy skin
-            val playerSilk = player.spider_silk.toDouble()
-            val skinPrice = skin.price.toDouble()
+            return
+        }
 
-            if (playerSilk >= skinPrice) {
-                val newSilk = playerSilk - skinPrice
-                val newOwned = ownedSkins + skin.name
+        // If player DOES NOT own this skin → BUY + EQUIP
+        val playerSilk = player.spider_silk
+        val skinPrice = skin.price
 
-                // Set spider_silk explicitly as Double (Android Developers, 2025; Firebsae, 2025)
-                playerRef.child("spider_silk").setValue(newSilk).addOnSuccessListener {
-                    playerRef.child("ownedSkins").setValue(newOwned).addOnSuccessListener {
-                        player = player.copy(spider_silk = newSilk, ownedSkins = newOwned)
-                        Toast.makeText(requireContext(), "You bought ${skin.name}!", Toast.LENGTH_SHORT).show()
-                        skinAdapter.updatePlayer(player)
-                    }.addOnFailureListener {
-                        Toast.makeText(requireContext(), "Failed to update owned skins", Toast.LENGTH_SHORT).show()
-                    }
+        if (playerSilk >= skinPrice) {
+
+            val newSilk = playerSilk - skinPrice
+            val newOwned = ownedSkins + skin.name
+
+            // Update Firebase silk
+            playerRef.child("spider_silk").setValue(newSilk).addOnSuccessListener {
+
+                // Update Firebase owned skins
+                playerRef.child("ownedSkins").setValue(newOwned).addOnSuccessListener {
+
+                    // Save locally and update player
+                    player = player.copy(
+                        spider_silk = newSilk,
+                        ownedSkins = newOwned,
+                        equippedSkin = skin.name      // <-- AUTO EQUIP
+                    )
+
+                    // Save equipped skin in SharedPreferences immediately
+                    val prefs = requireContext().getSharedPreferences("GamePrefs", MODE_PRIVATE)
+                    prefs.edit()
+                        .putString("equippedSkin", skin.name)
+                        .putStringSet("ownedSkins", newOwned.toSet())
+                        .apply()
+
+                    // Update equipped skin in Firebase
+                    playerRef.child("equippedSkin").setValue(skin.name)
+
+                    Toast.makeText(requireContext(), "You bought and equipped ${skin.name}!", Toast.LENGTH_SHORT).show()
+
+                    // Refresh UI instantly (Buy → Equipped)
+                    skinAdapter.updatePlayer(player)
+
                 }.addOnFailureListener {
-                    Toast.makeText(requireContext(), "Failed to update spider silk", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Failed to update owned skins", Toast.LENGTH_SHORT).show()
                 }
-            } else {
-                Toast.makeText(requireContext(), "Not enough spider silk!", Toast.LENGTH_SHORT).show()
+
+            }.addOnFailureListener {
+                Toast.makeText(requireContext(), "Failed to update spider silk", Toast.LENGTH_SHORT).show()
             }
-        }
-    }
 
-    private fun saveEquippedSkinLocally(skinName: String) {
-        val prefs = requireContext().getSharedPreferences("GamePrefs", MODE_PRIVATE)
-        val username = prefs.getString("username", "Guest") ?: "Guest"
-        val ownedSkins = prefs.getStringSet("ownedSkins", setOf("Moth")) ?: setOf("Moth")
-
-        val finalSkin = if (!username.equals("Guest", ignoreCase = true) &&
-            username.isNotBlank() &&
-            ownedSkins.contains(skinName)
-        ) {
-            skinName
         } else {
-            "Moth"
+            Toast.makeText(requireContext(), "Not enough spider silk!", Toast.LENGTH_SHORT).show()
         }
-
-        prefs.edit().putString("equippedSkin", finalSkin).apply()
     }
 
     private fun replaceFragment(fragment: Fragment) {

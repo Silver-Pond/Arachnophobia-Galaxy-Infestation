@@ -101,5 +101,17 @@
             android:fontFamily="@font/black_ops_one"
             android:text="@string/btnguest"
             android:textColor="#FFFFFF" />
+
+        <Button
+            android:id="@+id/btnexit"
+            android:layout_width="287dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/ripple_effect"
+            android:backgroundTint="#673AB7"
+            android:fontFamily="@font/black_ops_one"
+            android:text="@string/btnexit"
+            android:textColor="#FFFFFF" />
     </LinearLayout>
 </FrameLayout>

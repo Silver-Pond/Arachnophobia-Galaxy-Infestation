@@ -1,5 +1,6 @@
 package com.example.arachnophobia_galaxy_infestation
 
+import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.media.SoundPool
@@ -59,6 +60,7 @@ class LoginHubFragment : Fragment() {
         val btnlogin = view.findViewById<Button>(R.id.btnlogin)
         val btnbiologin = view.findViewById<Button>(R.id.btnbiologin)
         val btnguest = view.findViewById<Button>(R.id.btnguest)
+        val btnexit = view.findViewById<Button>(R.id.btnexit)
 
         // Initialize SoundPool once
         val soundPool = SoundPool.Builder().setMaxStreams(5).build()
@@ -113,6 +115,14 @@ class LoginHubFragment : Fragment() {
             if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
 
             replaceFragment(GameMenuFragment())
+        }
+
+        btnexit.setOnClickListener {
+            // Play button click sound (Android Developers, 2025; ChatGPT-4, 2025)
+            if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
+
+            // Exit the app (Android Developers, 2025)
+            requireActivity().finishAffinity()
         }
     }
 
