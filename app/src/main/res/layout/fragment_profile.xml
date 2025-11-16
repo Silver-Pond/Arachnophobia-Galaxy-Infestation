@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#070707"
+    android:background="@color/backgroundColor"
     tools:context=".ProfileFragment">
 
     <LinearLayout
@@ -18,11 +18,7 @@
         android:layout_marginEnd="1dp"
         android:layout_marginBottom="1dp"
         android:gravity="center"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:orientation="vertical">
 
         <ImageView
             android:id="@+id/loginTitleImage"
@@ -39,7 +35,7 @@
             android:fontFamily="@font/black_ops_one"
             android:text="ARACHNOPHOBIA: GALAXY INFESTATION"
             android:textAlignment="center"
-            android:textColor="#009688"
+            android:textColor="@color/primaryText"
             android:textSize="30sp" />
 
         <TextView
@@ -50,7 +46,7 @@
             android:fontFamily="@font/black_ops_one"
             android:text="@string/profiletext"
             android:textAlignment="center"
-            android:textColor="#009688"
+            android:textColor="@color/primaryText"
             android:textSize="24sp"
             android:textStyle="italic" />
 
@@ -62,7 +58,7 @@
             android:fontFamily="@font/black_ops_one"
             android:text="Guest"
             android:textAlignment="center"
-            android:textColor="#3F51B5"
+            android:textColor="@color/usernameText"
             android:textSize="20sp" />
 
         <LinearLayout
@@ -88,21 +84,10 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/black_ops_one"
                 android:text="SPIDER SILK: "
-                android:textColor="#E91E63"
+                android:textColor="@color/spiderSilkText"
                 android:textSize="16sp"
                 android:textStyle="italic" />
         </LinearLayout>
-
-        <!-- Button
-            android:id="@+id/btnprofilechange"
-            android:layout_width="287dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="10dp"
-            android:background="@drawable/ripple_effect"
-            android:fontFamily="@font/black_ops_one"
-            android:text="@string/btnprofilechange"
-            android:textColor="#FFFFFF" /-->
 
         <Button
             android:id="@+id/btnskin"
@@ -111,9 +96,10 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="10dp"
             android:background="@drawable/ripple_effect"
+            android:backgroundTint="@color/buttonBackground2"
             android:fontFamily="@font/black_ops_one"
             android:text="@string/btnskin"
-            android:textColor="#FFFFFF" />
+            android:textColor="@color/buttonText" />
 
         <Button
             android:id="@+id/btnback"
@@ -122,9 +108,10 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="10dp"
             android:background="@drawable/ripple_effect"
+            android:backgroundTint="@color/buttonBackground2"
             android:fontFamily="@font/black_ops_one"
             android:text="@string/btnback"
-            android:textColor="#FFFFFF" />
+            android:textColor="@color/buttonText" />
 
         <Button
             android:id="@+id/btnlogout"
@@ -133,8 +120,9 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="10dp"
             android:background="@drawable/ripple_effect"
+            android:backgroundTint="@color/buttonBackground2"
             android:fontFamily="@font/black_ops_one"
             android:text="@string/btnlogout"
-            android:textColor="#FFFFFF" />
+            android:textColor="@color/buttonText" />
     </LinearLayout>
 </FrameLayout>

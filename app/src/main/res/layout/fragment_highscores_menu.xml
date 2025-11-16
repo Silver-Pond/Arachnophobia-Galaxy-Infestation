@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".HighscoresMenuFragment"
-    android:background="#070707">
+    android:background="@color/backgroundColor">
 
     <LinearLayout
         android:id="@+id/submain"
@@ -38,7 +38,7 @@
             android:fontFamily="@font/black_ops_one"
             android:text="ARACHNOPHOBIA: GALAXY INFESTATION"
             android:textAlignment="center"
-            android:textColor="#009688"
+            android:textColor="@color/primaryText"
             android:textSize="30sp" />
 
         <TextView
@@ -50,7 +50,7 @@
             android:fontFamily="@font/black_ops_one"
             android:text="@string/highscorestext"
             android:textAlignment="center"
-            android:textColor="#009688"
+            android:textColor="@color/primaryText"
             android:textSize="24sp"
             android:textStyle="italic" />
 
@@ -61,10 +61,10 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="10dp"
             android:background="@drawable/ripple_effect"
-            android:backgroundTint="#673AB7"
+            android:backgroundTint="@color/buttonBackground"
             android:fontFamily="@font/black_ops_one"
             android:text="@string/btnarcadehighscore"
-            android:textColor="#FFFFFF" />
+            android:textColor="@color/secondaryText" />
 
         <Button
             android:id="@+id/btnsurvivalhighscore"
@@ -73,10 +73,10 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="10dp"
             android:background="@drawable/ripple_effect"
-            android:backgroundTint="#673AB7"
+            android:backgroundTint="@color/buttonBackground"
             android:fontFamily="@font/black_ops_one"
             android:text="@string/btnsurvivalhighscore"
-            android:textColor="#FFFFFF" />
+            android:textColor="@color/secondaryText" />
 
         <Button
             android:id="@+id/btnback"
@@ -85,9 +85,9 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="10dp"
             android:background="@drawable/ripple_effect"
-            android:backgroundTint="#673AB7"
+            android:backgroundTint="@color/buttonBackground"
             android:fontFamily="@font/black_ops_one"
             android:text="@string/btnback"
-            android:textColor="#FFFFFF" />
+            android:textColor="@color/secondaryText" />
     </LinearLayout>
 </FrameLayout>

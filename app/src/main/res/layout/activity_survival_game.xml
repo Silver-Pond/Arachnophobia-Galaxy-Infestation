@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000"
+    android:background="@color/backgroundColor"
     tools:context=".SurvivalGameActivity">
 
     <LinearLayout
@@ -22,6 +22,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <!-- Highscore Layout -->
         <LinearLayout
             android:id="@+id/highscoreLayout"
             android:layout_width="match_parent"
@@ -46,7 +47,7 @@
                     android:layout_weight="1"
                     android:fontFamily="@font/black_ops_one"
                     android:text="HIGH SCORE: 0"
-                    android:textColor="#009688"
+                    android:textColor="@color/primaryText"
                     android:textSize="16sp" />
 
                 <TextView
@@ -58,7 +59,7 @@
                     android:layout_weight="1"
                     android:fontFamily="@font/black_ops_one"
                     android:text="SCORE: 0"
-                    android:textColor="#009688"
+                    android:textColor="@color/primaryText"
                     android:textSize="16sp" />
 
             </LinearLayout>
@@ -78,24 +79,24 @@
                     android:layout_marginTop="5dp"
                     android:layout_marginBottom="10dp"
                     android:background="@drawable/custom_button"
-                    android:backgroundTint="#673AB7"
                     android:fontFamily="@font/black_ops_one"
                     android:text="PAUSE"
-                    android:textColor="#FFFFFF" />
+                    android:textColor="@color/buttonText" />
             </LinearLayout>
 
         </LinearLayout>
 
+        <!-- Game Frame -->
         <FrameLayout
             android:id="@+id/gameframe"
             android:layout_width="389dp"
             android:layout_height="523dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="5dp"
-            android:background="#10022C">
-
+            android:background="@color/cardBackground2">
         </FrameLayout>
 
+        <!-- Controls Layout -->
         <LinearLayout
             android:id="@+id/controlsLayout"
             android:layout_width="389dp"
@@ -110,6 +111,7 @@
                 android:layout_marginRight="10dp"
                 android:orientation="horizontal">
 
+                <!-- Left Button -->
                 <Button
                     android:id="@+id/leftbtn"
                     android:layout_width="wrap_content"
@@ -121,10 +123,11 @@
                     android:fontFamily="@font/black_ops_one"
                     android:text="L"
                     android:textAlignment="center"
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/buttonText"
                     android:textSize="34sp" />
             </LinearLayout>
 
+            <!-- Right Button -->
             <LinearLayout
                 android:id="@+id/rightbtnLayout"
                 android:layout_width="100dp"
@@ -143,7 +146,7 @@
                     android:fontFamily="@font/black_ops_one"
                     android:text="R"
                     android:textAlignment="center"
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/buttonText"
                     android:textSize="34sp" />
             </LinearLayout>
 
@@ -153,6 +156,7 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
+                <!-- Blast Button -->
                 <LinearLayout
                     android:id="@+id/vertLayout"
                     android:layout_width="match_parent"
@@ -168,7 +172,7 @@
                         android:background="@drawable/custom_button"
                         android:fontFamily="@font/black_ops_one"
                         android:text="BLAST"
-                        android:textColor="#FFFFFF" />
+                        android:textColor="@color/buttonText" />
 
                 </LinearLayout>
             </LinearLayout>

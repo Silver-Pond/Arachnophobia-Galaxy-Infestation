@@ -4,7 +4,7 @@
     android:id="@+id/mainGameFrame"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#080114"
+    android:background="@color/cardBackground2"
     tools:context=".SurvivalGameFragment">
 
     <ImageView
@@ -37,7 +37,7 @@
             android:layout_marginStart="6dp"
             android:fontFamily="@font/black_ops_one"
             android:text="x3"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/secondaryText"
             android:textSize="18sp" />
     </LinearLayout>
 
@@ -60,6 +60,6 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/black_ops_one"
         android:text="00:00"
-        android:textColor="#009688"
+        android:textColor="@color/primaryText"
         android:textSize="20sp" />
 </FrameLayout>

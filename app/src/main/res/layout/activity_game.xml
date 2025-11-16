@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000"
+    android:background="@color/backgroundColor"
     tools:context=".GameActivity">
 
     <LinearLayout
@@ -22,6 +23,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <!-- Highscore Layout -->
         <LinearLayout
             android:id="@+id/highscoreLayout"
             android:layout_width="match_parent"
@@ -46,7 +48,7 @@
                     android:layout_weight="1"
                     android:fontFamily="@font/black_ops_one"
                     android:text="HIGH SCORE: 0"
-                    android:textColor="#009688"
+                    android:textColor="@color/primaryText"
                     android:textSize="16sp" />
 
                 <TextView
@@ -58,7 +60,7 @@
                     android:layout_weight="1"
                     android:fontFamily="@font/black_ops_one"
                     android:text="SCORE: 0"
-                    android:textColor="#009688"
+                    android:textColor="@color/primaryText"
                     android:textSize="16sp" />
 
             </LinearLayout>
@@ -78,24 +80,24 @@
                     android:layout_marginTop="5dp"
                     android:layout_marginBottom="10dp"
                     android:background="@drawable/custom_button"
-                    android:backgroundTint="#673AB7"
                     android:fontFamily="@font/black_ops_one"
                     android:text="PAUSE"
-                    android:textColor="#FFFFFF" />
+                    android:textColor="@color/buttonText" />
             </LinearLayout>
 
         </LinearLayout>
 
+        <!-- Game Frame -->
         <FrameLayout
             android:id="@+id/gameframe"
             android:layout_width="389dp"
             android:layout_height="523dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="5dp"
-            android:background="#10022C">
-
+            android:background="@color/cardBackground2">
         </FrameLayout>
 
+        <!-- Controls Layout -->
         <LinearLayout
             android:id="@+id/controlsLayout"
             android:layout_width="380dp"
@@ -103,6 +105,7 @@
             android:layout_gravity="center_horizontal"
             android:orientation="horizontal">
 
+            <!-- Left Button -->
             <LinearLayout
                 android:id="@+id/leftbtnLayout"
                 android:layout_width="100dp"
@@ -117,14 +120,15 @@
                     android:layout_marginTop="5dp"
                     android:layout_weight="1"
                     android:background="@drawable/control_buttons_a"
-                    android:backgroundTint="#E91E63"
+                    android:backgroundTint="@color/spiderSilkText"
                     android:fontFamily="@font/black_ops_one"
                     android:text="L"
                     android:textAlignment="center"
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/buttonText"
                     android:textSize="34sp" />
             </LinearLayout>
 
+            <!-- Right Button -->
             <LinearLayout
                 android:id="@+id/rightbtnLayout"
                 android:layout_width="100dp"
@@ -139,14 +143,15 @@
                     android:layout_marginTop="5dp"
                     android:layout_weight="1"
                     android:background="@drawable/control_buttons_a"
-                    android:backgroundTint="#E91E63"
+                    android:backgroundTint="@color/spiderSilkText"
                     android:fontFamily="@font/black_ops_one"
                     android:text="R"
                     android:textAlignment="center"
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/buttonText"
                     android:textSize="34sp" />
             </LinearLayout>
 
+            <!-- Blast Button -->
             <LinearLayout
                 android:id="@+id/middlebtnLayout"
                 android:layout_width="120dp"
@@ -168,7 +173,7 @@
                         android:background="@drawable/custom_button"
                         android:fontFamily="@font/black_ops_one"
                         android:text="BLAST"
-                        android:textColor="#FFFFFF" />
+                        android:textColor="@color/buttonText" />
 
                 </LinearLayout>
             </LinearLayout>

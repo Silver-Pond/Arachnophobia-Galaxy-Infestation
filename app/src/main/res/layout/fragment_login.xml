@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#070707"
+    android:background="@color/backgroundColor"
     tools:context=".MainActivity" >
 
     <LinearLayout
@@ -38,7 +38,7 @@
             android:fontFamily="@font/black_ops_one"
             android:text="ARACHNOPHOBIA: GALAXY INFESTATION"
             android:textAlignment="center"
-            android:textColor="#009688"
+            android:textColor="@color/primaryText"
             android:textSize="30sp" />
 
         <LinearLayout
@@ -65,8 +65,8 @@
                 android:fontFamily="@font/black_ops_one"
                 android:hint="@string/emailinput"
                 android:inputType="textEmailAddress"
-                android:textColor="#009688"
-                android:textColorHint="#009688"
+                android:textColor="@color/primaryText"
+                android:textColorHint="@color/buttonBackground2"
                 android:textSize="20sp"
                 android:textStyle="italic" />
         </LinearLayout>
@@ -95,8 +95,8 @@
                 android:fontFamily="@font/black_ops_one"
                 android:hint="@string/passwordinput"
                 android:inputType="textPassword"
-                android:textColor="#009688"
-                android:textColorHint="#009688"
+                android:textColor="@color/primaryText"
+                android:textColorHint="@color/spiderSilkText"
                 android:textSize="20sp"
                 android:textStyle="italic" />
         </LinearLayout>
@@ -108,10 +108,10 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="15dp"
             android:background="@drawable/ripple_effect"
-            android:backgroundTint="#673AB7"
+            android:backgroundTint="@color/buttonBackground"
             android:fontFamily="@font/black_ops_one"
             android:text="@string/btnlogin"
-            android:textColor="#FFFFFF" />
+            android:textColor="@color/buttonText" />
 
         <Button
             android:id="@+id/btnBack"
@@ -120,10 +120,10 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="15dp"
             android:background="@drawable/ripple_effect"
-            android:backgroundTint="#673AB7"
+            android:backgroundTint="@color/buttonBackground"
             android:fontFamily="@font/black_ops_one"
             android:text="@string/btnback"
-            android:textColor="#FFFFFF" />
+            android:textColor="@color/buttonText" />
 
         <TextView
             android:id="@+id/loginText"
@@ -133,7 +133,7 @@
             android:fontFamily="@font/black_ops_one"
             android:text="@string/signuptext"
             android:textAlignment="center"
-            android:textColor="#9C27B0"
+            android:textColor="@color/buttonBackground2"
             android:textStyle="italic" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

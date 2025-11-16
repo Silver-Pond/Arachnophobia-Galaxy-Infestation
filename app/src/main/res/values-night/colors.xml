@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Backgrounds -->
+    <color name="backgroundColor">#121212</color> <!-- slightly lighter black for dark mode -->
+    <color name="cardBackground">#1E1E1E</color> <!-- slightly lighter than background -->
+    <color name="cardBackground2">#10022C</color>
+
+    <!-- Text -->
+    <color name="primaryText">#009688</color> <!-- Same, works on dark -->
+    <color name="secondaryText">#E0E0E0</color>
+    <color name="usernameText">#6573C3</color>
+    <color name="spiderSilkText">#FF79A3</color> <!-- slightly softer pink -->
+
+    <!-- Controls -->
+    <color name="switchThumb">#3F51B5</color>
+    <color name="switchTrack">#3F51B5</color>
+
+    <!-- Spinner, sliders -->
+    <color name="spinnerBackground">#121212</color>
+
+    <!-- Buttons -->
+    <color name="buttonBackground">#7C4DFF</color> <!-- lighter purple for contrast -->
+    <color name="buttonBackground2">#6573C3</color> <!-- lighter blue for contrast -->
+    <color name="buttonText">#FFFFFF</color>
+</resources>

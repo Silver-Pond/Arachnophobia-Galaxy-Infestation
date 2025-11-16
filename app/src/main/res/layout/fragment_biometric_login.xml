@@ -5,35 +5,38 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000"
+    android:background="@color/backgroundColor"
     tools:context=".BiometricLoginFragment">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
+    <LinearLayout
         android:orientation="vertical"
-        android:padding="24dp">
-
-        <TextView
-            android:id="@+id/txtStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/black_ops_one"
-            android:text="Checking biometrics..."
-            android:textColor="#FFFFFF"
-            android:textSize="18sp" />
+        android:gravity="center"
+        android:padding="24dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <Button
-            android:id="@+id/btnFaceLogin"
-            android:layout_width="wrap_content"
+            android:id="@+id/btnBiometricLogin"
+            android:layout_width="145dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="15dp"
             android:background="@drawable/ripple_effect"
-            android:backgroundTint="#673AB7"
+            android:backgroundTint="@color/buttonBackground"
             android:fontFamily="@font/black_ops_one"
-            android:text="@string/btnbiologin"
-            android:textColor="#FFFFFF"
-            android:layout_marginTop="20dp"/>
+            android:text="@string/btnlogin"
+            android:textColor="@color/buttonText" />
 
+        <Button
+            android:id="@+id/btnBack"
+            android:layout_width="145dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="15dp"
+            android:background="@drawable/ripple_effect"
+            android:backgroundTint="@color/buttonBackground"
+            android:fontFamily="@font/black_ops_one"
+            android:text="@string/btnback"
+            android:textColor="@color/buttonText" />
     </LinearLayout>
 </FrameLayout>

@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#070707"
-    tools:context=".MainActivity" >
+    android:background="@color/backgroundColor"
+    tools:context=".MainActivity">
 
     <LinearLayout
         android:id="@+id/submain"
@@ -38,7 +39,7 @@
             android:fontFamily="@font/black_ops_one"
             android:text="ARACHNOPHOBIA: GALAXY INFESTATION"
             android:textAlignment="center"
-            android:textColor="#009688"
+            android:textColor="@color/primaryText"
             android:textSize="30sp" />
 
         <LinearLayout
@@ -65,8 +66,8 @@
                 android:fontFamily="@font/black_ops_one"
                 android:hint="@string/usernameinput"
                 android:inputType="text"
-                android:textColor="#009688"
-                android:textColorHint="#009688"
+                android:textColor="@color/primaryText"
+                android:textColorHint="@color/buttonBackground2"
                 android:textSize="20sp"
                 android:textStyle="italic" />
         </LinearLayout>
@@ -95,11 +96,10 @@
                 android:fontFamily="@font/black_ops_one"
                 android:hint="@string/emailinput"
                 android:inputType="textEmailAddress"
-                android:textColor="#009688"
-                android:textColorHint="#009688"
+                android:textColor="@color/primaryText"
+                android:textColorHint="@color/spiderSilkText"
                 android:textSize="20sp"
                 android:textStyle="italic" />
-
         </LinearLayout>
 
         <LinearLayout
@@ -126,8 +126,8 @@
                 android:fontFamily="@font/black_ops_one"
                 android:hint="@string/passwordinput"
                 android:inputType="textPassword"
-                android:textColor="#009688"
-                android:textColorHint="#009688"
+                android:textColor="@color/primaryText"
+                android:textColorHint="@color/buttonBackground2"
                 android:textSize="20sp"
                 android:textStyle="italic" />
         </LinearLayout>
@@ -138,11 +138,11 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:background="@drawable/ripple_effect"
-            android:backgroundTint="#9C27B0"
+            android:backgroundTint="@color/buttonBackground"
             android:layout_marginBottom="15dp"
             android:fontFamily="@font/black_ops_one"
             android:text="@string/btnsignup"
-            android:textColor="#FFFFFF" />
+            android:textColor="@color/buttonText" />
 
         <TextView
             android:id="@+id/loginText"
@@ -152,7 +152,7 @@
             android:fontFamily="@font/black_ops_one"
             android:text="@string/logintext"
             android:textAlignment="center"
-            android:textColor="#9C27B0"
+            android:textColor="@color/spiderSilkText"
             android:textStyle="italic" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

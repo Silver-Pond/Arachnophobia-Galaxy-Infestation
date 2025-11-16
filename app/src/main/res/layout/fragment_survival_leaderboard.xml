@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black"
+    android:background="@color/backgroundColor"
     tools:context=".SurvivalLeaderboardFragment">
 
     <LinearLayout
@@ -21,10 +21,10 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="15dp"
             android:background="@drawable/ripple_effect"
-            android:backgroundTint="#673AB7"
+            android:backgroundTint="@color/buttonBackground"
             android:fontFamily="@font/black_ops_one"
             android:text="@string/btnback"
-            android:textColor="#FFFFFF" />
+            android:textColor="@color/buttonText" />
 
         <TextView
             android:id="@+id/highscoresTitle"
@@ -34,7 +34,7 @@
             android:fontFamily="@font/black_ops_one"
             android:paddingBottom="8dp"
             android:text="@string/highscorestext"
-            android:textColor="#009688"
+            android:textColor="@color/primaryText"
             android:textSize="20sp"
             android:textStyle="bold" />
 

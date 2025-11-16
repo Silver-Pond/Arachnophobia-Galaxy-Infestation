@@ -39,6 +39,7 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Initialize views
         val emailInput = view.findViewById<EditText>(R.id.emailLoginInput)
         val passwordInput = view.findViewById<EditText>(R.id.passwordLoginInput)
         val signUpText = view.findViewById<TextView>(R.id.loginText)
