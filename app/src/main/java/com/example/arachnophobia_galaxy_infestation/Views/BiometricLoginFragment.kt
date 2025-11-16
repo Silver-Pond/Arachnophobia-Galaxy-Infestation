@@ -1,93 +1,161 @@
 package com.example.arachnophobia_galaxy_infestation
 
-import android.content.Context
+import android.content.Context.MODE_PRIVATE
+import android.media.SoundPool
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
-import androidx.core.content.ContextCompat
-import com.google.firebase.auth.FirebaseAuth
-import java.util.concurrent.Executor
+import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
-import com.google.firebase.auth.EmailAuthProvider
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.FirebaseDatabase
 
 class BiometricLoginFragment : Fragment() {
+
     private lateinit var auth: FirebaseAuth
     private lateinit var biometricPrompt: BiometricPrompt
-    private lateinit var promptInfo: BiometricPrompt.PromptInfo
-    private lateinit var executor: Executor
+    private lateinit var biometricInfo: BiometricPrompt.PromptInfo
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {}
-        auth = FirebaseAuth.getInstance()
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        auth = FirebaseAuth.getInstance()
+
+        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_biometric_login, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        executor = ContextCompat.getMainExecutor(requireContext())
+        setupBiometricPrompt()
+        checkBiometricAvailability(view)
+
+        // Initialize SoundPool once (Android Developers, 2025; Firebsae, 2025)
+        val btnFaceLogin = view.findViewById<Button>(R.id.btnFaceLogin)
+
+        btnFaceLogin.setOnClickListener {
+            biometricPrompt.authenticate(biometricInfo)
+        }
+    }
+
+    // -------------------------------------------------
+    // BIOMETRIC PROMPT SETUP
+    // -------------------------------------------------
+
+    private fun setupBiometricPrompt() {
+        val executor = ContextCompat.getMainExecutor(requireContext())
 
         biometricPrompt = BiometricPrompt(
             this,
             executor,
             object : BiometricPrompt.AuthenticationCallback() {
-                override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+
+                override fun onAuthenticationSucceeded(
+                    result: BiometricPrompt.AuthenticationResult
+                ) {
+                    super.onAuthenticationSucceeded(result)
+                    Toast.makeText(requireContext(), "Face Verified", Toast.LENGTH_SHORT).show()
+                    signInWithFirebase()
+                }
+
+                override fun onAuthenticationError(
+                    errorCode: Int,
+                    errString: CharSequence
+                ) {
                     super.onAuthenticationError(errorCode, errString)
                     Toast.makeText(requireContext(), "Error: $errString", Toast.LENGTH_SHORT).show()
                 }
 
-                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                    super.onAuthenticationSucceeded(result)
-
-                    // Retrieve stored credentials (saved after first successful login)
-                    val sharedPref = requireActivity()
-                        .getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-                    val email = sharedPref.getString("email", null)
-                    val password = sharedPref.getString("password", null)
-
-                    if (email != null && password != null) {
-                        val credential = EmailAuthProvider.getCredential(email, password)
-
-                        auth.signInWithCredential(credential).addOnCompleteListener { task ->
-                            if (task.isSuccessful) {
-                                Toast.makeText(requireContext(), "Biometric login success!", Toast.LENGTH_SHORT).show()
-                                replaceFragment(GameMenuFragment())
-                            } else {
-                                Toast.makeText(requireContext(), "Firebase login failed", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                    } else {
-                        Toast.makeText(requireContext(), "No stored credentials. Please login manually first.", Toast.LENGTH_LONG).show()
-                    }
-                }
-
                 override fun onAuthenticationFailed() {
                     super.onAuthenticationFailed()
-                    Toast.makeText(requireContext(), "Authentication failed", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Face Not Recognized", Toast.LENGTH_SHORT).show()
                 }
             }
         )
 
-        promptInfo = BiometricPrompt.PromptInfo.Builder()
-            .setTitle("Technopoints Authentication")
-            .setSubtitle("Login using your fingerprint")
-            .setNegativeButtonText("Cancel")
+        biometricInfo = BiometricPrompt.PromptInfo.Builder()
+            .setTitle("Login with Facial Recognition")
+            .setSubtitle("Authenticate to access your account")
+            .setAllowedAuthenticators(
+                BiometricManager.Authenticators.BIOMETRIC_STRONG or
+                        BiometricManager.Authenticators.DEVICE_CREDENTIAL
+            )
             .build()
+    }
 
-        val btnBioLogin = view.findViewById<Button>(R.id.btnBioLogin)
-        btnBioLogin.setOnClickListener {
-            biometricPrompt.authenticate(promptInfo)
+    // -------------------------------------------------
+    // CHECK BIOMETRIC HARDWARE
+    // -------------------------------------------------
+
+    private fun checkBiometricAvailability(view: View) {
+
+        val txtStatus = view.findViewById<TextView>(R.id.txtStatus)
+        val biometricManager = BiometricManager.from(requireContext())
+
+        when (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG)) {
+
+            BiometricManager.BIOMETRIC_SUCCESS ->
+                txtStatus.text = "Facial Recognition Available"
+
+            BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE ->
+                txtStatus.text = "No biometric hardware detected"
+
+            BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE ->
+                txtStatus.text = "Biometric features currently unavailable"
+
+            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED ->
+                txtStatus.text = "No face or biometric enrolled"
+
+            else -> txtStatus.text = "Biometrics unavailable"
+        }
+    }
+
+    // -------------------------------------------------
+    // FIREBASE LOGIN + DATABASE FETCH
+    // -------------------------------------------------
+
+    private fun signInWithFirebase() {
+        val user = auth.currentUser
+
+        if (user == null) {
+            Toast.makeText(requireContext(), "No Firebase session found", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        loadUserData(user)
+    }
+
+    private fun loadUserData(user: FirebaseUser) {
+        val dbRef = FirebaseDatabase.getInstance()
+            .getReference("users")
+            .child(user.uid)
+
+        dbRef.get().addOnSuccessListener { snapshot ->
+            if (snapshot.exists()) {
+                val username = snapshot.child("username").value
+                Toast.makeText(requireContext(), "Welcome $username!", Toast.LENGTH_LONG).show()
+            } else {
+                Toast.makeText(requireContext(), "User data not found", Toast.LENGTH_SHORT).show()
+            }
+
+        }.addOnFailureListener { e ->
+            Toast.makeText(requireContext(), "Database error", Toast.LENGTH_SHORT).show()
+            Log.e("BiometricLogin", "Firebase error", e)
         }
     }
 
