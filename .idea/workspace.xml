@@ -151,9 +151,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0fa8f017-5757-4b80-8e2d-5853bd444b49" name="Changes" comment="Updated code in main and res.">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="0fa8f017-5757-4b80-8e2d-5853bd444b49" name="Changes" comment="Updated main and res." />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -228,8 +226,8 @@
         <option value="layoutResourceFile" />
         <option value="resourceFile" />
         <option value="Kotlin Interface" />
-        <option value="valueResourceFile" />
         <option value="Kotlin Class" />
+        <option value="valueResourceFile" />
       </list>
     </option>
   </component>
@@ -585,22 +583,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1755129484054</updated>
-    </task>
-    <task id="LOCAL-00048" summary="Merged remote history with local changes">
-      <option name="closed" value="true" />
-      <created>1757854009720</created>
-      <option name="number" value="00048" />
-      <option name="presentableId" value="LOCAL-00048" />
-      <option name="project" value="LOCAL" />
-      <updated>1757854009721</updated>
-    </task>
-    <task id="LOCAL-00049" summary="Merged remote history with local changes">
-      <option name="closed" value="true" />
-      <created>1757854028551</created>
-      <option name="number" value="00049" />
-      <option name="presentableId" value="LOCAL-00049" />
-      <option name="project" value="LOCAL" />
-      <updated>1757854028551</updated>
     </task>
     <task id="LOCAL-00050" summary="Merged remote history with local changes">
       <option name="closed" value="true" />
@@ -978,7 +960,23 @@
       <option name="project" value="LOCAL" />
       <updated>1763310818858</updated>
     </task>
-    <option name="localTasksCounter" value="97" />
+    <task id="LOCAL-00097" summary="Updated layouts, colors.xml and added values-night colors.xml.">
+      <option name="closed" value="true" />
+      <created>1763336739294</created>
+      <option name="number" value="00097" />
+      <option name="presentableId" value="LOCAL-00097" />
+      <option name="project" value="LOCAL" />
+      <updated>1763336739297</updated>
+    </task>
+    <task id="LOCAL-00098" summary="Updated main and res.">
+      <option name="closed" value="true" />
+      <created>1763340729729</created>
+      <option name="number" value="00098" />
+      <option name="presentableId" value="LOCAL-00098" />
+      <option name="project" value="LOCAL" />
+      <updated>1763340729746</updated>
+    </task>
+    <option name="localTasksCounter" value="99" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -998,19 +996,21 @@
     <MESSAGE value="Created folders for better organisation." />
     <MESSAGE value="Updated code." />
     <MESSAGE value="Updated code in main and res." />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated code in main and res." />
+    <MESSAGE value="Updated layouts, colors.xml and added values-night colors.xml." />
+    <MESSAGE value="Updated main and res." />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated main and res." />
   </component>
   <component name="play_dynamic_filters_status">
     <option name="appIdToCheckInfo">
       <map>
         <entry key="com.example.arachnophobia_galaxy_infestation">
           <value>
-            <CheckInfo lastCheckTimestamp="1763252767569" />
+            <CheckInfo lastCheckTimestamp="1763340516336" />
           </value>
         </entry>
         <entry key="com.example.arachnophobia_galaxy_infestation.test">
           <value>
-            <CheckInfo lastCheckTimestamp="1763252767588" />
+            <CheckInfo lastCheckTimestamp="1763340516334" />
           </value>
         </entry>
       </map>

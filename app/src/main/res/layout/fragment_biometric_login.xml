@@ -15,6 +15,37 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <ImageView
+            android:id="@+id/fingerprint"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:src="@drawable/biometric_print" />
+
+        <TextView
+            android:id="@+id/appTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:fontFamily="@font/black_ops_one"
+            android:text="ARACHNOPHOBIA: GALAXY INFESTATION"
+            android:textAlignment="center"
+            android:textColor="@color/primaryText"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/pageTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="20dp"
+            android:fontFamily="@font/black_ops_one"
+            android:text="@string/btnbiologin"
+            android:textAlignment="center"
+            android:textColor="@color/primaryText"
+            android:textSize="24sp"
+            android:textStyle="italic" />
+
         <Button
             android:id="@+id/btnBiometricLogin"
             android:layout_width="145dp"

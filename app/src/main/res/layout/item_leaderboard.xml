@@ -22,7 +22,7 @@
             android:fontFamily="@font/black_ops_one"
             android:text="1."
             android:textSize="16sp"
-            android:textColor="@color/primaryText" />
+            android:textColor="@color/secondaryText" />
 
         <TextView
             android:id="@+id/usernameText"
@@ -32,7 +32,7 @@
             android:fontFamily="@font/black_ops_one"
             android:text="Username"
             android:textSize="16sp"
-            android:textColor="@color/primaryText" />
+            android:textColor="@color/secondaryText" />
 
         <TextView
             android:id="@+id/scoreText"
@@ -41,6 +41,6 @@
             android:fontFamily="@font/black_ops_one"
             android:text="100"
             android:textSize="16sp"
-            android:textColor="@color/primaryText" />
+            android:textColor="@color/secondaryText" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

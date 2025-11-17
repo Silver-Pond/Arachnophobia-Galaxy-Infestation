@@ -80,7 +80,7 @@ class SettingsFragment : Fragment() {
             }
         )
 
-        // Set slider to saved volume
+        // Set slider to saved volume (Android Developers, 2025; Firebsae, 2025)
         musicvolumeSlider.value = savedVolume * musicvolumeSlider.valueTo // scale to slider max
         MusicPlayerManager.updateVolume(savedVolume)
 
@@ -99,24 +99,24 @@ class SettingsFragment : Fragment() {
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
 
-        // Listen to slider changes
+        // Listen to slider changes (Android Developers, 2025; Firebsae, 2025)
         musicvolumeSlider.addOnChangeListener { _, value, _ ->
             val volume = value / musicvolumeSlider.valueTo // normalize to 0.0–1.0
             MusicPlayerManager.updateVolume(volume)
             prefs.edit().putFloat("music_volume", volume).apply()
         }
-        // Load saved effects volume
+        // Load saved effects volume (Android Developers, 2025; Firebsae, 2025)
         effectsvolumeSlider.value = savedEffectsVolume * effectsvolumeSlider.valueTo
         SoundEffectsManager.updateVolume(savedEffectsVolume)
 
-        // Listen for changes
+        // Listen for changes (Android Developers, 2025; Firebsae, 2025)
         effectsvolumeSlider.addOnChangeListener { _, value, _ ->
             val volume = value / effectsvolumeSlider.valueTo // normalize 0.0–1.0
             SoundEffectsManager.updateVolume(volume)
             prefs.edit().putFloat("effects_volume", volume).apply()
         }
 
-        // Load saved biometric setting (default = false)
+        // Load saved biometric setting (default = false) (Android Developers, 2025; Firebsae, 2025)
         val bioEnabled = prefs.getBoolean("use_biometrics", false)
         bioswitch.isChecked = bioEnabled
 
@@ -162,7 +162,7 @@ class SettingsFragment : Fragment() {
             config, requireActivity().baseContext.resources.displayMetrics
         )
 
-        // Force activity to refresh so UI language updates immediately
+        // Force activity to refresh so UI language updates immediately (Android Developers, 2025; Firebsae, 2025)
         requireActivity().recreate()
     }
 }

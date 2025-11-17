@@ -1,9 +1,16 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.Arachnophobia_Galaxy_Infestation" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+<resources>
+
+    <style name="Base.Theme.Arachnophobia_Galaxy_Infestation"
+        parent="Theme.AppCompat.Light.NoActionBar">
+
+        <!-- Required Material components support -->
+        <item name="materialThemeOverlay">@style/ThemeOverlay.Material3.Light</item>
+        <item name="tooltipStyle">@style/Widget.Material3.Tooltip</item>
+        <item name="sliderStyle">@style/Widget.Material3.Slider</item>
+
     </style>
 
-    <style name="Theme.Arachnophobia_Galaxy_Infestation" parent="Base.Theme.Arachnophobia_Galaxy_Infestation" />
+    <style name="Theme.Arachnophobia_Galaxy_Infestation"
+        parent="Base.Theme.Arachnophobia_Galaxy_Infestation" />
+
 </resources>

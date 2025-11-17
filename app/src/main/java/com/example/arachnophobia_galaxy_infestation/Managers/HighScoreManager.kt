@@ -12,14 +12,22 @@ object HighScoreManager {
 
     /**
      * Saves the high score — locally if offline, or to Firebase if online.
-     * Automatically uploads any pending local score when called online.
+     * Will NOT save if username is Guest, null, or empty.
      */
     fun saveHighScore(appContext: Context, score: Int) {
         val auth = FirebaseAuth.getInstance()
         val uid = auth.currentUser?.uid ?: return
 
-        val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
         val prefs = appContext.getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
+
+        // --- Username validation ---
+        val username = prefs.getString("username", "Guest") ?: "Guest"
+        if (username.isBlank() || username.equals("Guest", ignoreCase = true)) {
+            // Reject saving highscore entirely
+            return
+        }
+
+        val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
 
         val connectivityManager = appContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val networkInfo = connectivityManager.activeNetworkInfo
@@ -59,8 +67,7 @@ object HighScoreManager {
     }
 
     /**
-     * Registers a system-wide listener to automatically sync high scores
-     * whenever the network connection is restored.
+     * Automatically syncs pending high scores when network returns.
      */
     fun registerNetworkCallback(context: Context) {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -69,8 +76,15 @@ object HighScoreManager {
             override fun onAvailable(network: Network) {
                 super.onAvailable(network)
 
-                // Try syncing pending highscore when back online
                 val prefs = context.getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
+
+                // --- Username validation ---
+                val username = prefs.getString("username", "Guest") ?: "Guest"
+                if (username.isBlank() || username.equals("Guest", ignoreCase = true)) {
+                    // Do not sync highscores for guest accounts
+                    return
+                }
+
                 val pendingHighScore = prefs.getInt("pending_highscore", 0)
 
                 if (pendingHighScore > 0) {
@@ -109,4 +123,8 @@ object HighScoreManager {
 * Firebase, 2025. DatabaseReference. [online]. Available at:
 * https://firebase.google.com/docs/reference/android/com/google/firebase/database/DatabaseReference
 * [Accessed: 7 October 2025].
+*
+* ChatGPT-4, 2025. OpenAI. [online]. Available at:
+* https://chatgpt.com/?model=auto
+* [Accessed: 10 November 2025].
 */

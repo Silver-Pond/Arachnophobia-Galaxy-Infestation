@@ -34,7 +34,7 @@
             android:text="Trophy Name"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:textColor="@color/primaryText"/>
+            android:textColor="@color/secondaryText"/>
 
         <CheckBox
             android:id="@+id/trophyCheckBox"
