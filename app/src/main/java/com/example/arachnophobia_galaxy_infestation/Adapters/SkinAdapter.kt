@@ -32,14 +32,14 @@ class SkinAdapter(
         val skin = skins[position]
         val ownedSkins = player.ownedSkins ?: emptyList()
 
-        // Read updated equipped skin every bind
+        // Read updated equipped skin every bind (Android Developers, 2025; ChatGPT-4, 2025)
         val prefs = holder.itemView.context.getSharedPreferences("GamePrefs", Context.MODE_PRIVATE)
         val equippedSkin = prefs.getString("equippedSkin", "Moth") ?: "Moth"
 
         // Set name
         holder.skinName.text = skin.name
 
-        // Price / owned indicator
+        // Price / owned indicator (Android Developers, 2025; ChatGPT-4, 2025)
         holder.skinPrice.text =
             if (ownedSkins.contains(skin.name)) "Owned" else "${skin.price} silk"
 
@@ -51,7 +51,7 @@ class SkinAdapter(
         )
         holder.skinImage.setImageResource(if (resId != 0) resId else R.drawable.moth)
 
-        // Button text + enabled state
+        // Button text + enabled state (Android Developers, 2025; ChatGPT-4, 2025)
         when {
             equippedSkin == skin.name -> {
                 holder.actionButton.text = "Equipped"

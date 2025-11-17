@@ -65,7 +65,7 @@ class SurvivalGameFragment : Fragment() {
     var currentLevel = 1
     private var currentWave = 1
     private val maxWaves = 3
-    private var baseEnemySpeed = 3f
+    private var baseEnemySpeed = 2f
     private var currentEnemySpeed = baseEnemySpeed
     private var projectileSpeed = 10f
     private var bulletSpeed = 15f
@@ -723,16 +723,17 @@ class SurvivalGameFragment : Fragment() {
 
             if (enemyType == "spider_maroon") startMaroonShooting(enemy)
         }
-        // Spawn meteorites only on levels 2–3, and only every 4th level (4, 8, 12, ...)
-        val mod = currentLevel % 10
-        if (mod in 0..4) {
+        // Meteorites spawn only in level ranges 1–4, 10–14, 20–24, etc. (Android Developers, 2025; ChatGPT-4, 2025)
+        val levelGroup = (currentLevel - 1) / 10
+        val levelInGroup = currentLevel - levelGroup * 10
+        if (levelInGroup in 1..4) {
             startMeteoriteDrops()
         } else {
             stopMeteoriteDrops()
         }
     }
 
-    // Meteorite spawn logic
+    // Meteorite spawn logic (Android Developers, 2025; ChatGPT-4, 2025)
     private fun spawnMeteorite() {
         val ctx = context ?: return
         val ga = gameArea ?: return
@@ -742,7 +743,7 @@ class SurvivalGameFragment : Fragment() {
             setImageResource(R.drawable.web_bomb)
         }
 
-        // Better randomness + anti-clustering
+        // Better randomness + anti-clustering (Android Developers, 2025; ChatGPT-4, 2025)
         var spawnX: Float
         do {
             spawnX = ThreadLocalRandom.current().nextInt(0, ga.width - 150).toFloat()
@@ -757,6 +758,7 @@ class SurvivalGameFragment : Fragment() {
         meteorites.add(meteor)
     }
 
+    // Meteorite spawn logic (Android Developers, 2025; ChatGPT-4, 2025)
     private fun startMeteoriteDrops() {
         meteorSpawnHandler.removeCallbacksAndMessages(null)
 
@@ -772,6 +774,7 @@ class SurvivalGameFragment : Fragment() {
         meteorSpawnHandler.post(dropRunnable)
     }
 
+    // Meteorite stop logic (Android Developers, 2025; ChatGPT-4, 2025)
     private fun stopMeteoriteDrops() {
         meteorSpawnHandler.removeCallbacksAndMessages(null)
     }
@@ -970,13 +973,13 @@ class SurvivalGameFragment : Fragment() {
             19 -> trophiesToAward.add(Trophy("trophy16", "Survivor lvl 19", "Completed Level 19 of Survival Mode!", "lvl_trophy"))
         }
 
-        // Score-based trophies for Survival Mode
+        // Score-based trophies for Survival Mode (Android Developers, 2025; ChatGPT-4, 2025)
         if (score >= 2000) trophiesToAward.add(Trophy("trophy17", "Arachno-Loser", "Obtained a score of 2000 in Survival Mode!", "score_trophy"))
         if (score >= 4000) trophiesToAward.add(Trophy("trophy18", "New Survivor", "Obtained a score of 4000 in Survival Mode!", "score_trophy"))
         if (score >= 6000) trophiesToAward.add(Trophy("trophy19", "Spider Hunter lvl 1", "Obtained a score of 6000 in Survival Mode!", "score_trophy"))
         if (score >= 8000) trophiesToAward.add(Trophy("trophy20", "Spider Hunter lvl...Legit", "Obtained a score of 8000 in Survival Mode!", "score_trophy"))
 
-        // 🏆 Save & notify only NEW trophies
+        // 🏆 Save & notify only NEW trophies (Android Developers, 2025; ChatGPT-4, 2025)
         trophiesToAward.forEach { trophy ->
             dbRef.child(trophy.id).get().addOnSuccessListener { snapshot ->
                 if (!snapshot.exists()) {
@@ -988,7 +991,7 @@ class SurvivalGameFragment : Fragment() {
                         Snackbar.LENGTH_LONG
                     )
 
-                    // Place Snackbar at top center
+                    // Place Snackbar at top center (Android Developers, 2025; ChatGPT-4, 2025)
                     val snackbarView = snackbar.view
                     val params = snackbarView.layoutParams as FrameLayout.LayoutParams
                     params.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
@@ -1085,4 +1088,8 @@ class SurvivalGameFragment : Fragment() {
 * Firebase, 2025. FirebaseDatabase. [online]. Available at:
 * https://firebase.google.com/docs/reference/android/com/google/firebase/database/FirebaseDatabase
 * [Accessed: 7 October 2025].
+*
+* ChatGPT-4, 2025. OpenAI. [online]. Available at:
+* https://chatgpt.com/?model=auto
+* [Accessed: 10 November 2025].
 */
