@@ -18,6 +18,9 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricPrompt
+import androidx.core.content.ContextCompat
 
 class LoginFragment : Fragment() {
     private var clickbuttonSoundId: Int = 0
@@ -88,53 +91,107 @@ class LoginFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            val auth = FirebaseAuth.getInstance()
-            auth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        val firebaseUser = auth.currentUser
-                        val uid = firebaseUser?.uid
+            // Load biometric preference from Settings
+            val prefs = requireContext().getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
+            val useBiometrics = prefs.getBoolean("use_biometrics", false)
 
-                        if (uid != null) {
-                            val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
+            // Function that performs the Firebase login after biometrics succeed
+            val performEmailPasswordLogin = {
+                val auth = FirebaseAuth.getInstance()
+                auth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val firebaseUser = auth.currentUser
+                            val uid = firebaseUser?.uid
 
-                            dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                                override fun onDataChange(snapshot: DataSnapshot) {
-                                    if (snapshot.exists()) {
-                                        val username = snapshot.child("username").getValue(String::class.java) ?: "Player"
+                            if (uid != null) {
+                                val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
 
-                                        // Save login details for biometric login (Android Developers, 2025; Firebsae, 2025)
-                                        val sharedPref = requireActivity()
-                                            .getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-                                        with(sharedPref.edit()) {
-                                            putString("email", email)
-                                            putString("password", password)
-                                            putString("username", username) // optional
-                                            apply()
-                                        }
-                                        Toast.makeText(requireContext(), "Welcome $username", Toast.LENGTH_SHORT).show()
+                                dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                                    override fun onDataChange(snapshot: DataSnapshot) {
+                                        if (snapshot.exists()) {
+                                            val username = snapshot.child("username").getValue(String::class.java) ?: "Player"
 
-                                        // Navigate to GameMenuFragment
-                                        val gameMenuFragment = GameMenuFragment().apply {
-                                            arguments = Bundle().apply {
+                                            // Save login details for biometric login
+                                            val sharedPref = requireActivity()
+                                                .getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+                                            with(sharedPref.edit()) {
+                                                putString("email", email)
+                                                putString("password", password)
                                                 putString("username", username)
+                                                apply()
                                             }
+
+                                            Toast.makeText(requireContext(), "Welcome $username", Toast.LENGTH_SHORT).show()
+
+                                            // Navigate to GameMenuFragment
+                                            val gameMenuFragment = GameMenuFragment().apply {
+                                                arguments = Bundle().apply {
+                                                    putString("username", username)
+                                                }
+                                            }
+                                            replaceFragment(gameMenuFragment)
+
+                                        } else {
+                                            Toast.makeText(requireContext(), "User data not found", Toast.LENGTH_SHORT).show()
                                         }
-                                        replaceFragment(gameMenuFragment)
-                                    } else {
-                                        Toast.makeText(requireContext(), "User data not found", Toast.LENGTH_SHORT).show()
                                     }
+
+                                    override fun onCancelled(error: DatabaseError) {
+                                        Toast.makeText(requireContext(), "Database error: ${error.message}", Toast.LENGTH_SHORT).show()
+                                    }
+                                })
+                            }
+                        } else {
+                            Toast.makeText(requireContext(), "Login failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+            }
+
+            // If biometrics enabled → prompt
+            if (useBiometrics) {
+                val biometricManager = BiometricManager.from(requireContext())
+
+                when (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG)) {
+                    BiometricManager.BIOMETRIC_SUCCESS -> {
+                        val executor = ContextCompat.getMainExecutor(requireContext())
+                        val biometricPrompt = BiometricPrompt(this, executor,
+                            object : BiometricPrompt.AuthenticationCallback() {
+                                override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                                    super.onAuthenticationError(errorCode, errString)
+                                    Toast.makeText(requireContext(), "Biometric error: $errString", Toast.LENGTH_SHORT).show()
                                 }
 
-                                override fun onCancelled(error: DatabaseError) {
-                                    Toast.makeText(requireContext(), "Database error: ${error.message}", Toast.LENGTH_SHORT).show()
+                                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                                    super.onAuthenticationSucceeded(result)
+                                    performEmailPasswordLogin()
+                                }
+
+                                override fun onAuthenticationFailed() {
+                                    super.onAuthenticationFailed()
+                                    Toast.makeText(requireContext(), "Biometric authentication failed", Toast.LENGTH_SHORT).show()
                                 }
                             })
-                        }
-                    } else {
-                        Toast.makeText(requireContext(), "Login failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+
+                        val promptInfo = BiometricPrompt.PromptInfo.Builder()
+                            .setTitle("Biometric Login")
+                            .setSubtitle("Scan your fingerprint to continue")
+                            .setNegativeButtonText("Cancel")
+                            .build()
+
+                        biometricPrompt.authenticate(promptInfo)
+                    }
+
+                    else -> {
+                        // Fallback: device doesn't support biometrics or none enrolled
+                        Toast.makeText(requireContext(), "Biometric login not available. Logging in normally.", Toast.LENGTH_SHORT).show()
+                        performEmailPasswordLogin()
                     }
                 }
+            } else {
+                // No biometrics required
+                performEmailPasswordLogin()
+            }
         }
 
         btnback.setOnClickListener{

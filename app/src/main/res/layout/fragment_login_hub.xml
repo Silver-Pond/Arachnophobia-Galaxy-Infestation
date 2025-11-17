@@ -79,18 +79,6 @@
             android:textColor="@color/buttonText" />
 
         <Button
-            android:id="@+id/btnbiologin"
-            android:layout_width="287dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="10dp"
-            android:background="@drawable/ripple_effect"
-            android:backgroundTint="@color/buttonBackground"
-            android:fontFamily="@font/black_ops_one"
-            android:text="@string/btnbiologin"
-            android:textColor="@color/buttonText" />
-
-        <Button
             android:id="@+id/btnguest"
             android:layout_width="287dp"
             android:layout_height="wrap_content"

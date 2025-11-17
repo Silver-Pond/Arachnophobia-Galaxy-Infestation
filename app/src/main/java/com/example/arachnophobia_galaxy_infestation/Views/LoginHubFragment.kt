@@ -1,6 +1,5 @@
 package com.example.arachnophobia_galaxy_infestation
 
-import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.media.SoundPool
@@ -22,6 +21,9 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricPrompt
+import androidx.core.content.ContextCompat
 
 class LoginHubFragment : Fragment() {
     private var clickbuttonSoundId: Int = 0
@@ -58,7 +60,6 @@ class LoginHubFragment : Fragment() {
         // Initialize views
         val btngooglelogin = view.findViewById<Button>(R.id.btngooglelogin)
         val btnlogin = view.findViewById<Button>(R.id.btnlogin)
-        val btnbiologin = view.findViewById<Button>(R.id.btnbiologin)
         val btnguest = view.findViewById<Button>(R.id.btnguest)
         val btnexit = view.findViewById<Button>(R.id.btnexit)
 
@@ -84,9 +85,6 @@ class LoginHubFragment : Fragment() {
         val savedEffectsVolume = prefs.getFloat("effects_volume", 1.0f)
         SoundEffectsManager.updateVolume(savedEffectsVolume)
 
-        // Check if user is already signed in
-        val useBiometrics = prefs.getBoolean("use_biometrics", false)
-
         btngooglelogin.setOnClickListener {
             // Play button click sound
             if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
@@ -99,15 +97,6 @@ class LoginHubFragment : Fragment() {
             if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
 
             replaceFragment(LoginFragment())
-        }
-        // Hide or show the button based on preference (Android Developers, 2025; Firebsae, 2025)
-        btnbiologin.visibility = if (useBiometrics) View.VISIBLE else View.GONE
-
-        btnbiologin.setOnClickListener {
-            // Play button click sound
-            if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
-
-            replaceFragment(BiometricLoginFragment())
         }
 
         btnguest.setOnClickListener {
@@ -137,75 +126,125 @@ class LoginHubFragment : Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
         if (requestCode == RC_SIGN_IN) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
                 val account = task.getResult(ApiException::class.java)!!
-                firebaseAuthWithGoogle(account)
+
+                // Retrieve the user’s biometric preference from Settings
+                val prefs = requireContext().getSharedPreferences("AppSettings", MODE_PRIVATE)
+                val useBiometrics = prefs.getBoolean("use_biometrics", false)
+
+                // Pass the flag into your biometric-enabled login function
+                firebaseAuthWithGoogle(account, useBiometrics)
+
             } catch (e: ApiException) {
                 Toast.makeText(requireContext(), "Google sign in failed", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun firebaseAuthWithGoogle(account: GoogleSignInAccount) {
-        val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-        auth.signInWithCredential(credential)
-            .addOnCompleteListener(requireActivity()) { task ->
-                if (task.isSuccessful) {
-                    val user = auth.currentUser
-                    user?.let {
-                        val database = FirebaseDatabase.getInstance().getReference("players")
-                        val playerId = it.uid
+    private fun firebaseAuthWithGoogle(account: GoogleSignInAccount, useBiometrics: Boolean) {
+        val proceedWithFirebaseAuth = {
+            val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+            auth.signInWithCredential(credential)
+                .addOnCompleteListener(requireActivity()) { task ->
+                    if (task.isSuccessful) {
+                        val user = auth.currentUser
+                        user?.let {
+                            val database = FirebaseDatabase.getInstance().getReference("players")
+                            val playerId = it.uid
 
-                        database.child(playerId).addListenerForSingleValueEvent(object : ValueEventListener {
-                            override fun onDataChange(snapshot: DataSnapshot) {
-                                if (snapshot.exists()) {
-                                    val existingUsername = snapshot.child("username").getValue(String::class.java)
-                                        ?: it.displayName ?: "Guest"
+                            database.child(playerId).addListenerForSingleValueEvent(object : ValueEventListener {
+                                override fun onDataChange(snapshot: DataSnapshot) {
+                                    if (snapshot.exists()) {
+                                        val existingUsername = snapshot.child("username").getValue(String::class.java)
+                                            ?: it.displayName ?: "Guest"
 
-                                    val gameMenuFragment = GameMenuFragment().apply {
-                                        arguments = Bundle().apply {
-                                            putString("username", existingUsername)
-                                        }
-                                    }
-                                    replaceFragment(gameMenuFragment)
-                                } else {
-                                    val player = Player(
-                                        username = it.displayName ?: "Guest",
-                                        email = it.email ?: "No Email",
-                                        password = "N/A",
-                                        highscore = 0,
-                                        survivalhighscore = 0,
-                                        spider_silk = 0.00,
-                                        trophies = emptyList(),
-                                        ownedSkins = listOf("Moth", "Mario", "Invader"),
-                                        equippedSkin = "Moth"
-                                    )
-                                    database.child(playerId).setValue(player)
-                                        .addOnSuccessListener {
-                                            val gameMenuFragment = GameMenuFragment().apply {
-                                                arguments = Bundle().apply {
-                                                    putString("username", player.username)
-                                                }
+                                        val gameMenuFragment = GameMenuFragment().apply {
+                                            arguments = Bundle().apply {
+                                                putString("username", existingUsername)
                                             }
-                                            replaceFragment(gameMenuFragment)
                                         }
-                                        .addOnFailureListener { e ->
-                                            Toast.makeText(requireContext(), "Failed to save user: ${e.message}", Toast.LENGTH_SHORT).show()
-                                        }
+                                        replaceFragment(gameMenuFragment)
+                                    } else {
+                                        val player = Player(
+                                            username = it.displayName ?: "Guest",
+                                            email = it.email ?: "No Email",
+                                            password = "N/A",
+                                            highscore = 0,
+                                            survivalhighscore = 0,
+                                            spider_silk = 0.00,
+                                            trophies = emptyList(),
+                                            ownedSkins = listOf("Moth", "Mario", "Invader"),
+                                            equippedSkin = "Moth"
+                                        )
+                                        database.child(playerId).setValue(player)
+                                            .addOnSuccessListener {
+                                                val gameMenuFragment = GameMenuFragment().apply {
+                                                    arguments = Bundle().apply {
+                                                        putString("username", player.username)
+                                                    }
+                                                }
+                                                replaceFragment(gameMenuFragment)
+                                            }
+                                            .addOnFailureListener { e ->
+                                                Toast.makeText(requireContext(), "Failed to save user: ${e.message}", Toast.LENGTH_SHORT).show()
+                                            }
+                                    }
                                 }
-                            }
 
-                            override fun onCancelled(error: DatabaseError) {
-                                Toast.makeText(requireContext(), "Database error: ${error.message}", Toast.LENGTH_SHORT).show()
-                            }
-                        })
+                                override fun onCancelled(error: DatabaseError) {
+                                    Toast.makeText(requireContext(), "Database error: ${error.message}", Toast.LENGTH_SHORT).show()
+                                }
+                            })
+                        }
+                    } else {
+                        Toast.makeText(requireContext(), "Authentication Failed.", Toast.LENGTH_SHORT).show()
                     }
-                } else {
-                    Toast.makeText(requireContext(), "Authentication Failed.", Toast.LENGTH_SHORT).show()
+                }
+        }
+
+        if (useBiometrics) {
+            val biometricManager = BiometricManager.from(requireContext())
+            when (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG)) {
+                BiometricManager.BIOMETRIC_SUCCESS -> {
+                    val executor = ContextCompat.getMainExecutor(requireContext())
+                    val biometricPrompt = BiometricPrompt(this, executor, object : BiometricPrompt.AuthenticationCallback() {
+                        override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                            super.onAuthenticationError(errorCode, errString)
+                            Toast.makeText(requireContext(), "Biometric error: $errString", Toast.LENGTH_SHORT).show()
+                        }
+
+                        override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                            super.onAuthenticationSucceeded(result)
+                            proceedWithFirebaseAuth()
+                        }
+
+                        override fun onAuthenticationFailed() {
+                            super.onAuthenticationFailed()
+                            Toast.makeText(requireContext(), "Biometric authentication failed", Toast.LENGTH_SHORT).show()
+                        }
+                    })
+
+                    val promptInfo = BiometricPrompt.PromptInfo.Builder()
+                        .setTitle("Biometric Login")
+                        .setSubtitle("Scan your fingerprint to continue")
+                        .setNegativeButtonText("Cancel")
+                        .build()
+
+                    biometricPrompt.authenticate(promptInfo)
+                }
+                else -> {
+                    // Fallback: device doesn't support biometrics or none are enrolled
+                    Toast.makeText(requireContext(), "Biometric login not available. Logging in with Google.", Toast.LENGTH_SHORT).show()
+                    proceedWithFirebaseAuth()
                 }
             }
+        } else {
+            proceedWithFirebaseAuth()
+        }
     }
 
     // Helper method to replace fragment (Android Developers, 2025; Firebsae, 2025)
