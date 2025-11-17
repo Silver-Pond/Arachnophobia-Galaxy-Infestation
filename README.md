@@ -1,7 +1,7 @@
-# 📘 Archanophia: Galaxy Infestation – Comprehensive Documentation
+# Archanophia: Galaxy Infestation – Comprehensive Documentation
 
 ## 📖 1. Introduction
-Archanophia: Galaxy Infestation is a retro-inspired, vertical-scrolling shoot ’em up game that merges classic arcade intensity with modern mobile-application features. Designed for high difficulty and replayability, the game offers multiple game modes, online data handling, secure authentication, biometric login, and persistent player progression. Throughout development, GitHub served as the central platform for version control, CI automation, and documentation management, ensuring a structured and reliable workflow.
+Archanophia: Galaxy Infestation is a retro-inspired, vertical-scrolling shoot ’em up that merges classic arcade intensity with modern mobile app features. Designed for high difficulty and replayability, the game offers multiple game modes, online data handling, secure authentication, biometric login, and persistent player progression. Throughout development, GitHub served as the central platform for version control, CI automation, and documentation management, ensuring a structured and reliable workflow.
 
 ---
 
@@ -43,7 +43,7 @@ GitHub Actions ensured consistent build reliability and reduced manual overhead 
 
 ## 🔐 5. Revised Biometric Login Implementation
 
-### 🧩 Overview
+### Overview
 The prototype used a *dedicated biometric login fragment*.  
 This has been replaced with a **modern, integrated biometric flow** embedded directly into the login logic.  
 The new system is **more seamless, secure, and in line with Android UX standards**.
@@ -60,9 +60,9 @@ firebaseAuthWithGoogle(account: GoogleSignInAccount, useBiometrics: Boolean)
 
 ## 🔐 5.2 Email/Password Login + Biometrics (Updated Flow)
 
-The updated email/password login system now integrates biometric authentication when the user has enabled it in the app’s Settings. This replaces the previous prototype, where biometrics were pushed to a separate page. The new flow is seamless, streamlined, and consistent with modern mobile security practices.
+The updated email/password login system now integrates biometric authentication when the user has enabled it in the app’s Settings. This replaces the previous prototype, which pushed biometrics to a separate page. The new flow is seamless, streamlined, and consistent with modern mobile security practices.
 
-### 🔄 Updated Email Login Sequence
+### Updated Email Login Sequence
 1. The user enters their email and password on the login screen.  
 2. The app checks the stored biometric preference found in `AppSettings`.  
 3. If biometrics are enabled:  
@@ -74,7 +74,7 @@ The updated email/password login system now integrates biometric authentication 
 6. Login credentials and username are securely saved in `UserPrefs` for future biometric login.  
 7. The player is directed to the `GameMenuFragment`.
 
-### 🛡️ Improvements Over the Prototype
+### Improvements Over the Prototype
 - No more separate biometric login fragment  
 - Consistent behaviour for both login types (Google SSO & Email/Password)  
 - Cleaner and easier-to-maintain authentication architecture  
@@ -86,9 +86,9 @@ The updated email/password login system now integrates biometric authentication 
 # 📝 6. Release Notes  
 ## **Version 1.0 – Current Release**
 
-### 🚀 New Features & Improvements Since Prototype
+### New Features & Improvements Since Prototype
 
-#### 🔐 **Biometric Login System Overhaul**
+#### **Biometric Login System Overhaul**
 - Removed the standalone biometric login fragment used in the prototype  
 - Integrated biometric authentication directly into:
   - Google SSO login  
@@ -96,7 +96,7 @@ The updated email/password login system now integrates biometric authentication 
 - Implemented biometric fallback behaviour for unsupported devices  
 - Credentials now securely stored in `UserPrefs` for fingerprint-based quick login  
 
-#### 🔧 **Authentication Flow Enhancements**
+#### **Authentication Flow Enhancements**
 - Centralised all Firebase authentication logic for cleaner, more maintainable code  
 - Added detailed error handling for:
   - Incorrect credentials  
@@ -105,12 +105,12 @@ The updated email/password login system now integrates biometric authentication 
   - Biometric failures  
 - Created faster, smoother navigation from login to the Game Menu  
 
-#### 💾 **Data Handling Improvements**
+#### **Data Handling Improvements**
 - User biometric preference stored in `AppSettings`  
 - User credentials securely saved for biometric reuse  
 - Optimised Firebase database calls using single-value listeners  
 
-#### 🎨 **User Experience Improvements**
+#### **User Experience Improvements**
 - Added click sound effects to login interactions  
 - Improved login speed by eliminating unnecessary fragments  
 - Reduced cognitive load with a streamlined login flow  
@@ -205,12 +205,14 @@ This release includes major structural improvements, biometric authentication in
   - Multi-language localisation  
   - Cleaner string management  
   - Future extension to South African languages
+- Introduced `BootReceiver.kt` and `NotificationReceiver.kt` to support:
+  - Post Notifications
 
 ---
 
 ## **October 8, 2025**
 ### **Initial Updates**
-- Early project setup changes prior to major updates.  
+- Early project setup changes before major updates.  
 - Minor adjustments to layouts, logic, and resource organisation.
 
 ---
@@ -226,3 +228,13 @@ This release includes major structural improvements, biometric authentication in
 - Updated README with correct project documentation  
 
 ---
+
+### 🌟 Innovative Features Added
+
+#### **1. Dynamic Environmental Hazards in Survival Mode**
+A new environmental hazard system has been implemented to increase gameplay challenge and variety within Survival Mode. Large web-coated asteroids now descend from random x-axis positions at fixed level intervals (Levels 1–4, 10–14, 20–24, and so on).  
+These hazards introduce meaningful difficulty during early waves—where fewer enemy types are present—ensuring that low-level stages remain engaging while encouraging players to adapt their movement and positioning strategies.
+
+#### **2. Unlockable and Equippable Starship Skins**
+The game now features a fully functional starship skin system. Players can unlock new cosmetic skins for their ship using in-game currency earned across both Arcade Mode and Survival Mode.  
+Once unlocked, skins can be equipped via the dedicated Skins page, and they appear consistently across all gameplay modes. This system enhances player personalization, offers clear progression incentives, and rewards long-term engagement.
