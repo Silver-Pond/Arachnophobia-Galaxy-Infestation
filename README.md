@@ -120,3 +120,109 @@ The updated email/password login system now integrates biometric authentication 
 # 🏁 7. Conclusion
 
 Archanophia: Galaxy Infestation merges classic arcade gameplay with modern mobile architecture, advanced authentication features, and persistent user data management. The redesigned biometric system marks a significant upgrade from the prototype, providing a seamless, secure, and user-friendly login experience. The integration of GitHub and GitHub Actions throughout development ensured reliable build automation, efficient version control, and stable continuous integration. The result is a polished, scalable, and user-centric mobile game application ready for delivery and further enhancement.
+
+---
+
+# 📦 Release Notes  
+## **Version 1.0 – November 2025 Update**
+
+This release includes major structural improvements, biometric authentication integration, UI updates, gameplay enhancements, and overall project reorganisation. Below is a detailed breakdown of changes based on commit history from **October 8, 2025 → November 18, 2025**.
+
+---
+
+## **November 18, 2025**
+### **Updated Documentation**
+- Updated the `README.md` to reflect new authentication logic, UI updates, and biometric changes.  
+- Verified commit cleanup by **Silver-Pond** to maintain documentation accuracy.
+
+---
+
+## **November 17, 2025**
+### **Biometric System Overhaul**
+- **Removed `BiometricLoginFragment.kt` entirely** as part of the new integrated biometric workflow.  
+- Implemented biometric authentication directly inside:
+  - `LoginHubFragment.kt`
+  - `LoginFragment.kt`  
+- Improved accuracy, fallback logic, and user experience for biometric-enabled logins.
+
+### **Theme & UI Enhancements**
+- Updated themes to align with the new login behaviour.  
+- Refined biometric-related UI components.
+
+### **Project Structure Updates**
+- Updated main directory files and `res` folder contents for better consistency.  
+- Improved resource loading and fragment UI behaviour.
+
+### **Colour & Layout Improvements**
+- Updated various layout files.  
+- Modified `colors.xml` for standard mode.  
+- Added new `values-night/colors.xml` to ensure proper dark mode support.
+
+---
+
+## **November 16, 2025**
+### **General Code Improvements**
+- Updated additional code in `main` and `res` folders.  
+- Refined fragment interactions and gameplay logic.  
+- Multiple small fixes to improve stability and resource access.
+
+### **Project Organisation**
+- Created new folders to improve codebase structure and maintainability.
+
+---
+
+## **November 15, 2025**
+### **Gameplay & Notification Updates**
+- Updated `NotificationReceiver` to improve in-game notification handling.  
+- Enhanced `SurvivalGameFragment` logic, including:
+  - Enemy spawning improvements  
+  - Survival mode stability fixes  
+  - Event-handling consistency  
+
+---
+
+## **November 14, 2025**
+### **Currency System Overhaul**
+- Updated the `CurrencyManager` to support more reliable offline/online currency handling.
+- Added a **new CurrencyManager implementation** with improved logic for currency accumulation.
+- Updated:
+  - `HighScoreManager`
+  - `GameFragment`  
+- Improved coin reward calculations and persistent data storage.
+
+### **Notification System Updates**
+- Enhanced the `NotificationReceiver` to ensure messages are triggered consistently across different game states.
+
+---
+
+## **November 9, 2025**
+### **Repository Synchronisation**
+- Merged remote-tracking branch `origin/main` to unify the codebase across devices and contributors.
+- Ensured all local changes were reflected in the main branch.
+
+### **String Resources Added**
+- Introduced `values-strings.xml` to support:
+  - Multi-language localisation  
+  - Cleaner string management  
+  - Future extension to South African languages
+
+---
+
+## **October 8, 2025**
+### **Initial Updates**
+- Early project setup changes prior to major updates.  
+- Minor adjustments to layouts, logic, and resource organisation.
+
+---
+
+# Summary of Key Improvements in This Release
+- Full biometric authentication integration  
+- Removal of old biometric fragment in favour of a seamless, modern login flow  
+- Updated layouts, themes, colours, and resource files  
+- New CurrencyManager implementation  
+- Gameplay updates for survival mode  
+- Notification and high-score logic improvements  
+- Better project structure and maintainability  
+- Updated README with correct project documentation  
+
+---
