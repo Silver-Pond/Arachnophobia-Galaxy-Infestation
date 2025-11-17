@@ -1,3 +1,5 @@
+---
+
 ## YouTube Link: 
 
 ---
@@ -237,7 +239,7 @@ This release includes major structural improvements, biometric authentication in
 
 ## **1. Dynamic Environmental Hazards in Survival Mode**
 A new environmental hazard system has been implemented to increase gameplay challenge and variety within Survival Mode. Large web-coated asteroids now descend from random x-axis positions at fixed level intervals (Levels 1–4, 10–14, 20–24, and so on).  
-These hazards introduce meaningful difficulty during early waves—where fewer enemy types are present—ensuring that low-level stages remain engaging while encouraging players to adapt their movement and positioning strategies.
+These hazards introduce meaningful difficulty during early waves where fewer enemy types are present, ensuring that low-level stages remain engaging while encouraging players to adapt their movement and positioning strategies.
 
 ## **2. Unlockable and Equippable Starship Skins**
 The game now features a fully functional starship skin system. Players can unlock new cosmetic skins for their ship using in-game currency earned across both Arcade Mode and Survival Mode.  
