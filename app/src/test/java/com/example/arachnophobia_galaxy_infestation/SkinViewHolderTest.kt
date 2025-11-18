@@ -21,7 +21,7 @@ class SkinViewHolderTest {
 
     @Before
     fun setup() {
-        // Mock the itemView and its child views
+        // Mock the itemView and its child views (ChatGPT-4, 2025)
         itemView = mock(View::class.java)
         skinImage = mock(ImageView::class.java)
         skinName = mock(TextView::class.java)
@@ -34,7 +34,7 @@ class SkinViewHolderTest {
         `when`(itemView.findViewById<TextView>(R.id.skinPrice)).thenReturn(skinPrice)
         `when`(itemView.findViewById<Button>(R.id.actionButton)).thenReturn(actionButton)
 
-        // Create the ViewHolder with the mocked itemView
+        // Create the ViewHolder with the mocked itemView (ChatGPT-4, 2025)
         viewHolder = SkinViewHolder(itemView)
     }
 
@@ -48,7 +48,7 @@ class SkinViewHolderTest {
 
     @Test
     fun `actionButton click can be triggered`() {
-        // simulate click
+        // simulate click (ChatGPT-4, 2025)
         viewHolder.actionButton.performClick()
         // verify that the method can be called
         verify(actionButton).performClick()
@@ -62,3 +62,10 @@ class SkinViewHolderTest {
         assertEquals(actionButton, viewHolder.actionButton)
     }
 }
+/*
+* Reference List
+*
+* ChatGPT-4, 2025. OpenAI. [online]. Available at:
+* https://chatgpt.com/?model=auto
+* [Accessed: 10 November 2025].
+*/

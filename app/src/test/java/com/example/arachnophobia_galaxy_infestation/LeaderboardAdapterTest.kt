@@ -48,18 +48,18 @@ class LeaderboardAdapterTest {
 
     @Test
     fun `onBindViewHolder sets texts correctly`() {
-        // Mock Color.rgb to return a fixed int
+        // Mock Color.rgb to return a fixed int (ChatGPT-4, 2025)
         mockStatic(Color::class.java).use { colorMock ->
             `when`(Color.rgb(85, 48, 101)).thenReturn(123456)
 
-            // Bind first player (Alice)
+            // Bind first player (Alice) (ChatGPT-4, 2025)
             adapter.onBindViewHolder(mockHolder, 0)
             verify(mockRankText).text = "1."
             verify(mockUsernameText).text = "Alice"
             verify(mockScoreText).text = "100"
             verify(mockItemView).setBackgroundColor(Color.TRANSPARENT)
 
-            // Bind logged-in user (Bob)
+            // Bind logged-in user (Bob) (ChatGPT-4, 2025)
             adapter.onBindViewHolder(mockHolder, 1)
             verify(mockRankText).text = "2."
             verify(mockUsernameText).text = "Bob"
@@ -68,3 +68,10 @@ class LeaderboardAdapterTest {
         }
     }
 }
+/*
+* Reference List
+*
+* ChatGPT-4, 2025. OpenAI. [online]. Available at:
+* https://chatgpt.com/?model=auto
+* [Accessed: 10 November 2025].
+*/

@@ -24,9 +24,6 @@ class SkinAdapterTest {
     lateinit var mockPrefs: SharedPreferences
 
     @Mock
-    lateinit var editor: SharedPreferences.Editor
-
-    @Mock
     lateinit var mockView: View
 
     @Mock
@@ -52,7 +49,7 @@ class SkinAdapterTest {
     fun setup() {
         MockitoAnnotations.openMocks(this)
 
-        // Sample data
+        // Sample data (ChatGPT-4, 2025)
         skins = listOf(
             Skin(id = "1", name = "Moth", price = 100.0, image_url = "moth_image"),
             Skin(id = "2", name = "Spider", price = 200.0, image_url = "spider_image"),
@@ -91,10 +88,10 @@ class SkinAdapterTest {
     @Test
     fun `bind sets button text correctly for owned skin`() {
         val holder = adapter.SkinViewHolder(mockView)
-        adapter.onBindViewHolder(holder, 0) // Moth, owned, not equipped
+        adapter.onBindViewHolder(holder, 0) // Moth, owned, equipped
 
-        verify(actionButton).setText(eq("Equipped"))
-        verify(actionButton).setEnabled(eq(true))
+        verify(actionButton).setText("Equipped")
+        verify(actionButton).setEnabled(false)
     }
 
     @Test
@@ -127,7 +124,7 @@ class SkinAdapterTest {
         // Prepare the ViewHolder
         val holder = testAdapter.SkinViewHolder(mockView)
 
-        // Mock setOnClickListener to call the listener immediately
+        // Mock setOnClickListener to call the listener immediately (ChatGPT-4, 2025)
         doAnswer { invocation ->
             val listener = invocation.getArgument<View.OnClickListener>(0)
             // Simulate clicking immediately
@@ -137,10 +134,17 @@ class SkinAdapterTest {
         // Bind the view holder
         testAdapter.onBindViewHolder(holder, 0)
 
-        // Verify the listener was set at least once
+        // Verify the listener was set at least once (ChatGPT-4, 2025)
         verify(actionButton, atLeastOnce()).setOnClickListener(any())
 
-        // Assert that the click callback was invoked with the correct skin
+        // Assert that the click callback was invoked with the correct skin object (ChatGPT-4, 2025)
         assertEquals(skins[0], clickedSkin)
     }
 }
+/*
+* Reference List
+*
+* ChatGPT-4, 2025. OpenAI. [online]. Available at:
+* https://chatgpt.com/?model=auto
+* [Accessed: 10 November 2025].
+*/

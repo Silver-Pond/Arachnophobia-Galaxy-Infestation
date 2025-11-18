@@ -23,14 +23,14 @@ class BootReceiverTest {
         MockitoAnnotations.openMocks(this)
         receiver = BootReceiver()
 
-        // Mock dependencies
+        // Mock dependencies (ChatGPT-4, 2025)
         context = mock(Context::class.java)
         prefs = mock(SharedPreferences::class.java)
         mockIntent = mock(Intent::class.java)
 
         `when`(context.getSharedPreferences("AppSettings", Context.MODE_PRIVATE)).thenReturn(prefs)
 
-        // Mock static NotificationReceiver
+        // Mock static NotificationReceiver (ChatGPT-4, 2025)
         mockedStatic = mockStatic(NotificationReceiver.Companion::class.java)
     }
 
@@ -58,3 +58,10 @@ class BootReceiverTest {
         mockedStatic.verifyNoInteractions()
     }
 }
+/*
+* Reference List
+*
+* ChatGPT-4, 2025. OpenAI. [online]. Available at:
+* https://chatgpt.com/?model=auto
+* [Accessed: 10 November 2025].
+*/
