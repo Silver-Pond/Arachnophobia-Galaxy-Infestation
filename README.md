@@ -1,6 +1,6 @@
 ---
 
-## YouTube Link: (https://youtu.be/I1-2SiZtllU)
+## YouTube Link: https://youtu.be/I1-2SiZtllU
 
 ---
 
