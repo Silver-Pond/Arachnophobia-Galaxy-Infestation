@@ -24,9 +24,6 @@ class SkinAdapterTest {
     lateinit var mockPrefs: SharedPreferences
 
     @Mock
-    lateinit var editor: SharedPreferences.Editor
-
-    @Mock
     lateinit var mockView: View
 
     @Mock
