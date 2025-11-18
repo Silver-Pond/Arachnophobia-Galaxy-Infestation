@@ -3,7 +3,6 @@ package com.example.arachnophobia_galaxy_infestation
 import android.app.*
 import android.content.Context
 import android.content.Intent
-import androidx.core.app.NotificationCompat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
@@ -35,14 +34,14 @@ class NotificationReceiverTest {
         `when`(mockPrefs.edit()).thenReturn(mockEditor)
         `when`(mockEditor.putBoolean(anyString(), anyBoolean())).thenReturn(mockEditor)
 
-        // Stub Android static methods that crash in JVM tests
+        // Stub Android static methods that crash in JVM tests (ChatGPT-4, 2025)
         mockStatic(PendingIntent::class.java).use { pendingIntentMock ->
             pendingIntentMock.`when`<Any> {
                 PendingIntent.getBroadcast(any(), anyInt(), any(), anyInt())
             }.thenReturn(mock(PendingIntent::class.java))
 
             mockStatic(Intent::class.java).use { _ ->
-                // No need to mock Intent methods for this one
+                // No need to mock Intent methods for this one (ChatGPT-4, 2025)
             }
         }
     }
@@ -75,3 +74,10 @@ class NotificationReceiverTest {
         verify(mockEditor).apply()
     }
 }
+/*
+* Reference List
+*
+* ChatGPT-4, 2025. OpenAI. [online]. Available at:
+* https://chatgpt.com/?model=auto
+* [Accessed: 10 November 2025].
+*/

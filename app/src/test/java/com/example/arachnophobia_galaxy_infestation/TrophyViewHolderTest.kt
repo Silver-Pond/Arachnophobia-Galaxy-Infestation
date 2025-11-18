@@ -23,14 +23,14 @@ class TrophyViewHolderTest {
 
     @Before
     fun setup() {
-        // Mock Android views
+        // Mock Android views (ChatGPT-4, 2025)
         context = mock(Context::class.java)
         itemView = mock(View::class.java)
         trophyImage = mock(ImageView::class.java)
         trophyName = mock(TextView::class.java)
         trophyCheckBox = mock(CheckBox::class.java)
 
-        // When itemView.findViewById is called, return the mocks
+        // When itemView.findViewById is called, return the mocks (ChatGPT-4, 2025)
         `when`(itemView.findViewById<ImageView>(R.id.trophyImage)).thenReturn(trophyImage)
         `when`(itemView.findViewById<TextView>(R.id.trophyName)).thenReturn(trophyName)
         `when`(itemView.findViewById<CheckBox>(R.id.trophyCheckBox)).thenReturn(trophyCheckBox)
@@ -101,3 +101,10 @@ class TrophyViewHolderTest {
         assertEquals(trophy, clickedTrophy)
     }
 }
+/*
+* Reference List
+*
+* ChatGPT-4, 2025. OpenAI. [online]. Available at:
+* https://chatgpt.com/?model=auto
+* [Accessed: 10 November 2025].
+*/

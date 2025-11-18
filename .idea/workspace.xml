@@ -153,8 +153,8 @@
       <change beforePath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.13/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/fileHashes/resourceHashesCache.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Receivers/NotificationReceiver.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Receivers/NotificationReceiver.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -588,14 +588,6 @@
       <option name="presentableId" value="Default" />
       <updated>1755129484054</updated>
     </task>
-    <task id="LOCAL-00055" summary="Merged remote history with local changes">
-      <option name="closed" value="true" />
-      <created>1758049368575</created>
-      <option name="number" value="00055" />
-      <option name="presentableId" value="LOCAL-00055" />
-      <option name="project" value="LOCAL" />
-      <updated>1758049368576</updated>
-    </task>
     <task id="LOCAL-00056" summary="Merged remote history with local changes">
       <option name="closed" value="true" />
       <created>1758155322019</created>
@@ -980,7 +972,15 @@
       <option name="project" value="LOCAL" />
       <updated>1763478636648</updated>
     </task>
-    <option name="localTasksCounter" value="104" />
+    <task id="LOCAL-00104" summary="Updated HighScoreManager.kt.">
+      <option name="closed" value="true" />
+      <created>1763491687718</created>
+      <option name="number" value="00104" />
+      <option name="presentableId" value="LOCAL-00104" />
+      <option name="project" value="LOCAL" />
+      <updated>1763491687718</updated>
+    </task>
+    <option name="localTasksCounter" value="105" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">

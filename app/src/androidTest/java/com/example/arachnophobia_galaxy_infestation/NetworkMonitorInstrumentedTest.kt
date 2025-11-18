@@ -50,7 +50,7 @@ class NetworkMonitorInstrumentedTest {
     @Test
     @Throws(InterruptedException::class)
     fun testNetworkAvailableCallback() {
-        // Wait up to 5 seconds for the callback
+        // Wait up to 5 seconds for the callback (ChatGPT-4, 2025)
         val triggered = networkAvailableLatch!!.await(5, TimeUnit.SECONDS)
         Assert.assertTrue("Network available callback was not triggered", triggered)
     }
@@ -58,9 +58,16 @@ class NetworkMonitorInstrumentedTest {
     @Test
     @Throws(InterruptedException::class)
     fun testNetworkLostCallback() {
-        // NOTE: To actually trigger this, you need to disable network on the device/emulator manually.
-        // Wait up to 10 seconds for the callback
+        // NOTE: To actually trigger this, you need to disable network on the device/emulator manually. (ChatGPT-4, 2025)
+        // Wait up to 10 seconds for the callback (ChatGPT-4, 2025)
         val triggered = networkLostLatch!!.await(10, TimeUnit.SECONDS)
         Assert.assertTrue("Network lost callback was not triggered", triggered)
     }
 }
+/*
+* Reference List
+*
+* ChatGPT-4, 2025. OpenAI. [online]. Available at:
+* https://chatgpt.com/?model=auto
+* [Accessed: 10 November 2025].
+*/

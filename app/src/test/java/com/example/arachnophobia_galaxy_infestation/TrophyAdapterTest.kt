@@ -38,3 +38,10 @@ class TrophyAdapterTest {
         }
     }
 }
+/*
+* Reference List
+*
+* ChatGPT-4, 2025. OpenAI. [online]. Available at:
+* https://chatgpt.com/?model=auto
+* [Accessed: 10 November 2025].
+*/

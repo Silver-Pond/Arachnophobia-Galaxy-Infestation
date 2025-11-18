@@ -13,7 +13,7 @@ class SoundEffectsManagerTest {
 
     @Before
     fun setUp() {
-        // Mock SoundPool using Mockito
+        // Mock SoundPool using Mockito (ChatGPT-4, 2025)
         mockSoundPool = mock(SoundPool::class.java)
         SoundEffectsManager.soundPool = mockSoundPool
         SoundEffectsManager.effectsVolume = 1.0f
@@ -40,7 +40,7 @@ class SoundEffectsManagerTest {
         SoundEffectsManager.updateVolume(volume)
         SoundEffectsManager.playSound(soundId)
 
-        // Verify SoundPool.play() is called with correct arguments
+        // Verify SoundPool.play() is called with correct arguments (ChatGPT-4, 2025)
         verify(mockSoundPool).play(
             soundId,
             volume,    // left volume
@@ -53,10 +53,17 @@ class SoundEffectsManagerTest {
 
     @Test
     fun testPlaySound_whenSoundPoolNull_doesNotCrash() {
-        // Set SoundPool to null
+        // Set SoundPool to null (ChatGPT-4, 2025)
         SoundEffectsManager.soundPool = null
 
         // Should not throw exception
         SoundEffectsManager.playSound(123)
     }
 }
+/*
+* Reference List
+*
+* ChatGPT-4, 2025. OpenAI. [online]. Available at:
+* https://chatgpt.com/?model=auto
+* [Accessed: 10 November 2025].
+*/
