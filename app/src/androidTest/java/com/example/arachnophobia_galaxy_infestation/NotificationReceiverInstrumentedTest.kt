@@ -7,7 +7,6 @@ import android.content.Intent
 import android.media.MediaPlayer
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -27,13 +26,13 @@ class NotificationReceiverInstrumentedTest {
         notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-        // Cancel any previously scheduled alarms
+        // Cancel any previously scheduled alarms (ChatGPT-4, 2025)
         NotificationReceiver.cancelAlarm(context)
     }
 
     @After
     fun tearDown() {
-        // Cleanup: cancel alarms after test
+        // Cleanup: cancel alarms after test (ChatGPT-4, 2025)
         NotificationReceiver.cancelAlarm(context)
     }
 
@@ -44,7 +43,7 @@ class NotificationReceiverInstrumentedTest {
         val intent = Intent(context, NotificationReceiver::class.java)
         receiver.onReceive(context, intent)
 
-        // Check that SharedPreferences flag was set
+        // Check that SharedPreferences flag was set (ChatGPT-4, 2025)
         val scheduled = context.getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
             .getBoolean("scheduled_notifications", false)
         assertTrue("Notification scheduling flag should be true", scheduled)
@@ -59,17 +58,24 @@ class NotificationReceiverInstrumentedTest {
 
     @Test
     fun testScheduleAndCancelAlarm_setsAndRemovesAlarm() {
-        // Schedule alarm
+        // Schedule alarm (ChatGPT-4, 2025)
         NotificationReceiver.scheduleNextAlarm(context)
 
         val scheduled = context.getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
             .getBoolean("scheduled_notifications", false)
         assertTrue("Alarm should be scheduled", scheduled)
 
-        // Cancel alarm
+        // Cancel alarm (ChatGPT-4, 2025)
         NotificationReceiver.cancelAlarm(context)
         val canceled = context.getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
             .getBoolean("scheduled_notifications", true)
         assertTrue("Alarm should be canceled", !canceled)
     }
 }
+/*
+* Reference List
+*
+* ChatGPT-4, 2025. OpenAI. [online]. Available at:
+* https://chatgpt.com/?model=auto
+* [Accessed: 10 November 2025].
+*/
