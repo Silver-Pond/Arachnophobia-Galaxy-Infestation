@@ -14,7 +14,7 @@ object HighScoreManager {
         val auth = FirebaseAuth.getInstance()
         val uid = auth.currentUser?.uid ?: return
 
-        // ✅ Correct username source (fixes your issue)
+        // Correct username source (fixes your issue) (Android Developers, 2025; ChatGPT-4, 2025)
         val username = auth.currentUser?.displayName ?: "Guest"
         if (username.isBlank() || username.equals("Guest", ignoreCase = true)) {
             return
@@ -23,18 +23,18 @@ object HighScoreManager {
         val prefs = appContext.getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
         val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
 
-        // Network state
+        // Network state (Android Developers, 2025)
         val cm = appContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val isOnline = cm.activeNetworkInfo?.isConnected == true
 
-        // Offline → save pending
+        // Offline → save pending (Android Developers, 2025; ChatGPT-4, 2025)
         if (!isOnline) {
             prefs.edit().putInt("pending_highscore", score).apply()
             Toast.makeText(appContext, "No internet. High score saved locally.", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // Online → merge pending
+        // Online → merge pending with current (Android Developers, 2025)
         val pending = prefs.getInt("pending_highscore", 0)
         val currentScore = maxOf(score, pending)
 
@@ -63,9 +63,11 @@ object HighScoreManager {
     fun registerNetworkCallback(context: Context) {
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
+        // Network callback (Android Developers, 2025; ChatGPT-4, 2025)
         val callback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
 
+                // High score sync (Android Developers, 2025; Firebase, 2025)
                 val auth = FirebaseAuth.getInstance()
                 val username = auth.currentUser?.displayName ?: "Guest"
 
