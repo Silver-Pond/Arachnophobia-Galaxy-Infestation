@@ -34,7 +34,7 @@
             android:layout_gravity="center"
             android:fontFamily="@font/black_ops_one"
             android:paddingBottom="8dp"
-            android:text="TROPHIES"
+            android:text="@string/btntrophies"
             android:textColor="@color/primaryText"
             android:textSize="20sp"
             android:textStyle="bold" />

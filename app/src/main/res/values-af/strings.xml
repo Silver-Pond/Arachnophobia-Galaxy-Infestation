@@ -28,6 +28,8 @@
     <string name="emailinput">VOER E-POS IN</string>
     <string name="passwordinput">VOER WAGWOORD IN</string>
 
+    <string name="btnarcademode">ARCADE MODUS</string>
+    <string name="btnsurvivalmode">SURVIVAL MODUS</string>
     <string name="btnarcadehighscore">ARCADE HOOGTELLINGE</string>
     <string name="btnsurvivalhighscore">SURVIVAL HOOGTELLINGE</string>
     <string name="btnprofilechange">VERANDER PROFIEL</string>

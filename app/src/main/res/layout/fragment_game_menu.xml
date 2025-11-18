@@ -80,7 +80,7 @@
             android:background="@drawable/ripple_effect"
             android:backgroundTint="@color/buttonBackground"
             android:fontFamily="@font/black_ops_one"
-            android:text="ARCADE MODE"
+            android:text="@string/btnarcademode"
             android:textColor="@color/buttonText" />
 
         <Button
@@ -92,7 +92,7 @@
             android:background="@drawable/ripple_effect"
             android:backgroundTint="@color/buttonBackground"
             android:fontFamily="@font/black_ops_one"
-            android:text="SURVIVAL MODE"
+            android:text="@string/btnsurvivalmode"
             android:textColor="@color/buttonText" />
 
         <Button

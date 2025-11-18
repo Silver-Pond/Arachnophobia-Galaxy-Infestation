@@ -30,6 +30,8 @@
     <string name="emailinput">FAKA I-IMEYILI</string>
     <string name="passwordinput">FAKA IPHASIWEDI</string>
 
+    <string name="btnarcademode">INDLELA YE-ARCADE</string>
+    <string name="btnsurvivalmode">INDLELA YOKUSINDA</string>
     <string name="btnarcadehighscore">ARCADE AMAPHUZU APHEZULU</string>
     <string name="btnsurvivalhighscore">SURVIVAL AMAPHUZU APHEZULU</string>
     <string name="btnprofilechange">SHINTSHA UMLANDO</string>

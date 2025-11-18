@@ -29,6 +29,8 @@
     <string name="emailinput">ENTER EMAIL</string>
     <string name="passwordinput">ENTER PASSWORD</string>
 
+    <string name="btnarcademode">ARCADE MODE</string>
+    <string name="btnsurvivalmode">SURVIVAL MODE</string>
     <string name="btnarcadehighscore">ARCADE HIGHSCORES</string>
     <string name="btnsurvivalhighscore">SURVIVAL HIGHSCORES</string>
     <string name="btnprofilechange">CHANGE PROFILE</string>
