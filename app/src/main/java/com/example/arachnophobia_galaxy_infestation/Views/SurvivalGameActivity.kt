@@ -137,6 +137,7 @@ class SurvivalGameActivity : AppCompatActivity() {
         }
     }
 
+    // Helper method to start moving (Android Developers, 2025; Firebsae, 2025)
     private fun startMoving(action: () -> Unit) {
         moveRunnable = object : Runnable {
             override fun run() {
@@ -147,6 +148,7 @@ class SurvivalGameActivity : AppCompatActivity() {
         handler.post(moveRunnable!!)
     }
 
+    // Helper method to stop moving (Android Developers, 2025; Firebsae, 2025)
     private fun stopMoving() {
         moveRunnable?.let { handler.removeCallbacks(it) }
         moveRunnable = null

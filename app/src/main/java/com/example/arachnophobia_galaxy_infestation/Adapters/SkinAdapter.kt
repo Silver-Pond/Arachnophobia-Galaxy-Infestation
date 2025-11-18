@@ -116,4 +116,8 @@ class SkinAdapter(
 * Android Developers, 2025. Button. [online]. Available at:
 * https://developer.android.com/reference/android/widget/Button
 * [Accessed: 7 October 2025].
+*
+* ChatGPT-4, 2025. OpenAI. [online]. Available at:
+* https://chatgpt.com/?model=auto
+* [Accessed: 10 November 2025].
 */

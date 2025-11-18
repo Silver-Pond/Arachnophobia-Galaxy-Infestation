@@ -46,7 +46,7 @@ class SignUpFragment : Fragment() {
         val soundPool = SoundPool.Builder().setMaxStreams(5).build()
         SoundEffectsManager.soundPool = soundPool
 
-        // Initialize or reinitialize the SoundPool if needed
+        // Initialize or reinitialize the SoundPool if needed (Android Developers, 2025)
         if (SoundEffectsManager.soundPool == null) {
             SoundEffectsManager.soundPool = SoundPool.Builder().setMaxStreams(5).build()
 

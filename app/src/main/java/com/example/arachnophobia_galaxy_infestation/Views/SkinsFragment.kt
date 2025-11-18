@@ -41,7 +41,7 @@ class SkinsFragment : Fragment() {
         val soundPool = SoundPool.Builder().setMaxStreams(5).build()
         SoundEffectsManager.soundPool = soundPool
 
-        // Initialize or reinitialize the SoundPool if needed
+        // Initialize or reinitialize the SoundPool if needed (Android Developers, 2025)
         if (SoundEffectsManager.soundPool == null) {
             SoundEffectsManager.soundPool = SoundPool.Builder().setMaxStreams(5).build()
 
@@ -214,7 +214,7 @@ class SkinsFragment : Fragment() {
                         equippedSkin = skin.name      // <-- AUTO EQUIP
                     )
 
-                    // Save equipped skin in SharedPreferences immediately
+                    // Save equipped skin in SharedPreferences immediately (Android Developers, 2025; Firebsae, 2025)
                     val prefs = requireContext().getSharedPreferences("GamePrefs", MODE_PRIVATE)
                     prefs.edit()
                         .putString("equippedSkin", skin.name)

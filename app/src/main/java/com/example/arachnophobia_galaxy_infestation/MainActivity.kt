@@ -79,7 +79,7 @@ class MainActivity : AppCompatActivity(), NetworkMonitor.NetworkListener {
         super.onResume()
         networkMonitor.register()
 
-        // Reload saved volumes
+        // Reload saved volumes (Android Developers, 2025; Firebsae, 2025)
         val prefs = getSharedPreferences("AppSettings", MODE_PRIVATE)
         val savedMusicVolume = prefs.getFloat("music_volume", 0.5f)
         MusicPlayerManager.updateVolume(savedMusicVolume)

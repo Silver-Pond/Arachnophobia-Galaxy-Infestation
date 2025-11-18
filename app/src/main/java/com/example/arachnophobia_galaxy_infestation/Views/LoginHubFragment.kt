@@ -132,11 +132,11 @@ class LoginHubFragment : Fragment() {
             try {
                 val account = task.getResult(ApiException::class.java)!!
 
-                // Retrieve the user’s biometric preference from Settings
+                // Retrieve the user’s biometric preference from Settings (Android Developers, 2025; Firebsae, 2025)
                 val prefs = requireContext().getSharedPreferences("AppSettings", MODE_PRIVATE)
                 val useBiometrics = prefs.getBoolean("use_biometrics", false)
 
-                // Pass the flag into your biometric-enabled login function
+                // Pass the flag into your biometric-enabled login function (Android Developers, 2025; Firebsae, 2025)
                 firebaseAuthWithGoogle(account, useBiometrics)
 
             } catch (e: ApiException) {
@@ -237,7 +237,7 @@ class LoginHubFragment : Fragment() {
                     biometricPrompt.authenticate(promptInfo)
                 }
                 else -> {
-                    // Fallback: device doesn't support biometrics or none are enrolled
+                    // Fallback: device doesn't support biometrics or none are enrolled (Android Developers, 2025; ChatGPT-4, 2025)
                     Toast.makeText(requireContext(), "Biometric login not available. Logging in with Google.", Toast.LENGTH_SHORT).show()
                     proceedWithFirebaseAuth()
                 }
@@ -296,4 +296,8 @@ class LoginHubFragment : Fragment() {
 * Firebase, 2025. FirebaseDatabase. [online]. Available at:
 * https://firebase.google.com/docs/reference/android/com/google/firebase/database/FirebaseDatabase
 * [Accessed: 7 October 2025].
+*
+* ChatGPT-4, 2025. OpenAI. [online]. Available at:
+* https://chatgpt.com/?model=auto
+* [Accessed: 10 November 2025].
 */

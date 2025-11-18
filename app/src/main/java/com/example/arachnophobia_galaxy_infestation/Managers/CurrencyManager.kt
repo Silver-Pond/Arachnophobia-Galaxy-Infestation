@@ -32,7 +32,7 @@ object CurrencyManager {
         val netInfo = cm.activeNetworkInfo
         val isOnline = netInfo != null && netInfo.isConnected
 
-        // --- Offline → store pending silk ---
+        // --- Offline → store pending silk --- (Android Developers, 2025; ChatGPT-4, 2025)
         if (!isOnline) {
             val pending = prefs.getFloat("pending_silk", 0f)
             prefs.edit().putFloat("pending_silk", (pending + gainedSilk).toFloat()).apply()
@@ -43,7 +43,7 @@ object CurrencyManager {
             return
         }
 
-        // --- Online → sync pending + current silk ---
+        // --- Online → sync pending + current silk --- (Android Developers, 2025; ChatGPT-4, 2025)
         val pendingSilk = prefs.getFloat("pending_silk", 0f).toDouble()
         val silkToAdd = pendingSilk + gainedSilk
 

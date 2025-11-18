@@ -33,14 +33,13 @@ class ProfileFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_profile, container, false)
     }
 
-    // Use this method to safely access views
+    // Use this method to safely access views (Android Developers, 2025; Firebsae, 2025)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         // Initialize views
         val username = arguments?.getString("username") ?: "Guest"
         val profileusernameview = view.findViewById<TextView>(R.id.profileusernameview)
-        // val btnprofilechange = view.findViewById<Button>(R.id.btnprofilechange)
         val btnskin = view.findViewById<Button>(R.id.btnskin)
         val btnback = view.findViewById<Button>(R.id.btnback)
         val btnlogout = view.findViewById<Button>(R.id.btnlogout)
@@ -75,9 +74,6 @@ class ProfileFragment : Fragment() {
         }
         // Load spider silk (Android Developers, 2025; Firebsae, 2025)
         loadSpiderSilk()
-
-        // Set up click listeners
-        // btnprofilechange.setOnClickListener {}
 
         btnskin.setOnClickListener {
             // Play button click sound

@@ -119,6 +119,7 @@ class GameActivity : AppCompatActivity() {
         }
     }
 
+    // Helper method to start moving (Android Developers, 2025; Firebsae, 2025)
     private fun startMoving(action: () -> Unit) {
         moveRunnable = object : Runnable {
             override fun run() {
@@ -129,6 +130,7 @@ class GameActivity : AppCompatActivity() {
         handler.post(moveRunnable!!)
     }
 
+    // Helper method to stop moving (Android Developers, 2025; Firebsae, 2025)
     private fun stopMoving() {
         moveRunnable?.let { handler.removeCallbacks(it) }
         moveRunnable = null

@@ -109,7 +109,7 @@ class GameFragment : Fragment() {
         // Get username from arguments
         val username = arguments?.getString("username") ?: "Guest"
 
-        // Sync player data if user is not Guest
+        // Sync player data if user is not Guest (Android Developers, 2025; Firebsae, 2025)
         if (!username.equals("Guest", ignoreCase = true) && username.isNotBlank()) {
             MainActivity.PlayerDataSync.syncPlayerData(requireContext()) {
                 // Apply skin once here
@@ -148,7 +148,7 @@ class GameFragment : Fragment() {
         // Load game over sound
         gameOverSoundId = soundPool.load(requireContext(), R.raw.game_over, 1)
 
-        // Restore effects volume from prefs
+        // Restore effects volume from prefs (Android Developers, 2025)
         val prefs = requireActivity().getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
         val savedEffectsVolume = prefs.getFloat("effects_volume", 1.0f)
         SoundEffectsManager.updateVolume(savedEffectsVolume)
@@ -283,7 +283,7 @@ class GameFragment : Fragment() {
             for (col in 0 until 5) {
                 val enemyView = ImageView(ctx)
 
-                // --- Special phases ---
+                // --- Special phases --- (Android Developers, 2025; Firebsae, 2025)
                 val isSpecialBluePhase = currentLevel in 21..25
                 val isSpecialMaroonPhase = currentLevel in 26..30
 
@@ -342,7 +342,7 @@ class GameFragment : Fragment() {
                 set.add(enemy)
                 enemies.add(enemy)
 
-                // --- Special ZigZagger Effects ---
+                // --- Special ZigZagger Effects --- (Android Developers, 2025; Firebsae, 2025)
                 if (isZigZagger) {
                     // Looping sound effect
                     if (zigzagMoveSoundId != 0) SoundEffectsManager.playSound(zigzagMoveSoundId)
@@ -357,7 +357,7 @@ class GameFragment : Fragment() {
             enemySets.add(set)
         }
 
-        // --- Speed Scaling ---
+        // --- Speed Scaling --- (Android Developers, 2025; Firebsae, 2025)
         val offset = (currentLevel % 5)
 
         if (currentLevel in 21..25) {
@@ -382,7 +382,7 @@ class GameFragment : Fragment() {
     }
 
     private fun updateGame() {
-        // Player bullets
+        // Player bullets movement (Android Developers, 2025; Firebsae, 2025)
         val bulletIterator = bullets.iterator()
         while (bulletIterator.hasNext()) {
             val bullet = bulletIterator.next()
@@ -496,7 +496,7 @@ class GameFragment : Fragment() {
             }
         }
 
-        // Enemy bullets movement
+        // Enemy bullets movement (Android Developers, 2025; Firebsae, 2025)
         val enemyBulletIterator = enemyBullets.iterator()
         while (enemyBulletIterator.hasNext()) {
             val eBullet = enemyBulletIterator.next()
@@ -508,7 +508,7 @@ class GameFragment : Fragment() {
                 continue
             }
 
-            // Bullet collides with player
+            // Bullet collides with player (Android Developers, 2025; Firebsae, 2025)
             if (playerHitBy(eBullet)) {
                 gameArea.removeView(eBullet)
                 enemyBulletIterator.remove()
@@ -517,7 +517,7 @@ class GameFragment : Fragment() {
             }
         }
 
-        // Level progression
+        // Level progression (Android Developers, 2025; Firebsae, 2025)
         if (!isGameFinished && enemies.none { it.isAlive }) {
             if (currentSetIndex < setsPerLevel - 1) {
                 currentSetIndex++
@@ -552,7 +552,7 @@ class GameFragment : Fragment() {
         enemyBullets.add(bullet)
     }
 
-
+    // Player hit logic (Android Developers, 2025; ChatGPT-4, 2025)
     private fun playerHitBy(view: ImageView): Boolean {
         if (isPaused || takingHit) return false
 
@@ -708,7 +708,7 @@ class GameFragment : Fragment() {
 
         val trophiesToAward = mutableListOf<Trophy>()
 
-        // Level-based trophies
+        // Level-based trophies (Android Developers, 2025; ChatGPT-4, 2025)
         when (currentLevel) {
             1 -> trophiesToAward.add(Trophy("trophy01", "Hero lvl 1", "Completed Level 1!", "lvl_trophy"))
             4 -> trophiesToAward.add(Trophy("trophy02", "Hero lvl 4", "Completed Level 4!", "lvl_trophy"))
@@ -717,7 +717,7 @@ class GameFragment : Fragment() {
             19 -> trophiesToAward.add(Trophy("trophy05", "Hero lvl 19", "Completed Level 19!", "lvl_trophy"))
         }
 
-        // Score-based trophies
+        // Score-based trophies (Android Developers, 2025; ChatGPT-4, 2025)
         if (score >= 1000) trophiesToAward.add(Trophy("trophy06", "New User", "Obtained A Score of 1000!", "score_trophy"))
         if (score >= 2500) trophiesToAward.add(Trophy("trophy07", "Space Cadet", "Obtained A Score of 2500!", "score_trophy"))
         if (score >= 5000) trophiesToAward.add(Trophy("trophy08", "Space Lieutenant", "Obtained A Score of 5000!", "score_trophy"))
@@ -752,7 +752,7 @@ class GameFragment : Fragment() {
 
                     val snackbarView = snackbar.view
 
-                    // Change layout params to show at the top center
+                    // Change layout params to show at the top center (Android Developers, 2025; ChatGPT-4, 2025)
                     val params = snackbarView.layoutParams as FrameLayout.LayoutParams
                     params.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
                     params.topMargin = 100
@@ -870,4 +870,8 @@ class GameFragment : Fragment() {
 * Firebase, 2025. FirebaseDatabase. [online]. Available at:
 * https://firebase.google.com/docs/reference/android/com/google/firebase/database/FirebaseDatabase
 * [Accessed: 7 October 2025].
+*
+* ChatGPT-4, 2025. OpenAI. [online]. Available at:
+* https://chatgpt.com/?model=auto
+* [Accessed: 10 November 2025].
 */

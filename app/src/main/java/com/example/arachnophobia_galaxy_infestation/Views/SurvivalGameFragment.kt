@@ -275,7 +275,7 @@ class SurvivalGameFragment : Fragment() {
         // Get username from arguments
         val username = arguments?.getString("username") ?: "Guest"
 
-        // Sync player data if user is not Guest
+        // Sync player data if user is not Guest (Android Developers, 2025; Firebsae, 2025)
         if (!username.equals("Guest", ignoreCase = true) && username.isNotBlank()) {
             MainActivity.PlayerDataSync.syncPlayerData(requireContext()) {
                 // Apply skin once here
@@ -318,7 +318,7 @@ class SurvivalGameFragment : Fragment() {
         enemies.forEach { gameArea.removeView(it.view) }
         enemies.clear()
 
-        // Release all sound resources to avoid memory leaks
+        // Release all sound resources to avoid memory leaks (Android Developers, 2025; Firebsae, 2025)
         SoundEffectsManager.soundPool?.release()
         SoundEffectsManager.soundPool = null
     }
@@ -532,6 +532,7 @@ class SurvivalGameFragment : Fragment() {
         }
     }
 
+    // ================= Enemy Shooting =================
     private fun shootEnemyProjectile(enemy: SurvivalEnemy) {
         val ctx = context ?: return
 
@@ -553,7 +554,7 @@ class SurvivalGameFragment : Fragment() {
 
         val shootRunnable = object : Runnable {
             override fun run() {
-                // Only shoot if game is active AND player is alive AND enemy still exists
+                // Only shoot if game is active AND player is alive AND enemy still exists (Android Developers, 2025; Firebsae, 2025)
                 if (!isPaused && !isPlayerDead && enemies.contains(enemy)) {
                     shootEnemyProjectile(enemy)
 
@@ -964,7 +965,7 @@ class SurvivalGameFragment : Fragment() {
 
         val trophiesToAward = mutableListOf<Trophy>()
 
-        // Level-based trophies for Survival Mode
+        // Level-based trophies for Survival Mode (Android Developers, 2025; ChatGPT-4, 2025)
         when (currentLevel) {
             1 -> trophiesToAward.add(Trophy("trophy12", "Survivor lvl 1", "Completed Level 1 of Survival Mode!", "lvl_trophy"))
             4 -> trophiesToAward.add(Trophy("trophy13", "Survivor lvl 4", "Completed Level 4 of Survival Mode!", "lvl_trophy"))

@@ -20,7 +20,7 @@ object HighScoreManager {
 
         val prefs = appContext.getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
 
-        // --- Username validation ---
+        // --- Username validation --- (Android Developers, 2025; Firebase, 2025)
         val username = prefs.getString("username", "Guest") ?: "Guest"
         if (username.isBlank() || username.equals("Guest", ignoreCase = true)) {
             // Reject saving highscore entirely
@@ -33,14 +33,14 @@ object HighScoreManager {
         val networkInfo = connectivityManager.activeNetworkInfo
         val isOnline = networkInfo != null && networkInfo.isConnected
 
-        // --- Offline case: save pending highscore locally ---
+        // --- Offline case: save pending highscore locally --- (Android Developers, 2025; ChatGPT-4, 2025)
         if (!isOnline) {
             prefs.edit().putInt("pending_highscore", score).apply()
             Toast.makeText(appContext, "No internet. High score saved locally.", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // --- Online case: check pending and upload ---
+        // --- Online case: check pending and upload --- (Android Developers, 2025; ChatGPT-4, 2025)
         val pendingHighScore = prefs.getInt("pending_highscore", 0)
         val currentScore = maxOf(score, pendingHighScore)
 
@@ -78,7 +78,7 @@ object HighScoreManager {
 
                 val prefs = context.getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
 
-                // --- Username validation ---
+                // --- Username validation --- (Android Developers, 2025; Firebase, 2025)
                 val username = prefs.getString("username", "Guest") ?: "Guest"
                 if (username.isBlank() || username.equals("Guest", ignoreCase = true)) {
                     // Do not sync highscores for guest accounts

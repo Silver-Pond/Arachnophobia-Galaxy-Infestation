@@ -91,11 +91,11 @@ class LoginFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            // Load biometric preference from Settings
-            val prefs = requireContext().getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
+            // Load biometric preference from Settings (Android Developers, 2025; ChatGPT-4, 2025)
+            val prefs = requireContext().getSharedPreferences("AppSettings", MODE_PRIVATE)
             val useBiometrics = prefs.getBoolean("use_biometrics", false)
 
-            // Function that performs the Firebase login after biometrics succeed
+            // Function that performs the Firebase login after biometrics succeed (Android Developers, 2025; Firebsae, 2025)
             val performEmailPasswordLogin = {
                 val auth = FirebaseAuth.getInstance()
                 auth.signInWithEmailAndPassword(email, password)
@@ -112,9 +112,9 @@ class LoginFragment : Fragment() {
                                         if (snapshot.exists()) {
                                             val username = snapshot.child("username").getValue(String::class.java) ?: "Player"
 
-                                            // Save login details for biometric login
+                                            // Save login details for biometric login (Android Developers, 2025; ChatGPT-4, 2025)
                                             val sharedPref = requireActivity()
-                                                .getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+                                                .getSharedPreferences("UserPrefs", MODE_PRIVATE)
                                             with(sharedPref.edit()) {
                                                 putString("email", email)
                                                 putString("password", password)
@@ -124,7 +124,7 @@ class LoginFragment : Fragment() {
 
                                             Toast.makeText(requireContext(), "Welcome $username", Toast.LENGTH_SHORT).show()
 
-                                            // Navigate to GameMenuFragment
+                                            // Navigate to GameMenuFragment (Android Developers, 2025; Firebsae, 2025)
                                             val gameMenuFragment = GameMenuFragment().apply {
                                                 arguments = Bundle().apply {
                                                     putString("username", username)
@@ -148,7 +148,7 @@ class LoginFragment : Fragment() {
                     }
             }
 
-            // If biometrics enabled → prompt
+            // If biometrics enabled → prompt (Android Developers, 2025; ChatGPT-4, 2025)
             if (useBiometrics) {
                 val biometricManager = BiometricManager.from(requireContext())
 
@@ -183,13 +183,13 @@ class LoginFragment : Fragment() {
                     }
 
                     else -> {
-                        // Fallback: device doesn't support biometrics or none enrolled
+                        // Fallback: device doesn't support biometrics or none enrolled (Android Developers, 2025; ChatGPT-4, 2025)
                         Toast.makeText(requireContext(), "Biometric login not available. Logging in normally.", Toast.LENGTH_SHORT).show()
                         performEmailPasswordLogin()
                     }
                 }
             } else {
-                // No biometrics required
+                // No biometrics required (Android Developers, 2025; Firebsae, 2025)
                 performEmailPasswordLogin()
             }
         }
@@ -252,4 +252,8 @@ class LoginFragment : Fragment() {
 * Firebase, 2025. FirebaseDatabase. [online]. Available at:
 * https://firebase.google.com/docs/reference/android/com/google/firebase/database/FirebaseDatabase
 * [Accessed: 7 October 2025].
+*
+* ChatGPT-4, 2025. OpenAI. [online]. Available at:
+* https://chatgpt.com/?model=auto
+* [Accessed: 10 November 2025].
 */

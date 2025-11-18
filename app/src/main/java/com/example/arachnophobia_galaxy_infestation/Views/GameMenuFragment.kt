@@ -51,7 +51,7 @@ class GameMenuFragment : Fragment() {
         val soundPool = SoundPool.Builder().setMaxStreams(5).build()
         SoundEffectsManager.soundPool = soundPool
 
-        // Initialize or reinitialize the SoundPool if needed
+        // Initialize or reinitialize the SoundPool if needed (Android Developers, 2025)
         if (SoundEffectsManager.soundPool == null) {
             SoundEffectsManager.soundPool = SoundPool.Builder().setMaxStreams(5).build()
 
@@ -118,7 +118,7 @@ class GameMenuFragment : Fragment() {
             // Disable button temporarily to prevent multiple clicks
             btnsurvivalmode.isEnabled = false
 
-            // Try to connect to API first
+            // Try to connect to API first (Android Developers, 2025; ChatGPT-4, 2025)
             ApiClient.instance.getLevel(1).enqueue(object : Callback<Level> {
                 override fun onResponse(call: Call<Level>, response: Response<Level>) {
                     btnsurvivalmode.isEnabled = true
