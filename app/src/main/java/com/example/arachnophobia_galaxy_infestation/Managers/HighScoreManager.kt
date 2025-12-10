@@ -3,75 +3,90 @@ package com.example.arachnophobia_galaxy_infestation
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
-import android.net.NetworkRequest
+import android.net.NetworkCapabilities
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
 object HighScoreManager {
 
+    private var isSyncing = false     // prevents double-sync
+    private var networkCallbackRegistered = false
+
     fun saveHighScore(appContext: Context, score: Int) {
         val auth = FirebaseAuth.getInstance()
         val uid = auth.currentUser?.uid ?: return
 
-        // Correct username source (fixes your issue) (Android Developers, 2025; ChatGPT-4, 2025)
         val username = auth.currentUser?.displayName ?: "Guest"
-        if (username.isBlank() || username.equals("Guest", ignoreCase = true)) {
-            return
-        }
+        if (username.isBlank() || username.equals("Guest", ignoreCase = true)) return
 
         val prefs = appContext.getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
         val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
 
-        // Network state (Android Developers, 2025)
+        // Fast modern online check (Android Developers, 2025; Firebase, 2025)
         val cm = appContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val isOnline = cm.activeNetworkInfo?.isConnected == true
+        val capabilities = cm.getNetworkCapabilities(cm.activeNetwork)
+        val isOnline = capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
 
-        // Offline → save pending (Android Developers, 2025; ChatGPT-4, 2025)
         if (!isOnline) {
             prefs.edit().putInt("pending_highscore", score).apply()
             Toast.makeText(appContext, "No internet. High score saved locally.", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // Online → merge pending with current (Android Developers, 2025)
         val pending = prefs.getInt("pending_highscore", 0)
-        val currentScore = maxOf(score, pending)
+        val finalScore = maxOf(score, pending)
 
-        dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val existing = snapshot.child("highscore").getValue(Int::class.java) ?: 0
+        // Faster: Firebase transaction, no separate read (Android Developers, 2025; Firebase, 2025)
+        dbRef.child("highscore").runTransaction(object : Transaction.Handler {
 
-                if (currentScore > existing) {
-                    dbRef.child("highscore").setValue(currentScore)
-                        .addOnSuccessListener {
-                            prefs.edit().remove("pending_highscore").apply()
-                            Toast.makeText(appContext, "New high score saved online!", Toast.LENGTH_SHORT).show()
-                        }
-                        .addOnFailureListener {
-                            Toast.makeText(appContext, "Failed to update high score", Toast.LENGTH_SHORT).show()
-                        }
+            private var scoreWasUpdated = false   // track if an update happened
+
+            override fun doTransaction(currentData: MutableData): Transaction.Result {
+                val existing = currentData.getValue(Int::class.java) ?: 0
+
+                if (finalScore > existing) {
+                    currentData.value = finalScore
+                    scoreWasUpdated = true    // mark that a higher score was written
                 }
+
+                return Transaction.success(currentData)
             }
 
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(appContext, "Database error: ${error.message}", Toast.LENGTH_SHORT).show()
+            override fun onComplete(
+                error: DatabaseError?,
+                committed: Boolean,
+                snapshot: DataSnapshot?
+            ) {
+                if (error == null && committed && scoreWasUpdated) {
+                    prefs.edit().remove("pending_highscore").apply()
+
+                    Toast.makeText(
+                        appContext,
+                        "New high score saved online!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         })
     }
 
     fun registerNetworkCallback(context: Context) {
+        if (networkCallbackRegistered) return
+        networkCallbackRegistered = true
+
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
-        // Network callback (Android Developers, 2025; ChatGPT-4, 2025)
+        // Callback for when internet is available (Android Developers, 2025; Firebase, 2025)
         val callback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
+                if (isSyncing) return
+                isSyncing = true
 
-                // High score sync (Android Developers, 2025; Firebase, 2025)
                 val auth = FirebaseAuth.getInstance()
                 val username = auth.currentUser?.displayName ?: "Guest"
-
                 if (username.isBlank() || username.equals("Guest", ignoreCase = true)) {
+                    isSyncing = false
                     return
                 }
 
@@ -81,10 +96,13 @@ object HighScoreManager {
                 if (pending > 0) {
                     saveHighScore(context, pending)
                 }
+
+                isSyncing = false
             }
         }
 
-        cm.registerNetworkCallback(NetworkRequest.Builder().build(), callback)
+        // Instant network detection
+        cm.registerDefaultNetworkCallback(callback)
     }
 }
 /*
