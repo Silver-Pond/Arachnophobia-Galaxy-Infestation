@@ -80,8 +80,10 @@ class LoginFragment : Fragment() {
         }
 
         btnlogin.setOnClickListener {
-            // Play button click sound
-            if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
+
+            if (clickbuttonSoundId != 0) {
+                SoundEffectsManager.playSound(clickbuttonSoundId)
+            }
 
             val email = emailInput.text.toString().trim()
             val password = passwordInput.text.toString().trim()
@@ -91,110 +93,77 @@ class LoginFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            // Load biometric preference from Settings (Android Developers, 2025; ChatGPT-4, 2025)
             val prefs = requireContext().getSharedPreferences("AppSettings", MODE_PRIVATE)
             val useBiometrics = prefs.getBoolean("use_biometrics", false)
 
-            // Function that performs the Firebase login after biometrics succeed (Android Developers, 2025; Firebsae, 2025)
+            // DEFINE LOGIN FUNCTION
             val performEmailPasswordLogin = {
+
                 val auth = FirebaseAuth.getInstance()
+
                 auth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            val firebaseUser = auth.currentUser
-                            val uid = firebaseUser?.uid
 
-                            if (uid != null) {
-                                val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
+                        if (!task.isSuccessful) {
+                            Toast.makeText(
+                                requireContext(),
+                                "Login failed: ${task.exception?.message}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@addOnCompleteListener
+                        }
 
-                                dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                                    override fun onDataChange(snapshot: DataSnapshot) {
-                                        if (snapshot.exists()) {
-                                            val username = snapshot.child("username").getValue(String::class.java) ?: "Player"
+                        val firebaseUser = auth.currentUser ?: return@addOnCompleteListener
+                        val uid = firebaseUser.uid
 
-                                            // Save login details for biometric login (Android Developers, 2025; ChatGPT-4, 2025)
-                                            val sharedPref = requireActivity()
-                                                .getSharedPreferences("UserPrefs", MODE_PRIVATE)
-                                            with(sharedPref.edit()) {
-                                                putString("email", email)
-                                                putString("password", password)
-                                                putString("username", username)
-                                                apply()
-                                            }
+                        val dbRef = FirebaseDatabase.getInstance()
+                            .reference
+                            .child("players")
+                            .child(uid)
 
-                                            Toast.makeText(requireContext(), "Welcome $username", Toast.LENGTH_SHORT).show()
+                        dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
 
-                                            // Navigate to GameMenuFragment (Android Developers, 2025; Firebsae, 2025)
-                                            val gameMenuFragment = GameMenuFragment().apply {
-                                                arguments = Bundle().apply {
-                                                    putString("username", username)
-                                                }
-                                            }
-                                            replaceFragment(gameMenuFragment)
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                if (!snapshot.exists()) {
+                                    Toast.makeText(requireContext(), "User data not found", Toast.LENGTH_SHORT).show()
+                                    return
+                                }
 
-                                        } else {
-                                            Toast.makeText(requireContext(), "User data not found", Toast.LENGTH_SHORT).show()
+                                val username =
+                                    snapshot.child("username").getValue(String::class.java) ?: "Player"
+
+                                Toast.makeText(requireContext(), "Welcome $username", Toast.LENGTH_SHORT).show()
+
+                                replaceFragment(
+                                    GameMenuFragment().apply {
+                                        arguments = Bundle().apply {
+                                            putString("username", username)
                                         }
                                     }
-
-                                    override fun onCancelled(error: DatabaseError) {
-                                        Toast.makeText(requireContext(), "Database error: ${error.message}", Toast.LENGTH_SHORT).show()
-                                    }
-                                })
+                                )
                             }
-                        } else {
-                            Toast.makeText(requireContext(), "Login failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
-                        }
+
+                            override fun onCancelled(error: DatabaseError) {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Database error: ${error.message}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        })
                     }
             }
 
-            // If biometrics enabled → prompt (Android Developers, 2025; ChatGPT-4, 2025)
+            // CALL LOGIN FUNCTION
             if (useBiometrics) {
-                val biometricManager = BiometricManager.from(requireContext())
-
-                when (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG)) {
-                    BiometricManager.BIOMETRIC_SUCCESS -> {
-                        val executor = ContextCompat.getMainExecutor(requireContext())
-                        val biometricPrompt = BiometricPrompt(this, executor,
-                            object : BiometricPrompt.AuthenticationCallback() {
-                                override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                                    super.onAuthenticationError(errorCode, errString)
-                                    Toast.makeText(requireContext(), "Biometric error: $errString", Toast.LENGTH_SHORT).show()
-                                }
-
-                                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                                    super.onAuthenticationSucceeded(result)
-                                    performEmailPasswordLogin()
-                                }
-
-                                override fun onAuthenticationFailed() {
-                                    super.onAuthenticationFailed()
-                                    Toast.makeText(requireContext(), "Biometric authentication failed", Toast.LENGTH_SHORT).show()
-                                }
-                            })
-
-                        val promptInfo = BiometricPrompt.PromptInfo.Builder()
-                            .setTitle("Biometric Login")
-                            .setSubtitle("Scan your fingerprint to continue")
-                            .setNegativeButtonText("Cancel")
-                            .build()
-
-                        biometricPrompt.authenticate(promptInfo)
-                    }
-
-                    else -> {
-                        // Fallback: device doesn't support biometrics or none enrolled (Android Developers, 2025; ChatGPT-4, 2025)
-                        Toast.makeText(requireContext(), "Biometric login not available. Logging in normally.", Toast.LENGTH_SHORT).show()
-                        performEmailPasswordLogin()
-                    }
-                }
+                performEmailPasswordLogin()
             } else {
-                // No biometrics required (Android Developers, 2025; Firebsae, 2025)
                 performEmailPasswordLogin()
             }
         }
 
-        btnback.setOnClickListener{
+
+            btnback.setOnClickListener{
             // Play button click sound
             if (clickbuttonSoundId != 0) SoundEffectsManager.playSound(clickbuttonSoundId)
 

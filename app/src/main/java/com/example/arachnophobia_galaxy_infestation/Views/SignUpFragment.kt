@@ -98,18 +98,18 @@ class SignUpFragment : Fragment() {
                 Toast.makeText(requireContext(), "Password Invalid", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            // Firebase Authentication (Android Developers, 2025; Firebsae, 2025)
+            // Firebase Authentication
             val auth = FirebaseAuth.getInstance()
             val dbRef = FirebaseDatabase.getInstance().getReference("players")
 
-            // First, check if the username already exists in the database (Android Developers, 2025; Firebsae, 2025)
+            // First, check if the username already exists (optional; can be enforced via Cloud Function)
             dbRef.orderByChild("username").equalTo(username)
                 .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         if (snapshot.exists()) {
                             Toast.makeText(requireContext(), "Username already in use", Toast.LENGTH_SHORT).show()
                         } else {
-                            // Create user with email and password using Firebase Auth
+                            // Create user with email and password
                             auth.createUserWithEmailAndPassword(email, password)
                                 .addOnCompleteListener { task ->
                                     if (task.isSuccessful) {
@@ -117,21 +117,20 @@ class SignUpFragment : Fragment() {
                                         val uid = firebaseUser?.uid
 
                                         if (uid != null) {
-                                            // Build Player object
+                                            // Build Player object (without storing password)
                                             val player = Player(
                                                 id = uid,
                                                 username = username,
                                                 email = email,
-                                                password = password,
                                                 highscore = 0,
                                                 survivalhighscore = 0,
                                                 spider_silk = 0.00,
                                                 trophies = emptyList(),
-                                                ownedSkins = listOf("Moth", "Mario", "Invader"), // initial owned skins
-                                                equippedSkin = "Moth" // default equipped skin
+                                                ownedSkins = listOf("Moth", "Mario", "Invader"),
+                                                equippedSkin = "Moth"
                                             )
 
-                                            // Save Player in Realtime Database
+                                            // Save Player under /users/{uid}
                                             dbRef.child(uid).setValue(player)
                                                 .addOnSuccessListener {
                                                     Toast.makeText(requireContext(), "User created successfully", Toast.LENGTH_SHORT).show()
@@ -142,7 +141,6 @@ class SignUpFragment : Fragment() {
                                                 }
                                         }
                                     } else {
-                                        // Handle errors from Firebase Auth
                                         Toast.makeText(requireContext(), "Auth failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                                     }
                                 }
@@ -155,6 +153,7 @@ class SignUpFragment : Fragment() {
                 })
         }
     }
+
     // Username validation (Android Developers, 2025; Firebsae, 2025)
     private fun usernameValidation(username: String): Boolean{
         return username.matches(".*[A-Z].*".toRegex())

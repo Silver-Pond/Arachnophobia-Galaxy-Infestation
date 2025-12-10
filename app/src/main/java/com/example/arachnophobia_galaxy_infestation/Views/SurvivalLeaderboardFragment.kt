@@ -9,8 +9,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
+import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -93,34 +95,32 @@ class SurvivalLeaderboardFragment : Fragment() {
 
     // Load leaderboard data from Firebase (Android Developers, 2025; Firebsae, 2025)
     private fun loadLeaderboard() {
-        val dbRef = FirebaseDatabase.getInstance().getReference("players")
+        // Reference the public data node, which everyone logged in can read
+        val dbRef = FirebaseDatabase.getInstance().getReference("public_data/leaderboard")
 
         dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 players.clear()
 
-                for (playerSnap in snapshot.children) {
+                snapshot.children.forEach { playerSnap ->
                     val username = playerSnap.child("username").getValue(String::class.java) ?: "Guest"
                     val survivalHighscore = playerSnap.child("survivalHighscore").getValue(Int::class.java) ?: 0
-
                     players.add(HighScore(username, survivalHighscore))
                 }
 
-                // Sort by survival score descending (Android Developers, 2025; Firebsae, 2025)
+                // Sort by score descending
                 players.sortByDescending { it.score }
 
                 adapter = LeaderboardAdapter(players, loggedInUser)
                 recyclerView.adapter = adapter
 
-                // Scroll to logged-in user's position (Android Developers, 2025; Firebsae, 2025)
+                // Scroll to logged-in user's position
                 val position = players.indexOfFirst { it.username == loggedInUser }
-                if (position != -1) {
-                    recyclerView.scrollToPosition(position)
-                }
+                if (position != -1) recyclerView.scrollToPosition(position)
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(requireContext(), "Error loading leaderboard", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Error loading leaderboard: ${error.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }

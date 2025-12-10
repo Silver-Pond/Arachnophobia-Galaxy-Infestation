@@ -16,43 +16,54 @@ object CurrencyManager {
     private var networkCallbackRegistered = false
 
     fun saveInGameCurrency(appContext: Context, score: Int) {
-        val auth = FirebaseAuth.getInstance()
-        val uid = auth.currentUser?.uid ?: return
 
-        val username = auth.currentUser?.displayName
-        if (username.isNullOrBlank() || username.equals("Guest", ignoreCase = true)) return
+        val auth = FirebaseAuth.getInstance()
+        val currentUser = auth.currentUser ?: return
+        val uid = currentUser.uid
 
         val prefs = appContext.getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
 
-        // Calculate silk earned (Android Developers, 2025; ChatGPT-4, 2025)
-        val gainedSilk = (score * 0.5) / 100.0   // double
+        // Calculate silk earned
+        val gainedSilk = (score * 0.5) / 100.0
 
         // Fast modern network check
         val cm = appContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val capabilities = cm.getNetworkCapabilities(cm.activeNetwork)
-        val isOnline = capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+        val isOnline =
+            capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
 
-        // --- Offline -> store pending silk --- (Android Developers, 2025; Firebase, 2025)
+        // --- Offline → store pending silk ---
         if (!isOnline) {
             val pending = prefs.getFloat("pending_silk", 0f)
-            prefs.edit().putFloat("pending_silk", (pending + gainedSilk).toFloat()).apply()
+            prefs.edit()
+                .putFloat("pending_silk", (pending + gainedSilk).toFloat())
+                .apply()
 
             Handler(Looper.getMainLooper()).post {
-                Toast.makeText(appContext, "No internet. Silk saved locally.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    appContext,
+                    "No internet. Silk saved locally.",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
             return
         }
 
-        // --- Online -> merge pending + gained silk --- (Android Developers, 2025; Firebase, 2025)
+        // --- Online → merge pending + gained silk ---
         val pendingSilk = prefs.getFloat("pending_silk", 0f).toDouble()
         val silkToAdd = pendingSilk + gainedSilk
-
         if (silkToAdd <= 0) return
 
-        val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid).child("spider_silk")
+        // 🔐 UPDATED PATH — matches secure Firebase rules
+        val dbRef = FirebaseDatabase.getInstance()
+            .reference
+            .child("players")
+            .child(uid)
+            .child("spider_silk")
 
-        // Use a Firebase transaction (fast, atomic, no read needed)
+        // Atomic Firebase transaction
         dbRef.runTransaction(object : Transaction.Handler {
+
             override fun doTransaction(currentData: MutableData): Transaction.Result {
                 val existing = when (val v = currentData.value) {
                     is Long -> v.toDouble()
@@ -63,8 +74,8 @@ object CurrencyManager {
                 }
 
                 val newAmount = (existing + silkToAdd).coerceAtMost(100_000.0)
-
                 currentData.value = newAmount
+
                 return Transaction.success(currentData)
             }
 
@@ -85,7 +96,11 @@ object CurrencyManager {
                     }
                 } else {
                     Handler(Looper.getMainLooper()).post {
-                        Toast.makeText(appContext, "Failed to update silk.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            appContext,
+                            "Failed to update silk.",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             }
@@ -96,6 +111,7 @@ object CurrencyManager {
      * Auto-sync pending silk when internet returns.
      */
     fun registerNetworkCallback(appContext: Context) {
+
         if (networkCallbackRegistered) return
         networkCallbackRegistered = true
 
@@ -103,6 +119,7 @@ object CurrencyManager {
 
         val callback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
+
                 if (isSyncing) return
                 isSyncing = true
 
@@ -117,7 +134,6 @@ object CurrencyManager {
             }
         }
 
-        // Instant monitoring
         cm.registerDefaultNetworkCallback(callback)
     }
 }

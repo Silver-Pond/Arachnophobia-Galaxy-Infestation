@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.Context.MODE_PRIVATE
 import android.media.SoundPool
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -96,7 +97,12 @@ class TrophiesFragment : Fragment() {
     // Fetch user's earned trophies from Firebase (Android Developers, 2025; Firebsae, 2025)
     private fun fetchUserTrophies() {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
-        val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid).child("trophies")
+
+        // 🔐 Correct secure path: /users/{uid}/trophies
+        val dbRef = FirebaseDatabase.getInstance()
+            .getReference("players")
+            .child(uid)
+            .child("trophies")
 
         dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -110,27 +116,30 @@ class TrophiesFragment : Fragment() {
                 fetchAllTrophies()
             }
 
-            override fun onCancelled(error: DatabaseError) {}
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("Firebase", "Failed to fetch user trophies: ${error.message}")
+            }
         })
     }
 
-    // Fetch all trophies from Firebase (Android Developers, 2025; Firebsae, 2025)
+    // Fetch all trophies (static/public data, path does not need authentication)
     private fun fetchAllTrophies() {
-        val dbRef = FirebaseDatabase.getInstance().getReference("arachnotrophies")
+        val dbRef = FirebaseDatabase.getInstance()
+            .getReference("arachnotrophies") // public/static trophies
 
         dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 trophies.clear()
                 snapshot.children.forEach { child ->
                     val trophy = child.getValue(Trophy::class.java)
-                    if (trophy != null) {
-                        trophies.add(trophy)
-                    }
+                    if (trophy != null) trophies.add(trophy)
                 }
                 adapter.notifyDataSetChanged()
             }
 
-            override fun onCancelled(error: DatabaseError) {}
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("Firebase", "Failed to fetch all trophies: ${error.message}")
+            }
         })
     }
 

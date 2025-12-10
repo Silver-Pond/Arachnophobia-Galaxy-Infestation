@@ -16,11 +16,14 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.MutableData
+import com.google.firebase.database.Transaction
 import com.google.firebase.database.ValueEventListener
 import com.google.gson.Gson
 import retrofit2.Call
@@ -816,76 +819,94 @@ class SurvivalGameFragment : Fragment() {
     }
 
     private fun updateHighScoreUI() {
-        val username = arguments?.getString("username") ?: "Guest"
-
-        if (username.equals("Guest", ignoreCase = true) || username.isEmpty()) {
+        val currentUser = FirebaseAuth.getInstance().currentUser ?: run {
             highScoreText.text = "HIGHSCORE: 0"
-        } else {
-            val auth = FirebaseAuth.getInstance()
-            val uid = auth.currentUser?.uid ?: return  // No UID, just return
-            val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
-
-            dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    // Use the correct field name ("survivalHighscore")
-                    val storedHighscore = snapshot.child("survivalHighscore").getValue(Int::class.java) ?: 0
-                    highScoreText.text = "HIGHSCORE: $storedHighscore"
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    highScoreText.text = "HIGHSCORE: 0"
-                }
-            })
-        }
-    }
-
-    private fun saveHighScore() {
-        val auth = FirebaseAuth.getInstance()
-        val uid = auth.currentUser?.uid
-        if (uid == null) {
-            // Not logged in → just skip
             return
         }
+        val uid = currentUser.uid
 
-        val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
-
-        // Use global network state
-        if (!NetworkUtils.isOnline) {
-            // Offline → store locally
-            val prefs = requireActivity().getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
-            prefs.edit().putInt("pending_survival_highscore", score).apply()
-
-            Toast.makeText(requireContext(), "No internet. Survival high score saved locally.", Toast.LENGTH_SHORT).show()
-            return
-        }
+        // Secure Firebase path
+        val dbRef = FirebaseDatabase.getInstance()
+            .getReference("players")
+            .child(uid)
 
         dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val existingHighscore = snapshot.child("survivalHighscore").getValue(Int::class.java) ?: 0
-
-                // Only update if higher
-                if (score > existingHighscore) {
-                    dbRef.child("survivalHighscore").setValue(score)
-                        .addOnSuccessListener {
-                            Toast.makeText(requireContext(), "New Survival Highscore!", Toast.LENGTH_SHORT).show()
-                        }
-                        .addOnFailureListener {
-                            Toast.makeText(requireContext(), "Failed to update survival highscore", Toast.LENGTH_SHORT).show()
-                        }
+                if (!isAdded || view == null || !viewLifecycleOwner.lifecycle.currentState.isAtLeast(
+                        Lifecycle.State.STARTED)) {
+                    return
                 }
+
+                val storedHighscore = snapshot.child("survivalHighscore").getValue(Int::class.java) ?: 0
+                highScoreText.text = "HIGHSCORE: $storedHighscore"
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(requireContext(), "Database error: ${error.message}", Toast.LENGTH_SHORT).show()
+                highScoreText.text = "HIGHSCORE: 0"
+            }
+        })
+    }
+
+    private fun saveHighScore() {
+        val currentUser = FirebaseAuth.getInstance().currentUser ?: return
+        val uid = currentUser.uid
+
+        val prefs = requireActivity()
+            .getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
+
+        if (!NetworkUtils.isOnline) {
+            prefs.edit()
+                .putInt("pending_survival_highscore", score)
+                .apply()
+
+            Toast.makeText(
+                requireContext(),
+                "No internet. Survival high score saved locally.",
+                Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
+
+        val pending = prefs.getInt("pending_survival_highscore", 0)
+        val finalScore = maxOf(score, pending)
+
+        val survivalRef = FirebaseDatabase.getInstance()
+            .getReference("players/$uid/survivalHighscore")
+
+        survivalRef.runTransaction(object : Transaction.Handler {
+
+            private var updated = false
+
+            override fun doTransaction(currentData: MutableData): Transaction.Result {
+                val existing = currentData.getValue(Int::class.java) ?: 0
+                if (finalScore > existing) {
+                    currentData.value = finalScore
+                    updated = true
+                }
+                return Transaction.success(currentData)
+            }
+
+            override fun onComplete(
+                error: DatabaseError?,
+                committed: Boolean,
+                snapshot: DataSnapshot?
+            ) {
+                if (error == null && committed && updated) {
+                    prefs.edit().remove("pending_survival_highscore").apply()
+
+                    Toast.makeText(
+                        requireContext(),
+                        "New Survival Highscore!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         })
     }
 
     private fun saveInGameCurrency() {
         val username = arguments?.getString("username") ?: "Guest"
-
-        // Guest users do not earn spider silk (Android Developers, 2025; Firebsae, 2025)
-        if (username.equals("Guest", ignoreCase = true) || username.isEmpty()) return
+        if (username.equals("Guest", ignoreCase = true) || username.isBlank()) return
 
         val spiderSilkEarned = (score * 0.5) / 100.0
         val auth = FirebaseAuth.getInstance()
@@ -894,59 +915,18 @@ class SurvivalGameFragment : Fragment() {
 
         dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                if (!isAdded || view == null) return // Fragment is not active (Android Developers, 2025; Firebsae, 2025)
+                if (!isAdded || view == null) return
 
-                val showToasts = username.isNotBlank() && !username.equals("Guest", ignoreCase = true)
+                val currentSilk = snapshot.child("spider_silk").getValue(Double::class.java) ?: 0.0
+                val updatedSilk = (currentSilk + spiderSilkEarned).coerceAtMost(100_000.0)
 
-                if (snapshot.exists()) {
-                    val currentSilk = snapshot.child("spider_silk").getValue(Double::class.java) ?: 0.0
-                    if (currentSilk < 100_000) {
-                        val updatedSilk = (currentSilk + spiderSilkEarned).coerceAtMost(100_000.0)
-
-                        dbRef.child("spider_silk").setValue(updatedSilk)
-                            .addOnSuccessListener {
-                                if (showToasts) {
-                                    Toast.makeText(
-                                        requireContext(),
-                                        "You earned ${"%.1f".format(spiderSilkEarned)} silk!",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            }
-                            .addOnFailureListener {
-                                if (showToasts) {
-                                    Toast.makeText(requireContext(), "Failed to update spider silk.", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                    } else {
-                        if (showToasts) {
-                            Toast.makeText(requireContext(), "Max silk reached (100,000).", Toast.LENGTH_SHORT).show()
-                        }
+                dbRef.child("spider_silk").setValue(updatedSilk)
+                    .addOnSuccessListener {
+                        Toast.makeText(requireContext(), "You earned ${"%.1f".format(spiderSilkEarned)} silk!", Toast.LENGTH_SHORT).show()
                     }
-                } else {
-                    // If the player record doesn't exist, create it (Android Developers, 2025; Firebsae, 2025)
-                    val userMap = mapOf(
-                        "id" to uid,
-                        "username" to username.ifBlank { "Guest" },
-                        "email" to (snapshot.child("email").getValue(String::class.java) ?: ""),
-                        "password" to (snapshot.child("password").getValue(String::class.java) ?: ""),
-                        "highscore" to (snapshot.child("highscore").getValue(Int::class.java) ?: 0),
-                        "survivalHighscore" to (snapshot.child("survivalHighscore").getValue(Int::class.java) ?: 0),
-                        "spider_silk" to spiderSilkEarned.coerceAtMost(100_000.0)
-                    )
-
-                    dbRef.setValue(userMap)
-                        .addOnSuccessListener {
-                            if (showToasts) {
-                                Toast.makeText(requireContext(), "Player record created with spider silk!", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                        .addOnFailureListener {
-                            if (showToasts) {
-                                Toast.makeText(requireContext(), "Failed to save spider silk.", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                }
+                    .addOnFailureListener {
+                        Toast.makeText(requireContext(), "Failed to update spider silk.", Toast.LENGTH_SHORT).show()
+                    }
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -958,14 +938,11 @@ class SurvivalGameFragment : Fragment() {
 
     private fun checkAndAwardTrophies() {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
-        val dbRef = FirebaseDatabase.getInstance()
-            .getReference("players")
-            .child(uid)
-            .child("trophies")
+        val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid).child("trophies")
 
         val trophiesToAward = mutableListOf<Trophy>()
 
-        // Level-based trophies for Survival Mode (Android Developers, 2025; ChatGPT-4, 2025)
+        // Level-based Survival Mode trophies
         when (currentLevel) {
             1 -> trophiesToAward.add(Trophy("trophy12", "Survivor lvl 1", "Completed Level 1 of Survival Mode!", "lvl_trophy"))
             4 -> trophiesToAward.add(Trophy("trophy13", "Survivor lvl 4", "Completed Level 4 of Survival Mode!", "lvl_trophy"))
@@ -974,13 +951,12 @@ class SurvivalGameFragment : Fragment() {
             19 -> trophiesToAward.add(Trophy("trophy16", "Survivor lvl 19", "Completed Level 19 of Survival Mode!", "lvl_trophy"))
         }
 
-        // Score-based trophies for Survival Mode (Android Developers, 2025; ChatGPT-4, 2025)
+        // Score-based Survival Mode trophies
         if (score >= 2000) trophiesToAward.add(Trophy("trophy17", "Arachno-Loser", "Obtained a score of 2000 in Survival Mode!", "score_trophy"))
         if (score >= 4000) trophiesToAward.add(Trophy("trophy18", "New Survivor", "Obtained a score of 4000 in Survival Mode!", "score_trophy"))
         if (score >= 6000) trophiesToAward.add(Trophy("trophy19", "Spider Hunter lvl 1", "Obtained a score of 6000 in Survival Mode!", "score_trophy"))
         if (score >= 8000) trophiesToAward.add(Trophy("trophy20", "Spider Hunter lvl...Legit", "Obtained a score of 8000 in Survival Mode!", "score_trophy"))
 
-        // 🏆 Save & notify only NEW trophies (Android Developers, 2025; ChatGPT-4, 2025)
         trophiesToAward.forEach { trophy ->
             dbRef.child(trophy.id).get().addOnSuccessListener { snapshot ->
                 if (!snapshot.exists()) {
@@ -992,7 +968,6 @@ class SurvivalGameFragment : Fragment() {
                         Snackbar.LENGTH_LONG
                     )
 
-                    // Place Snackbar at top center (Android Developers, 2025; ChatGPT-4, 2025)
                     val snackbarView = snackbar.view
                     val params = snackbarView.layoutParams as FrameLayout.LayoutParams
                     params.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL

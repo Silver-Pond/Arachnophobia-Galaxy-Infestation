@@ -10,23 +10,18 @@ import com.google.firebase.database.*
 
 object HighScoreManager {
 
-    private var isSyncing = false     // prevents double-sync
+    private var isSyncing = false
     private var networkCallbackRegistered = false
 
     fun saveHighScore(appContext: Context, score: Int) {
-        val auth = FirebaseAuth.getInstance()
-        val uid = auth.currentUser?.uid ?: return
 
-        val username = auth.currentUser?.displayName ?: "Guest"
-        if (username.isBlank() || username.equals("Guest", ignoreCase = true)) return
+        val user = FirebaseAuth.getInstance().currentUser ?: return
+        val uid = user.uid
 
         val prefs = appContext.getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
-        val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
 
-        // Fast modern online check (Android Developers, 2025; Firebase, 2025)
         val cm = appContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val capabilities = cm.getNetworkCapabilities(cm.activeNetwork)
-        val isOnline = capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+        val isOnline = cm.activeNetwork != null
 
         if (!isOnline) {
             prefs.edit().putInt("pending_highscore", score).apply()
@@ -37,19 +32,19 @@ object HighScoreManager {
         val pending = prefs.getInt("pending_highscore", 0)
         val finalScore = maxOf(score, pending)
 
-        // Faster: Firebase transaction, no separate read (Android Developers, 2025; Firebase, 2025)
-        dbRef.child("highscore").runTransaction(object : Transaction.Handler {
+        val playerScoreRef = FirebaseDatabase.getInstance()
+            .getReference("players/$uid/highscore")
 
-            private var scoreWasUpdated = false   // track if an update happened
+        playerScoreRef.runTransaction(object : Transaction.Handler {
+
+            private var scoreUpdated = false
 
             override fun doTransaction(currentData: MutableData): Transaction.Result {
                 val existing = currentData.getValue(Int::class.java) ?: 0
-
                 if (finalScore > existing) {
                     currentData.value = finalScore
-                    scoreWasUpdated = true    // mark that a higher score was written
+                    scoreUpdated = true
                 }
-
                 return Transaction.success(currentData)
             }
 
@@ -58,9 +53,8 @@ object HighScoreManager {
                 committed: Boolean,
                 snapshot: DataSnapshot?
             ) {
-                if (error == null && committed && scoreWasUpdated) {
+                if (error == null && committed && scoreUpdated) {
                     prefs.edit().remove("pending_highscore").apply()
-
                     Toast.makeText(
                         appContext,
                         "New high score saved online!",
@@ -76,16 +70,13 @@ object HighScoreManager {
         networkCallbackRegistered = true
 
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-
-        // Callback for when internet is available (Android Developers, 2025; Firebase, 2025)
         val callback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
                 if (isSyncing) return
                 isSyncing = true
 
                 val auth = FirebaseAuth.getInstance()
-                val username = auth.currentUser?.displayName ?: "Guest"
-                if (username.isBlank() || username.equals("Guest", ignoreCase = true)) {
+                if (auth.currentUser == null) {
                     isSyncing = false
                     return
                 }
@@ -101,7 +92,6 @@ object HighScoreManager {
             }
         }
 
-        // Instant network detection
         cm.registerDefaultNetworkCallback(callback)
     }
 }

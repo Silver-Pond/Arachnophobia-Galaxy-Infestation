@@ -5,6 +5,7 @@ import android.media.SoundPool
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -648,27 +649,30 @@ class GameFragment : Fragment() {
     }
 
     private fun updateHighScoreUI() {
-        
-        val username = arguments?.getString("username") ?: "Guest"
-
-        if(username.equals("Guest")  || username.isNullOrEmpty()){
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val uid = currentUser?.uid ?: run {
             highScoreText.text = "HIGHSCORE: 0"
-        }else{
-            val auth = FirebaseAuth.getInstance()
-            val uid = auth.currentUser?.uid ?: "Guest"  // fallback for guest users (Android Developers, 2025; Firebsae, 2025)
-            val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
-
-            dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val storedHighscore = snapshot.child("highscore").getValue(Int::class.java) ?: 0
-                    highScoreText.text = "HIGHSCORE: $storedHighscore"
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    highScoreText.text = "HIGHSCORE: 0"
-                }
-            })
+            return
         }
+
+        val dbRef = FirebaseDatabase.getInstance()
+            .getReference("players") // 🔒 Updated secure path
+            .child(uid)
+
+        dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (!isAdded || view == null || !viewLifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+                    return
+                }
+
+                val storedHighscore = snapshot.child("highscore").getValue(Int::class.java) ?: 0
+                highScoreText.text = "HIGHSCORE: $storedHighscore"
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                highScoreText.text = "HIGHSCORE: 0"
+            }
+        })
     }
 
     fun togglePause(): Boolean {
@@ -700,15 +704,16 @@ class GameFragment : Fragment() {
     }
 
     private fun checkAndAwardTrophies() {
-        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val currentUser = FirebaseAuth.getInstance().currentUser ?: return
+        val uid = currentUser.uid
         val dbRef = FirebaseDatabase.getInstance()
-            .getReference("players")
+            .getReference("players") // 🔐 Updated path
             .child(uid)
             .child("trophies")
 
         val trophiesToAward = mutableListOf<Trophy>()
 
-        // Level-based trophies (Android Developers, 2025; ChatGPT-4, 2025)
+        // Level-based trophies
         when (currentLevel) {
             1 -> trophiesToAward.add(Trophy("trophy01", "Hero lvl 1", "Completed Level 1!", "lvl_trophy"))
             4 -> trophiesToAward.add(Trophy("trophy02", "Hero lvl 4", "Completed Level 4!", "lvl_trophy"))
@@ -717,7 +722,7 @@ class GameFragment : Fragment() {
             19 -> trophiesToAward.add(Trophy("trophy05", "Hero lvl 19", "Completed Level 19!", "lvl_trophy"))
         }
 
-        // Score-based trophies (Android Developers, 2025; ChatGPT-4, 2025)
+        // Score-based trophies
         if (score >= 1000) trophiesToAward.add(Trophy("trophy06", "New User", "Obtained A Score of 1000!", "score_trophy"))
         if (score >= 2500) trophiesToAward.add(Trophy("trophy07", "Space Cadet", "Obtained A Score of 2500!", "score_trophy"))
         if (score >= 5000) trophiesToAward.add(Trophy("trophy08", "Space Lieutenant", "Obtained A Score of 5000!", "score_trophy"))
@@ -725,15 +730,12 @@ class GameFragment : Fragment() {
         if (score >= 9000) trophiesToAward.add(Trophy("trophy10", "Galactic Trooper", "Obtained A Score of 9000!", "score_trophy"))
         if (score >= 10000) trophiesToAward.add(Trophy("trophy11", "Space Invader", "Obtained A Score of 10000!", "score_trophy"))
 
-        // Save & show toast only for NEW trophies
-        // Save & show toast only for NEW trophies
+        // Save & show only NEW trophies
         trophiesToAward.forEach { trophy ->
             dbRef.child(trophy.id).get().addOnSuccessListener { snapshot ->
 
-                // 🔒 SAFETY CHECKS — prevent crashes if fragment view is gone
-                if (!isAdded || view == null ||
-                    !viewLifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
-                ) {
+                // 🔒 SAFETY: Fragment may be detached
+                if (!isAdded || view == null || !viewLifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
                     return@addOnSuccessListener
                 }
 
@@ -741,18 +743,16 @@ class GameFragment : Fragment() {
                     // Award trophy in Firebase
                     dbRef.child(trophy.id).setValue(true)
 
-                    // SAFE access to view
+                    // Show Snackbar safely
                     val rootView = requireView()
-
                     val snackbar = Snackbar.make(
                         rootView,
                         "🏆 ${trophy.name} unlocked!\n${trophy.description}",
                         Snackbar.LENGTH_LONG
                     )
 
+                    // Position at top center
                     val snackbarView = snackbar.view
-
-                    // Change layout params to show at the top center (Android Developers, 2025; ChatGPT-4, 2025)
                     val params = snackbarView.layoutParams as FrameLayout.LayoutParams
                     params.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
                     params.topMargin = 100
@@ -768,6 +768,9 @@ class GameFragment : Fragment() {
 
                     snackbar.show()
                 }
+            }.addOnFailureListener {
+                // Optional: log error
+                Log.e("Trophies", "Failed to check trophy ${trophy.id}: ${it.message}")
             }
         }
     }

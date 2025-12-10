@@ -145,61 +145,91 @@ class LoginHubFragment : Fragment() {
         }
     }
 
-    private fun firebaseAuthWithGoogle(account: GoogleSignInAccount, useBiometrics: Boolean) {
+    private fun firebaseAuthWithGoogle(
+        account: GoogleSignInAccount,
+        useBiometrics: Boolean
+    ) {
         val proceedWithFirebaseAuth = {
             val credential = GoogleAuthProvider.getCredential(account.idToken, null)
             auth.signInWithCredential(credential)
                 .addOnCompleteListener(requireActivity()) { task ->
                     if (task.isSuccessful) {
+
                         val user = auth.currentUser
-                        user?.let {
-                            val database = FirebaseDatabase.getInstance().getReference("players")
-                            val playerId = it.uid
-
-                            database.child(playerId).addListenerForSingleValueEvent(object : ValueEventListener {
-                                override fun onDataChange(snapshot: DataSnapshot) {
-                                    if (snapshot.exists()) {
-                                        val existingUsername = snapshot.child("username").getValue(String::class.java)
-                                            ?: it.displayName ?: "Guest"
-
-                                        val gameMenuFragment = GameMenuFragment().apply {
-                                            arguments = Bundle().apply {
-                                                putString("username", existingUsername)
-                                            }
-                                        }
-                                        replaceFragment(gameMenuFragment)
-                                    } else {
-                                        val player = Player(
-                                            username = it.displayName ?: "Guest",
-                                            email = it.email ?: "No Email",
-                                            password = "N/A",
-                                            highscore = 0,
-                                            survivalhighscore = 0,
-                                            spider_silk = 0.00,
-                                            trophies = emptyList(),
-                                            ownedSkins = listOf("Moth", "Mario", "Invader"),
-                                            equippedSkin = "Moth"
-                                        )
-                                        database.child(playerId).setValue(player)
-                                            .addOnSuccessListener {
-                                                val gameMenuFragment = GameMenuFragment().apply {
-                                                    arguments = Bundle().apply {
-                                                        putString("username", player.username)
-                                                    }
-                                                }
-                                                replaceFragment(gameMenuFragment)
-                                            }
-                                            .addOnFailureListener { e ->
-                                                Toast.makeText(requireContext(), "Failed to save user: ${e.message}", Toast.LENGTH_SHORT).show()
-                                            }
-                                    }
-                                }
-
-                                override fun onCancelled(error: DatabaseError) {
-                                    Toast.makeText(requireContext(), "Database error: ${error.message}", Toast.LENGTH_SHORT).show()
-                                }
-                            })
+                        if (user == null) {
+                            Toast.makeText(requireContext(), "User not authenticated", Toast.LENGTH_SHORT).show()
+                            return@addOnCompleteListener
                         }
+
+                        val uid = user.uid
+
+                        // 🔐 UPDATED PATH: users/{uid}
+                        val database = FirebaseDatabase
+                            .getInstance()
+                            .reference
+                            .child("players")
+                            .child(uid)
+
+                        database.addListenerForSingleValueEvent(object : ValueEventListener {
+
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                if (snapshot.exists()) {
+
+                                    val existingUsername =
+                                        snapshot.child("username").getValue(String::class.java)
+                                            ?: user.displayName
+                                            ?: "Guest"
+
+                                    val gameMenuFragment = GameMenuFragment().apply {
+                                        arguments = Bundle().apply {
+                                            putString("username", existingUsername)
+                                        }
+                                    }
+                                    replaceFragment(gameMenuFragment)
+
+                                } else {
+
+                                    val player = Player(
+                                        username = user.displayName ?: "Guest",
+                                        email = user.email ?: "No Email",
+                                        password = "N/A", // OAuth users should not store passwords
+                                        highscore = 0,
+                                        survivalhighscore = 0,
+                                        spider_silk = 0.0,
+                                        trophies = emptyList(),
+                                        ownedSkins = listOf("Moth", "Mario", "Invader"),
+                                        equippedSkin = "Moth"
+                                    )
+
+                                    // 🔐 Writing ONLY under authenticated UID
+                                    database.setValue(player)
+                                        .addOnSuccessListener {
+                                            val gameMenuFragment = GameMenuFragment().apply {
+                                                arguments = Bundle().apply {
+                                                    putString("username", player.username)
+                                                }
+                                            }
+                                            replaceFragment(gameMenuFragment)
+                                        }
+                                        .addOnFailureListener { e ->
+                                            Toast.makeText(
+                                                requireContext(),
+                                                "Failed to save user: ${e.message}",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                }
+                            }
+
+                            override fun onCancelled(error: DatabaseError) {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Database error: ${error.message}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        })
+
                     } else {
                         Toast.makeText(requireContext(), "Authentication Failed.", Toast.LENGTH_SHORT).show()
                     }

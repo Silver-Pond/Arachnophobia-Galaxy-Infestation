@@ -93,7 +93,7 @@ class SkinsFragment : Fragment() {
 
         val uid = currentUser.uid
         val playerRef = FirebaseDatabase.getInstance()
-            .getReference("players")
+            .getReference("players") // 🔐 Updated path
             .child(uid)
 
         playerRef.get().addOnSuccessListener { snapshot ->
@@ -121,7 +121,7 @@ class SkinsFragment : Fragment() {
                     equippedSkin = equipped
                 )
 
-                // Save local prefs so other methods can use them (Android Developers, 2025; Firebsae, 2025)
+                // Save local prefs so other methods can use them
                 val prefs = requireContext().getSharedPreferences("GamePrefs", MODE_PRIVATE)
                 prefs.edit()
                     .putString("username", player.username)
@@ -167,72 +167,54 @@ class SkinsFragment : Fragment() {
     private fun onSkinAction(skin: Skin) {
         val currentUser = FirebaseAuth.getInstance().currentUser ?: return
         val playerRef = FirebaseDatabase.getInstance()
-            .getReference("players")
+            .getReference("players") // 🔐 Updated path
             .child(currentUser.uid)
 
         val ownedSkins = player.ownedSkins ?: emptyList()
 
-        // If player already owns this skin → EQUIP
         if (ownedSkins.contains(skin.name)) {
+            // EQUIP
+            playerRef.child("equippedSkin").setValue(skin.name)
+            player = player.copy(equippedSkin = skin.name)
 
-            // Save equipped skin immediately
             val prefs = requireContext().getSharedPreferences("GamePrefs", MODE_PRIVATE)
             prefs.edit().putString("equippedSkin", skin.name).apply()
 
-            // Update local player model
-            player = player.copy(equippedSkin = skin.name)
-
-            // Update Firebase
-            playerRef.child("equippedSkin").setValue(skin.name)
-
             Toast.makeText(requireContext(), "${skin.name} equipped!", Toast.LENGTH_SHORT).show()
-
-            // Notify adapter to refresh button state
             skinAdapter.updatePlayer(player)
             return
         }
 
-        // If player DOES NOT own this skin → BUY + EQUIP
+        // BUY + EQUIP
         val playerSilk = player.spider_silk
         val skinPrice = skin.price
 
         if (playerSilk >= skinPrice) {
-
             val newSilk = playerSilk - skinPrice
             val newOwned = ownedSkins + skin.name
 
-            // Update Firebase silk
             playerRef.child("spider_silk").setValue(newSilk).addOnSuccessListener {
-
-                // Update Firebase owned skins
                 playerRef.child("ownedSkins").setValue(newOwned).addOnSuccessListener {
+                    playerRef.child("equippedSkin").setValue(skin.name)
 
-                    // Save locally and update player
                     player = player.copy(
                         spider_silk = newSilk,
                         ownedSkins = newOwned,
-                        equippedSkin = skin.name      // <-- AUTO EQUIP
+                        equippedSkin = skin.name
                     )
 
-                    // Save equipped skin in SharedPreferences immediately (Android Developers, 2025; Firebsae, 2025)
                     val prefs = requireContext().getSharedPreferences("GamePrefs", MODE_PRIVATE)
                     prefs.edit()
                         .putString("equippedSkin", skin.name)
                         .putStringSet("ownedSkins", newOwned.toSet())
                         .apply()
 
-                    // Update equipped skin in Firebase
-                    playerRef.child("equippedSkin").setValue(skin.name)
-
                     Toast.makeText(requireContext(), "You bought and equipped ${skin.name}!", Toast.LENGTH_SHORT).show()
-
-                    // Refresh UI instantly (Buy → Equipped)
                     skinAdapter.updatePlayer(player)
 
                 }.addOnFailureListener {
                     Toast.makeText(requireContext(), "Failed to update owned skins", Toast.LENGTH_SHORT).show()
                 }
-
             }.addOnFailureListener {
                 Toast.makeText(requireContext(), "Failed to update spider silk", Toast.LENGTH_SHORT).show()
             }

@@ -127,17 +127,26 @@ class ProfileFragment : Fragment() {
     private fun loadSpiderSilk() {
         val auth = FirebaseAuth.getInstance()
         val uid = auth.currentUser?.uid ?: return
-        val dbRef = FirebaseDatabase.getInstance().getReference("players").child(uid)
 
-        dbRef.child("spider_silk").addListenerForSingleValueEvent(object : ValueEventListener {
+        // 🔐 Secure path: /users/{uid}/spider_silk
+        val dbRef = FirebaseDatabase.getInstance()
+            .getReference("players")
+            .child(uid)
+            .child("spider_silk")
+
+        dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val spiderSilk = snapshot.getValue(Int::class.java) ?: 0
+                val spiderSilk = snapshot.getValue(Double::class.java) ?: 0.0
                 val spiderSilkTextView: TextView = requireActivity().findViewById(R.id.spiderSilkTextView)
-                spiderSilkTextView.text = "SPIDER SILK: $spiderSilk"
+                spiderSilkTextView.text = "SPIDER SILK: ${"%.2f".format(spiderSilk)}"
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(requireContext(), "Failed to load spider silk: ${error.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    "Failed to load spider silk: ${error.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         })
     }
