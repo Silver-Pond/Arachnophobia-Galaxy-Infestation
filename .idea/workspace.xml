@@ -146,28 +146,16 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0fa8f017-5757-4b80-8e2d-5853bd444b49" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gradle/8.13/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/executionHistory/executionHistory.bin" afterDir="false" />
+    <list default="true" id="0fa8f017-5757-4b80-8e2d-5853bd444b49" name="Changes" comment="Updated code">
+      <change beforePath="$PROJECT_DIR$/.gradle/8.13/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/checksums/checksums.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.13/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/checksums/sha1-checksums.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.13/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/executionHistory/executionHistory.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.13/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/fileHashes/resourceHashesCache.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Managers/CurrencyManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Managers/CurrencyManager.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Managers/HighScoreManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Managers/HighScoreManager.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Views/GameActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Views/GameActivity.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Views/GameFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Views/GameFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Views/LeaderboardFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Views/LeaderboardFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Views/LoginFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Views/LoginFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Views/LoginHubFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Views/LoginHubFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Views/ProfileFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Views/ProfileFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Views/SignUpFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Views/SignUpFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Views/SkinsFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Views/SkinsFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Views/SurvivalGameFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Views/SurvivalGameFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Views/SurvivalLeaderboardFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Views/SurvivalLeaderboardFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Views/TrophiesFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/arachnophobia_galaxy_infestation/Views/TrophiesFragment.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -177,7 +165,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=PhysicalDevice, isTemplate=false, identifier=serial=R9PR80GS35H)]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -280,60 +268,60 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Android App.app.executor&quot;: &quot;Run&quot;,
-    &quot;Android Instrumented Tests.LeaderboardFragmentTest.executor&quot;: &quot;Run&quot;,
-    &quot;Android Instrumented Tests.NetworkMonitorInstrumentedTest.executor&quot;: &quot;Run&quot;,
-    &quot;Android Instrumented Tests.NotificationReceiverInstrumentedTest.executor&quot;: &quot;Run&quot;,
-    &quot;Android Instrumented Tests.SettingsFragmentInstrumentedTest.executor&quot;: &quot;Run&quot;,
-    &quot;Android Instrumented Tests.SettingsFragmentInstrumentedTestWithMocks.executor&quot;: &quot;Run&quot;,
-    &quot;Android Instrumented Tests.SoundEffectsManagerInstrumentedTest.executor&quot;: &quot;Run&quot;,
-    &quot;Android Instrumented Tests.save_button_saves_language().executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.BootReceiverTest.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.BootReceiverTest.onReceive does not schedule if intent is not BOOT_COMPLETED.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.BootReceiverTest.onReceive does not schedule notifications if disabled.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.BootReceiverTest.onReceive schedules notifications if enabled.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.ExampleUnitTest.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.HighScoreManagerTest.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.LeaderboardAdapterTest.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.LeaderboardAdapterTest.onBindViewHolder sets texts correctly.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.LeaderboardFragmentTest.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.LeaderboardFragmentUnitTest.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.LeaderboardFragmentUnitTest.loadLeaderboard should sort players by score descending.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.NetworkMonitorTest.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.NotificationReceiverTest.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.SettingsFragmentTest.bioswitch toggles preference correctly.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.SettingsFragmentTest.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.SettingsFragmentTest.testFragmentInflatesProperly.executor&quot;: &quot;Debug&quot;,
-    &quot;Gradle.SkinAdapterTest (1).executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.SkinAdapterTest.bind sets button text correctly for not owned skin.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.SkinAdapterTest.bind sets button text correctly for owned skin.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.SkinAdapterTest.bind sets button text correctly when owned but not equipped.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.SkinAdapterTest.bind sets skin name and price correctly.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.SkinAdapterTest.clicking actionButton calls onSkinAction.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.SkinAdapterTest.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.SkinAdapterTest.onBindViewHolder sets skin name and price correctly.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.SkinViewHolderTest.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.SoundEffectsManagerTest.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.TrophyAdapterTest.bind sets trophy name and earned state.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.TrophyAdapterTest.bind sets unearned trophy.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.TrophyAdapterTest.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.TrophyAdapterTest.onBindViewHolder binds earned trophy as true.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.TrophyAdapterTest.onBindViewHolder should call bind with correct isEarned value.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.TrophyViewHolderTest.bind sets trophy name correctly.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.TrophyViewHolderTest.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/ashfo/AndroidStudioProjects/Arachnophobia_Galaxy_Infestation/app/src/main/res/raw&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Android App.app.executor": "Run",
+    "Android Instrumented Tests.LeaderboardFragmentTest.executor": "Run",
+    "Android Instrumented Tests.NetworkMonitorInstrumentedTest.executor": "Run",
+    "Android Instrumented Tests.NotificationReceiverInstrumentedTest.executor": "Run",
+    "Android Instrumented Tests.SettingsFragmentInstrumentedTest.executor": "Run",
+    "Android Instrumented Tests.SettingsFragmentInstrumentedTestWithMocks.executor": "Run",
+    "Android Instrumented Tests.SoundEffectsManagerInstrumentedTest.executor": "Run",
+    "Android Instrumented Tests.save_button_saves_language().executor": "Run",
+    "Gradle.BootReceiverTest.executor": "Run",
+    "Gradle.BootReceiverTest.onReceive does not schedule if intent is not BOOT_COMPLETED.executor": "Run",
+    "Gradle.BootReceiverTest.onReceive does not schedule notifications if disabled.executor": "Run",
+    "Gradle.BootReceiverTest.onReceive schedules notifications if enabled.executor": "Run",
+    "Gradle.ExampleUnitTest.executor": "Run",
+    "Gradle.HighScoreManagerTest.executor": "Run",
+    "Gradle.LeaderboardAdapterTest.executor": "Run",
+    "Gradle.LeaderboardAdapterTest.onBindViewHolder sets texts correctly.executor": "Run",
+    "Gradle.LeaderboardFragmentTest.executor": "Run",
+    "Gradle.LeaderboardFragmentUnitTest.executor": "Run",
+    "Gradle.LeaderboardFragmentUnitTest.loadLeaderboard should sort players by score descending.executor": "Run",
+    "Gradle.NetworkMonitorTest.executor": "Run",
+    "Gradle.NotificationReceiverTest.executor": "Run",
+    "Gradle.SettingsFragmentTest.bioswitch toggles preference correctly.executor": "Run",
+    "Gradle.SettingsFragmentTest.executor": "Run",
+    "Gradle.SettingsFragmentTest.testFragmentInflatesProperly.executor": "Debug",
+    "Gradle.SkinAdapterTest (1).executor": "Run",
+    "Gradle.SkinAdapterTest.bind sets button text correctly for not owned skin.executor": "Run",
+    "Gradle.SkinAdapterTest.bind sets button text correctly for owned skin.executor": "Run",
+    "Gradle.SkinAdapterTest.bind sets button text correctly when owned but not equipped.executor": "Run",
+    "Gradle.SkinAdapterTest.bind sets skin name and price correctly.executor": "Run",
+    "Gradle.SkinAdapterTest.clicking actionButton calls onSkinAction.executor": "Run",
+    "Gradle.SkinAdapterTest.executor": "Run",
+    "Gradle.SkinAdapterTest.onBindViewHolder sets skin name and price correctly.executor": "Run",
+    "Gradle.SkinViewHolderTest.executor": "Run",
+    "Gradle.SoundEffectsManagerTest.executor": "Run",
+    "Gradle.TrophyAdapterTest.bind sets trophy name and earned state.executor": "Run",
+    "Gradle.TrophyAdapterTest.bind sets unearned trophy.executor": "Run",
+    "Gradle.TrophyAdapterTest.executor": "Run",
+    "Gradle.TrophyAdapterTest.onBindViewHolder binds earned trophy as true.executor": "Run",
+    "Gradle.TrophyAdapterTest.onBindViewHolder should call bind with correct isEarned value.executor": "Run",
+    "Gradle.TrophyViewHolderTest.bind sets trophy name correctly.executor": "Run",
+    "Gradle.TrophyViewHolderTest.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "C:/Users/ashfo/AndroidStudioProjects/Arachnophobia_Galaxy_Infestation/app/src/main/res/raw"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\ashfo\AndroidStudioProjects\Arachnophobia_Galaxy_Infestation\app\src\main\res\raw" />
@@ -562,22 +550,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1755129484054</updated>
-    </task>
-    <task id="LOCAL-00061" summary="Merged remote history with local changes">
-      <option name="closed" value="true" />
-      <created>1759187029939</created>
-      <option name="number" value="00061" />
-      <option name="presentableId" value="LOCAL-00061" />
-      <option name="project" value="LOCAL" />
-      <updated>1759187029941</updated>
-    </task>
-    <task id="LOCAL-00062" summary="Merged remote history with local changes">
-      <option name="closed" value="true" />
-      <created>1759249959940</created>
-      <option name="number" value="00062" />
-      <option name="presentableId" value="LOCAL-00062" />
-      <option name="project" value="LOCAL" />
-      <updated>1759249959941</updated>
     </task>
     <task id="LOCAL-00063" summary="Merged remote history with local changes">
       <option name="closed" value="true" />
@@ -955,7 +927,23 @@
       <option name="project" value="LOCAL" />
       <updated>1765384486183</updated>
     </task>
-    <option name="localTasksCounter" value="110" />
+    <task id="LOCAL-00110" summary="Updated code">
+      <option name="closed" value="true" />
+      <created>1780750919207</created>
+      <option name="number" value="00110" />
+      <option name="presentableId" value="LOCAL-00110" />
+      <option name="project" value="LOCAL" />
+      <updated>1780750919207</updated>
+    </task>
+    <task id="LOCAL-00111" summary="Updated code">
+      <option name="closed" value="true" />
+      <created>1780750991686</created>
+      <option name="number" value="00111" />
+      <option name="presentableId" value="LOCAL-00111" />
+      <option name="project" value="LOCAL" />
+      <updated>1780750991686</updated>
+    </task>
+    <option name="localTasksCounter" value="112" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -970,7 +958,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Merged remote history with local changes" />
     <MESSAGE value="Updated Survival Game Mode" />
     <MESSAGE value="Updated Unit Tests" />
     <MESSAGE value="Added Unit Tests" />
@@ -995,7 +982,8 @@
     <MESSAGE value="Updated HighScoreManager.kt." />
     <MESSAGE value="Updated Unit Tests." />
     <MESSAGE value="Updated Managers." />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated Managers." />
+    <MESSAGE value="Updated code" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated code" />
   </component>
   <component name="play_dynamic_filters_status">
     <option name="appIdToCheckInfo">

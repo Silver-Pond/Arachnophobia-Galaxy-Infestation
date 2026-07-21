@@ -160,6 +160,11 @@ class GameActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
+
+        // Stop player movement while the app is inactive
+        stopMoving()
+
+        // Pause music
         mediaPlayer?.pause()
     }
 

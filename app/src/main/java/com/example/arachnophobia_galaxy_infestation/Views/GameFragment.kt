@@ -31,6 +31,7 @@ class GameFragment : Fragment() {
     private lateinit var pauseText: TextView
     private lateinit var livesText: TextView
 
+    private var isGameLoopRunning = false
     private var playerX = 0f
     private var playerY = 0f
     private val moveStep = 40f
@@ -76,14 +77,29 @@ class GameFragment : Fragment() {
     // Game loop
     private val gameRunnable = object : Runnable {
         override fun run() {
-            if (isAdded && view != null && !isPaused) {
+            if (!isGameLoopRunning) return
+
+            if (isAdded && view != null && !isPaused && !isGameFinished) {
                 updateGame()
             }
-            // Re-post ONLY if still added and the view exists
-            if (isAdded && view != null) {
-                handler.postDelayed(this, 16)
+
+            if (isGameLoopRunning && isAdded && view != null) {
+                handler.postDelayed(this, 16L)
             }
         }
+    }
+
+    private fun startGameLoop() {
+        if (isGameLoopRunning) return
+
+        isGameLoopRunning = true
+        handler.removeCallbacks(gameRunnable)
+        handler.post(gameRunnable)
+    }
+
+    private fun stopGameLoop() {
+        isGameLoopRunning = false
+        handler.removeCallbacks(gameRunnable)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -199,20 +215,29 @@ class GameFragment : Fragment() {
         // Sync player data if user is not Guest
         if (!username.equals("Guest", ignoreCase = true) && username.isNotBlank()) {
             MainActivity.PlayerDataSync.syncPlayerData(requireContext()) {
-                // Apply skin once here
-                applyEquippedSkin()
+                if (isAdded && view != null) {
+                    applyEquippedSkin()
+                }
             }
         } else {
             // Default skin
             player.setImageResource(R.drawable.moth)
         }
 
-        handler.post(gameRunnable)
+        // Restart only one game loop
+        startGameLoop()
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        // Stop the game loop while the app is in the background
+        stopGameLoop()
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
-        // Stop ALL pending tasks (not just the game loop) (Android Developers, 2025; Firebsae, 2025)
+        stopGameLoop()
+
         handler.removeCallbacksAndMessages(null)
 
         SoundEffectsManager.soundPool?.release()
@@ -221,6 +246,8 @@ class GameFragment : Fragment() {
         bullets.clear()
         enemies.clear()
         enemyBullets.clear()
+
+        super.onDestroyView()
     }
 
     // Player movement
